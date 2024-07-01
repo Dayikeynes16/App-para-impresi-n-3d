@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Carrito extends Model
 {
     use HasFactory;
-    protected $fillable= ['usuario_id','status','direccion_id','total'];
+    protected $fillable= ['usuario_id','status','direccion_id','total','recoleccion'];
 
     public function direccion(){
         return $this->hasOne(Direccion::class,'direccion_id');
     }
 
-    public function productosCarritos(){
+    public function productos(){
         return $this->hasMany(Producto_Carrito::class,'carrito_id');
     }
 

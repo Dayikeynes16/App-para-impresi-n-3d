@@ -14,7 +14,7 @@ class Orden extends Model
 
     
     public function files (){
-        return $this->hasMany(Files::class, 'orden_id');
+        return $this->morphMany(Files::class, 'morphable');
     }
     public function carrito(){
         return $this->belongsTo(Carrito::class,'carrito_id');

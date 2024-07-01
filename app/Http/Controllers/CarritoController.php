@@ -49,7 +49,7 @@ class CarritoController extends Controller
 
     public function obtenerCarrito($user_id)
     {
-        $carrito = Carrito::with('productosCarritos.producto','orden.files')->firstorCreate([
+        $carrito = Carrito::with('productos.producto','orden.files')->firstorCreate([
             'status' => 'activo',
             'usuario_id' => $user_id
         ], [
@@ -90,13 +90,13 @@ class CarritoController extends Controller
 
     public function calcularCarrito($id)
     {
-        $carrito = Carrito::with('productosCarritos.producto', 'orden.files')->find($id);
+        $carrito = Carrito::with('productos.producto', 'orden.files')->find($id);
 
         if ($carrito) {
             $total = 0;
 
          
-            foreach ($carrito->productosCarritos as $item) {
+            foreach ($carrito->productos as $item) {
                 $total += $item->producto->price * $item->cantidad;
             }
 
@@ -168,7 +168,7 @@ class CarritoController extends Controller
     }
 
     public function getCarritosPendientes(){
-        $carritos = Carrito::with('usuario','orden.files','productosCarritos')->where('status', 'pagada')->get();
+        $carritos = Carrito::with('usuario','orden.files','productos')->where('status', 'pagada')->get();
         return response($carritos);
     }
 
@@ -177,15 +177,22 @@ class CarritoController extends Controller
 
         $carritos = Carrito::find($id);
         $ordenes = Orden::with('files')->where('carrito_id', $id)->get();
-        $producto = Producto_Carrito::with('producto')->where('carrito_id', $id)->get();
+        $productos = Producto_Carrito::with('producto.files')->where('carrito_id', $id)->get();
         $files = [];
-
         foreach ($ordenes as $orden) {
             foreach ($orden->files as $file) {
                 $files[] = $file;
             }
         }
-        return response()->json(['carrito' => $carritos, 'files' => $files, 'productos'=>$producto]);
+        return response()->json(['carrito' => $carritos, 'files' => $files, 'productos'=>$productos]);
+    }
+
+    public function listoParaEnvio($id){
+        $carrito = Carrito::find($id);
+        $carrito->status ='Listo Para Enviar';
+        $carrito->save();
+
+        return response()->json(['data'=>'exito']);
     }
     
 }

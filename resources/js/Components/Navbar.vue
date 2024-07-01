@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar elevation="0" color="grey-darken-1">
+  <v-app-bar elevation="0" color="blue-grey-darken-1">
     <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     <v-app-bar-title>Applicaciones Creativas</v-app-bar-title>
 

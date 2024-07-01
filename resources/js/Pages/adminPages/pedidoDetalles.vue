@@ -1,9 +1,9 @@
 <template>
     <v-container>
-        <v-card>
-            <v-card-title>
-                Detalles de la orden n.-{{ carrito.id }}
-            </v-card-title>
+        <v-row>
+            <v-col cols="8">
+                <v-card>
+            <v-card-title> Archivos del cliente </v-card-title>
             <v-card-text>
                 <v-table>
                     <thead>
@@ -15,56 +15,162 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="i in files" :key="i.id">
-                            <td>{{ i.nombre }}</td>
-                            <td>{{ i.cantidad }}</td>
-                            <td>{{ i.minutos }} minutos</td>
+                        <tr v-for="file in files" :key="file.id">
+                            <td>{{ file.nombre }}</td>
+                            <td>{{ file.cantidad }}</td>
+                            <td>{{ file.minutos }} minutos</td>
                             <td>
-                                <v-icon @click="download(i.id, i.nombre)" icon="mdi-download"></v-icon>
+                                <v-icon
+                                    icon="mdi-download"
+                                    @click="download(file.id, file.nombre)"
+                                ></v-icon>
                             </td>
-                        </tr>
-                        <tr v-for="i in productos" :key="i.producto.id">
-                            <td>{{ i.producto.name }}</td>
-                            <td>{{ i.cantidad }}</td>
                         </tr>
                     </tbody>
                 </v-table>
             </v-card-text>
         </v-card>
+        <v-divider></v-divider>
+        <v-card>
+            <v-card-title> Productos </v-card-title>
+            <v-card-subtitle>
+                Abrir para ver los archivos correspondientes
+            </v-card-subtitle>
+            <v-card-text>
+                <v-expansion-panels
+                    v-for="item in productos"
+                    :key="item.producto.id"
+                >
+                    <v-expansion-panel class="mb-1" elevation="0">
+                        <v-expansion-panel-title>
+                            <v-row>
+                                <v-col cols="7">
+                                    <div class="text-left">
+                                        {{ item.producto.name }}
+                                    </div></v-col
+                                >
+                                <v-col cols="4">
+                                    Piezas: {{ item.cantidad }}</v-col
+                                >
+                            </v-row>
+                        </v-expansion-panel-title>
+
+                        <v-expansion-panel-text>
+                            <v-list>
+                                <v-list-item
+                                    v-for="file in item.producto.files"
+                                    :key="file.id"
+                                >
+                                    <v-list-item-content>
+                                        <v-row>
+                                            <v-col cols="6">
+                                                <div class="text-left">
+                                                    {{ file.nombre }}
+                                                </div>
+                                            </v-col>
+
+                                            <v-col cols="6">
+                                                <div class="text-right">
+                                                    <v-icon
+                                                        icon="mdi-download"
+                                                        @click="
+                                                            download(
+                                                                file.id,
+                                                                file.nombre
+                                                            )
+                                                        "
+                                                    ></v-icon>
+                                                </div>
+                                            </v-col>
+                                        </v-row>
+                                    </v-list-item-content>
+                                </v-list-item>
+                            </v-list>
+                        </v-expansion-panel-text>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-card-text>
+        </v-card>
+
+            </v-col>
+            <v-col cols="4">
+                <v-card>
+                    <v-card-title>
+                        Detalles
+                    </v-card-title>
+                    
+                    <v-card-subtitle>
+                        Verifica la dirección
+                    </v-card-subtitle>
+                    <v-card-text>
+                        Dirección: Carretera la isla km5+300
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn @click="terminarTarea(carrito.id)" prepend-icon="mdi-check-outline">Finalizado</v-btn>
+
+                    </v-card-actions>
+                </v-card>
+
+            </v-col>
+        </v-row>
+        
     </v-container>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
-import { useRoute } from 'vue-router';
+import { onMounted, ref } from "vue";
+import axios from "axios";
+import { useRouter, useRoute } from "vue-router";
 
+const token = document.querySelector("meta[name='csrf-token']").getAttribute('value');
+const router = useRouter();
 const route = useRoute();
+
+
+
 const files = ref([]);
 const productos = ref([]);
-const carrito = ref({})
+const carrito = ref({});
 
 onMounted(async () => {
-    const { data } = await axios.get(`/carrito/${route.params.id}`);
-    files.value = data.files;
-    productos.value = data.productos;
-    carrito.value = data.carrito
+    try {
+        const { data } = await axios.get(`/carrito/${route.params.id}`);
+        files.value = data.files;
+        productos.value = data.productos;
+        carrito.value = data.carrito;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
 });
 
 const download = async (id, nombre) => {
     try {
         const response = await axios.get(`/DownloadFile/${id}`, {
-            responseType: 'blob' 
+            responseType: "blob",
         });
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', `${nombre}.stl`);
+        link.setAttribute("download", `${nombre}.stl`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     } catch (error) {
-        console.error('Error downloading the file', error);
+        console.error("Error downloading the file:", error);
     }
-}
+};
+
+const terminarTarea = async (id) => {
+    try {
+        const { data } = await axios.post(`/listoParaEnvio/${id}`, {
+            headers: { "X-CSRF-TOKEN": token },
+        });
+        if (data.data === 'exito') {
+            router.push({ name: 'Dashboard' });
+        }
+    } catch (error) {
+        console.error("Error finalizando la tarea:", error);
+    }
+};
+
 </script>

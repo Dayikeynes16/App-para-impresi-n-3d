@@ -17,6 +17,8 @@ import CarritoFinal from './Pages/CarritoFinal.vue'
 import recuperarContraseña from './Pages/recuperarContraseña.vue'
 import Dashboard from './Pages/adminPages/Dashboard.vue'
 import pedidoDetalles from './Pages/adminPages/pedidoDetalles.vue'
+import EditarDireccion from './Components/EditarDireccion.vue'
+
 
 
 const routes = [{
@@ -79,6 +81,10 @@ const routes = [{
     name: 'PedidoDetalle',
     path: '/PedidoDetalle/:id/detalles',
     component: pedidoDetalles
+},{
+    name: 'editarDireccion',
+    path: '/editarDireccion/:id/editar',
+    component: EditarDireccion
 }
 ]
 

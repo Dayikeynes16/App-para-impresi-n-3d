@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('usuario_id')->constrained('users','id');
             $table->string('status')->default('activo');
             $table->decimal('total')->default(0);
+            $table->boolean('recoleccion')->default(false);
             $table->foreignId('direccion_id')->nullable()->constrained('direccions','id');
         });
     }

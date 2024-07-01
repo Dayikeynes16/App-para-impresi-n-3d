@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Files;
 use App\Models\Orden;
+use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
@@ -29,12 +30,13 @@ class ArchivosController extends Controller
             ]);
 
             $filePath = $request->file('file')->store('files');
-            $file = $orden->files()->create([
+            $file = new Files([
                 'path' => $filePath,
                 'nombre' => $request->file('file')->getClientOriginalName(),
                 'minutos' => ($response['print_time'] / 60) / 3.5,
                 'precio' => (($response['print_time'] / 60) / 3.5) * 1.5,
             ]);
+            $orden->files()->save($file);
 
             return response()->json(['data' => $file]);
         } catch (Exception $e) {
@@ -89,15 +91,16 @@ class ArchivosController extends Controller
             'file' => 'file|required',
             'producto_id' => 'numeric|required'
         ]);
+        $producto = Product::find($request->input('producto_id'));
         $filePath = $request->file('file')->store('files');
 
 
-        $file = Files::create([
-            'producto_id' => $request->input('producto_id'),
+        $file = new Files([
             'path' => $filePath,
             'nombre' => $request->file('file')->getClientOriginalName()
         ]);
-        $file->save();
+        $producto->files()->save($file);
+      
 
         
         

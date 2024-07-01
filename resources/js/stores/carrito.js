@@ -13,7 +13,7 @@ export const useCartStore = defineStore('cart', {
       try {
 
         const { data } = await axios.get('/traerCarrito');
-        this.items = data.productos_carritos;
+        this.items = data.productos;
         this.id = data.id;
         
    

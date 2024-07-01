@@ -15,6 +15,23 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 
+ //AuthController
+ Route::get('/get_user', [AuthController::class, 'get_user']);
+ Route::get('/auth', [AuthController::class, 'auth']);
+ Route::post('/login', [AuthController::class, 'login']);
+ Route::post('/cerrarSesion', [AuthController::class, 'cerrarSesion']);
+ Route::post('/usuarios', function (Request $request) {
+     $request->validate([
+         'name' => 'required',
+         'email' => 'required|email|unique:users,email',
+         'password' => 'required|confirmed'
+     ]);
+ 
+     $usuario = User::create($request->all());
+     return response()->json([
+         'data' => $usuario, 'message' => 'Usuario guardado con éxito'
+     ], 200);
+ });
 
 Route::get('/formulario-recuperar-contrasenia', [AuthController::class, 'formularioRecuperarContrasenia'])->name('formulario-recuperar-contrasenia');
 Route::post('/enviar-recuperar-contrasenia', [AuthController::class, 'enviarRecuperarContraseña'])->name('enviar-recuperacion');
@@ -35,53 +52,55 @@ Route::get('/send-test-email', function () {
 
 
 Route::group(['middleware' => ['auth']], function(){
+
+    //DireccionesController
     Route::post('/guardarDireccion', [DireccionesController::class, 'guardarDireccion']);
     Route::post('/eliminarDireccion', [DireccionesController::class, 'eliminarDireccion']);
-    Route::post('/eliminarProducto', [ProductosController::class, 'eliminarProducto']);
-    Route::get('/get_user', [AuthController::class, 'get_user']);
-    Route::post('/deletefile', [ArchivosController::class, 'deletefile']);
-    Route::post('/calculate', [ArchivosController::class, 'calculate']);
     Route::get('/getDirecciones', [DireccionesController::class, 'getDirecciones']);
-    Route::get('/traerarchivos', [ModelsController::class, 'traerarchivos']);
+    Route::post('/actualizarDireccion',[DireccionesController::class, 'actualizarDireccion']);
+    Route::get('/direccion/{direccion}',[DireccionesController::class, 'show']);
+    Route::post('/updateDireccion/{direccion}',[DireccionesController::class, 'update']);
+
+
+    //ProductosController
+    Route::post('/eliminarProducto', [ProductosController::class, 'eliminarProducto']);
     Route::get('/modelos', [ProductosController::class, 'traerProductos']);
     Route::post('/savemodel', [ProductosController::class, 'StoreProduct']);
     Route::get('/productos/{producto}', [ProductosController::class, 'show']);
     Route::post('/productos/{producto}', [ProductosController::class, 'update']);
-    Route::post('/guardarImagen', [ImagenesController::class, 'guardarImagen']);
-    Route::get('/getImagenes', [ImagenesController::class, 'getImagenes']);
-    Route::post('/eliminarImagen', [ImagenesController::class, 'eliminarImagen']);
+
+   
+
+    //ArchivosController
+    Route::post('/deletefile', [ArchivosController::class, 'deletefile']);
+    Route::post('/calculate', [ArchivosController::class, 'calculate']);
+    Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);});
+    Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);   
+
+    //ModelsController
+    Route::get('/traerarchivos', [ModelsController::class, 'traerarchivos']);
+
+    //CarritoController
     Route::post('/añadirCarrito', [CarritoController::class, 'añadirCarrito']);
-    Route::post('/cerrarSesion', [AuthController::class, 'cerrarSesion']);
     Route::get('/traerCarrito', [CarritoController::class, 'traerCarrito']);
     Route::post('/borrarProducto', [CarritoController::class, 'borrarProducto']);
     Route::post('/actualizarProductoCarrito', [CarritoController::class, 'actualizar']);
     Route::post('/añadirStlCarrito', [CarritoController::class, 'añadirStlCarrito']);
     Route::post('/actualizarFileCarrito', [CarritoController::class, 'actualizarFileCarrito']);
     Route::post('/finalizarCarrito',[CarritoController::class, 'finalizarCarrito']);
-
-
     Route::get('/getCarritosPendientes', [CarritoController::class, 'getCarritosPendientes']);
     Route::get('/carrito/{carrito}',[CarritoController::class, 'show']);
+    Route::post('/listoParaEnvio/{id}',[CarritoController::class, 'listoParaEnvio']);
 
-    Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);});
-    Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);
 
-Route::get('/auth', [AuthController::class, 'auth']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/usuarios', function (Request $request) {
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|confirmed'
-    ]);
 
-    $usuario = User::create($request->all());
-    return response()->json([
-        'data' => $usuario, 'message' => 'Usuario guardado con éxito'
-    ], 200);
-});
+    //ImagenesController
+    Route::post('/guardarImagen', [ImagenesController::class, 'guardarImagen']);
+    Route::get('/getImagenes', [ImagenesController::class, 'getImagenes']);
+    Route::post('/eliminarImagen', [ImagenesController::class, 'eliminarImagen']);
+    Route::get('/images/{image}/image', [ImagenesController::class, 'showImage'])->name('images.image');
 
-Route::get('/images/{image}/image', [ImagenesController::class, 'showImage'])->name('images.image');
+
 Route::get('/{any}', function (): View {
     return view('welcome');
 })->where('any', '.*');

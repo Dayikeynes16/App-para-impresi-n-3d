@@ -1,8 +1,12 @@
 <template>
     <v-container>
-        <v-stepper  v-model="step" hide-actions :items="['Productos', 'Direccion', 'Pago']" >
-            <template  v-slot:item.1>
-                <v-card>
+        <v-stepper
+            v-model="step"
+            hide-actions
+            :items="['Productos', 'Direccion', 'Pago']"
+        >
+            <template v-slot:item.1>
+                <v-card color="blue-grey-lighten-4">
                     <v-container>
                         <v-divider></v-divider>
                         <v-table hover="true" class="table table-borderless">
@@ -17,7 +21,7 @@
                                     <th>
                                         <p>Total</p>
                                     </th>
-                                    <th>
+                                    <th class="text-center">
                                         <p>Eliminar</p>
                                     </th>
                                 </tr>
@@ -44,7 +48,7 @@
                                         </v-row>
                                     </td>
                                     <td>$ {{ item.precio * item.cantidad }}</td>
-                                    <td>
+                                    <td class="text-center">
                                         <v-icon
                                             color="red"
                                             icon="mdi-delete"
@@ -72,7 +76,7 @@
                                         </v-row>
                                     </td>
                                     <td>$ {{ file.precio }}</td>
-                                    <td>
+                                    <td class="text-center">
                                         <v-icon
                                             color="red"
                                             icon="mdi-delete"
@@ -99,16 +103,7 @@
                                     }}
                                 </v-col>
                                 <v-col cols="8" class="d-flex justify-end">
-                                    <v-btn
-                                        @click="pasos(1)"
-                                        color="primary"
-                                        >Siguiente</v-btn
-                                    >
-                                    <!-- <v-btn
-                                        @click="finalizarCarrito()"
-                                        color="primary"
-                                        >Proceder con el pago</v-btn
-                                    > -->
+                                    <v-icon @click="pasos(2)" icon="mdi-arrow-right"></v-icon>
                                 </v-col>
                             </v-row>
                         </v-card-actions>
@@ -116,8 +111,28 @@
                 </v-card>
             </template>
 
-            <template v-slot:item.2> <ElegirDireccion></ElegirDireccion> </template>
-            <template v-slot:item.3> eth </template>
+            <template v-slot:item.2>
+                <ElegirDireccion></ElegirDireccion>
+                <v-card-actions elevation="1">
+                    <v-row>
+                        <v-col class="d-flex justify-start" cols="6"> <v-icon @click="pasos(1)" icon="mdi-arrow-left"> </v-icon></v-col>
+                        <v-col class="d-flex justify-end" cols="6"><v-icon @click="pasos(3)" icon="mdi-arrow-right"></v-icon>
+
+                        </v-col>
+                    </v-row>
+                                
+                    </v-card-actions>
+            </template>
+            <template v-slot:item.3> 
+
+                <v-card>
+                    <v-card-actions>
+                        <v-col class="d-flex justify-start" cols="6"> <v-icon @click="pasos(2)" icon="mdi-arrow-left"> </v-icon></v-col>
+
+                    </v-card-actions>
+                </v-card>
+
+                 </template>
         </v-stepper>
     </v-container>
 </template>
@@ -131,7 +146,6 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import ElegirDireccion from "../Components/ElegirDireccion.vue";
 const step = ref(1);
 
-
 const router = useRouter();
 const cartStore = useCartStore();
 const token = document
@@ -142,10 +156,9 @@ const productos_carrito = ref([]);
 const files = ref([]);
 const total = ref(0);
 
-
-const pasos = (value)=>{
-    step.value = value +1 
- }
+const pasos = (value) => {
+    step.value = value;
+};
 
 const fetchProductosCarrito = () => {
     productos_carrito.value = cartStore.items.map((item) => ({

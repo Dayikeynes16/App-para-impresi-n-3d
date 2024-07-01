@@ -11,13 +11,13 @@ class Files extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'path', 'minutos', 'precio', 'orden_id','cantidad','producto_id'];
+    protected $fillable = ['nombre', 'path', 'minutos', 'precio','cantidad','morphable_id', 'morphable_type'];
 
     protected $casts = ['precio'=>'float'];
 
-    public function orden(): BelongsTo
+    public function morphable()
     {
-        return $this->belongsTo(Orden::class, 'orden_id');
+        return $this->morphTo();
     }
 
 }

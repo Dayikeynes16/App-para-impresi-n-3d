@@ -22,8 +22,8 @@ class Product extends Model
         return $this->hasMany(Producto_Carrito::class,'producto_id');
     }
 
-    public function files(){
-        return $this->hasMany(Files::class,'producto_id');
+    public function files (){
+        return $this->morphMany(Files::class, 'morphable');
     }
 
   

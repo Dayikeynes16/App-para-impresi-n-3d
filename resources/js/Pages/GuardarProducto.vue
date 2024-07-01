@@ -60,7 +60,7 @@
             </v-container>
           </template>
           <template  v-slot:item.3>
-            <v-card-title>Sube los archivos correspondientes al modelo</v-card-title>
+            <v-card-title>Archivos del producto</v-card-title>
             <v-card-text>
                 <el-upload class="upload-demo" drag :http-request="guardarSTL" ref='loadform'
                   accept=".jpeg,.jpg,.png,.gif" :headers="{
@@ -77,6 +77,10 @@
                   </template>
                 </el-upload>
               </v-card-text>
+              <v-card-actions>
+                <v-btn @click="router.push({name: 'editarcatalogo'})">Finalizar</v-btn>
+
+              </v-card-actions>
 
 
           </template>

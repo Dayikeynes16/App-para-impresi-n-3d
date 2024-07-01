@@ -41,9 +41,13 @@
 
                             <v-card-actions>
                                 <v-row>
-                                    <v-col cols="8">
+                                    <v-col cols="6">
+                                        <div >
                                         <v-row>
-                                            <v-col class="text-left" cols="3"
+                                         
+
+                                          
+                                            <v-col class="text-center" cols="3"
                                                 ><v-icon
                                                     @click="
                                                         sumarProductoCantidad(
@@ -56,10 +60,10 @@
                                             ></v-col>
                                             <v-col
                                                 class="text-center"
-                                                cols="2"
+                                                cols="3"
                                                 >{{ imagen.cantidad }}</v-col
                                             >
-                                            <v-col class="text-left" cols="3"
+                                            <v-col class="text-center" cols="3"
                                                 ><v-icon
                                                     @click="
                                                         restarProductoCantidad(
@@ -70,7 +74,9 @@
                                                     icon="mdi-minus"
                                                 ></v-icon
                                             ></v-col>
+                                        
                                         </v-row>
+                                    </div>
                                     </v-col>
                                     <v-col class="text-right" cols="4">
                                         <v-icon
@@ -147,7 +153,7 @@ const restarProductoCantidad = (imagen) => {
     if (imagen.cantidad > 1) {
         imagen.cantidad--;
     } else {
-        alert("La cantidad no puede ser 0");
+        
     }
 };
 

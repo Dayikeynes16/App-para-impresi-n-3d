@@ -1,11 +1,11 @@
 <template>
-    <v-card>
-        <v-card-title>
-            <v-text>Pedidos Pendientes</v-text>
+    <v-card color="blue-grey-lighten-4">
+        <v-card-title class="text-center">
+            <v-text >Pedidos Pendientes</v-text>
         </v-card-title>
         <v-card-text v-if="existenPedidos">
-            <v-table>
-                <thead>
+            <v-table class="tablaPersonalizada">
+                <thead >
                     <tr>
                         <th class="text-left">N. Orden</th>
                         <th class="text-left">Correo</th>
@@ -18,7 +18,7 @@
                         <td class="text-left">#{{ i.id }}</td>
                         <td class="text-left">{{ i.usuario.email }}</td>
                         <td class="text-left">{{ i.status }}</td>
-                        <td class="text-center"><v-btn @click="router.push({name: 'PedidoDetalle', params: {id : i.id}})" >Info</v-btn></td>
+                        <td class="text-center"><v-icon icon="mdi-dots-horizontal" @click="router.push({name: 'PedidoDetalle', params: {id : i.id}})" ></v-icon></td>
                     </tr>
                 </tbody>
             </v-table>
@@ -49,3 +49,10 @@ const traerPendientes = async () => {
 
 traerPendientes();
 </script>
+
+<style>
+.tablaPersonalizada{
+    background-color: #CFD8DC !important;
+}
+
+</style>

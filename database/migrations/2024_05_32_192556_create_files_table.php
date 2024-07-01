@@ -19,12 +19,13 @@ return new class extends Migration
             $table->integer('cantidad')->default(1)->nullable();
             $table->unsignedInteger('minutos')->nullable();
             $table->decimal('precio')->nullable();
-            $table->foreignId('orden_id')->nullable()->constrained('ordenes', 'id');
-            $table->foreignId('producto_id')->nullable()->constrained('ordenes','id');
+            $table->unsignedBigInteger('morphable_id');
+            $table->string('morphable_type');
+
         });
     }
 
-    /**
+    /**0
      * Reverse the migrations.
      */
     public function down(): void
