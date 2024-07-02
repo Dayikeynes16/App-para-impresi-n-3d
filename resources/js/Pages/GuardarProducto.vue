@@ -53,9 +53,6 @@
                 <v-col cols="2">
                   <v-btn @click="siguientePaso()">Siguiente</v-btn>
                 </v-col>
-                 
-
-              
               </v-card-actions>
             </v-container>
           </template>
@@ -63,7 +60,7 @@
             <v-card-title>Archivos del producto</v-card-title>
             <v-card-text>
                 <el-upload class="upload-demo" drag :http-request="guardarSTL" ref='loadform'
-                  accept=".jpeg,.jpg,.png,.gif" :headers="{
+                  accept=".stl" :headers="{
                     'X-CSRF-TOKEN': token
                   }" :auto-upload="true">
                   <el-icon class="el-icon--upload"><upload-filled /></el-icon>

@@ -6,15 +6,21 @@ export const useCartStore = defineStore('cart', {
     id: null,
     items: [],
     files: [],
-    visible: false
+    visible: false,
+    domicilio: false
   }),
   actions: {
     async fetchCart() {
       try {
-
         const { data } = await axios.get('/traerCarrito');
         this.items = data.productos;
         this.id = data.id;
+        if (data.recoleccion === false){
+          this.domicilio = false
+        } else{
+          this.domicilio = true
+        }
+
         
    
         if (data.orden && data.orden.length > 0) {

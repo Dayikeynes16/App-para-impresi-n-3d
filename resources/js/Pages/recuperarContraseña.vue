@@ -1,7 +1,9 @@
 <template>
     <v-container>
-       
-        <v-card class="py -6" title="Recuperar Contraseña">
+       <v-row>
+        <v-col cols="4"></v-col>
+        <v-col cols="4">
+            <v-card color="grey-lighten-3" class="py -6" title="Recuperar Contraseña">
             <v-card-text>
                 <v-form @submit.prevent="recuperacion">
                     <v-text-field
@@ -16,6 +18,11 @@
                 <v-alert v-if="errorMessage" type="error" dismissible>{{ errorMessage }}</v-alert>
             </v-card-text>
         </v-card>
+
+        </v-col>
+        <v-col cols="4"></v-col>
+       </v-row>
+        
     </v-container>
 </template>
 

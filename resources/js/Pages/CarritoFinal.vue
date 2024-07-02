@@ -1,139 +1,199 @@
 <template>
     <v-container>
-        <v-stepper
-            v-model="step"
-            hide-actions
-            :items="['Productos', 'Direccion', 'Pago']"
-        >
-            <template v-slot:item.1>
-                <v-card color="blue-grey-lighten-4">
-                    <v-container>
-                        <v-divider></v-divider>
-                        <v-table hover="true" class="table table-borderless">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <p>Producto</p>
-                                    </th>
-                                    <th>
-                                        <p>Piezas</p>
-                                    </th>
-                                    <th>
-                                        <p>Total</p>
-                                    </th>
-                                    <th class="text-center">
-                                        <p>Eliminar</p>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="item in productos_carrito"
-                                    :key="item.id"
-                                >
-                                    <td>
-                                        <p>{{ item.nombre }}</p>
-                                    </td>
-                                    <td>
-                                        <v-row>
+        <div v-if="carritovacio">
+            <v-card>
+                <v-card-title>Carrito vacío</v-card-title>
+                <v-card-text>
+                    Su carrito está vacío. Por favor, añada productos.
+                </v-card-text>
+            </v-card>
+            
+        </div>
+        <div v-else>
+            <v-stepper
+            olor="grey-lighten-4"
+                v-model="step"
+                hide-actions
+                :items="['Productos', 'Direccion', 'Pago']"
+            >
+                <template v-slot:item.1>
+                    <v-card >
+                        <v-container>
+                            <v-divider></v-divider>
+                            <v-table
+                                hover="true"
+                                class="table table-borderless"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <p>Producto</p>
+                                        </th>
+                                        <th>
+                                            <p>Piezas</p>
+                                        </th>
+                                        <th>
+                                            <p>Total</p>
+                                        </th>
+                                        <th class="text-center">
+                                            <p>Eliminar</p>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        v-for="item in productos_carrito"
+                                        :key="item.id"
+                                    >
+                                        <td>
+                                            <p>{{ item.nombre }}</p>
+                                        </td>
+                                        <td>
+                                            <v-row>
+                                                <v-icon
+                                                    @click="
+                                                        restarCantidad(item)
+                                                    "
+                                                    icon="mdi-minus"
+                                                ></v-icon>
+                                                <p>{{ item.cantidad }}</p>
+                                                <v-icon
+                                                    @click="sumarCantidad(item)"
+                                                    icon="mdi-plus"
+                                                ></v-icon>
+                                            </v-row>
+                                        </td>
+                                        <td>
+                                            $ {{ item.precio * item.cantidad }}
+                                        </td>
+                                        <td class="text-center">
                                             <v-icon
-                                                @click="restarCantidad(item)"
-                                                icon="mdi-minus"
+                                                color="red"
+                                                icon="mdi-delete"
+                                                @click="borrarProducto(item.id)"
                                             ></v-icon>
-                                            <p>{{ item.cantidad }}</p>
+                                        </td>
+                                    </tr>
+                                    <tr v-for="file in files" :key="file.id">
+                                        <td>
+                                            <p>{{ file.nombre }}</p>
+                                        </td>
+                                        <td>
+                                            <v-row>
+                                                <v-icon
+                                                    @click="
+                                                        restarCantidadFile(file)
+                                                    "
+                                                    icon="mdi-minus"
+                                                ></v-icon>
+                                                <p>{{ file.cantidad }}</p>
+                                                <v-icon
+                                                    @click="
+                                                        sumarCantidadFile(file)
+                                                    "
+                                                    icon="mdi-plus"
+                                                ></v-icon>
+                                            </v-row>
+                                        </td>
+                                        <td>$ {{ file.precio }}</td>
+                                        <td class="text-center">
                                             <v-icon
-                                                @click="sumarCantidad(item)"
-                                                icon="mdi-plus"
+                                                color="red"
+                                                icon="mdi-delete"
+                                                @click="borrarFile(file.id)"
                                             ></v-icon>
-                                        </v-row>
-                                    </td>
-                                    <td>$ {{ item.precio * item.cantidad }}</td>
-                                    <td class="text-center">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </v-table>
+                            <v-divider></v-divider>
+                            <v-card-actions>
+                                <v-row>
+                                    <v-col cols="2">
+                                        <v-text>Total:</v-text>
+                                    </v-col>
+                                    <v-col cols="2">
+                                        $
+                                        {{
+                                            Intl.NumberFormat("es-MX", {
+                                                type: "currency",
+                                                currency: "MXN",
+                                                minimumFractionDigits: 2,
+                                            }).format(total)
+                                        }}
+                                    </v-col>
+                                    <v-col cols="8" class="d-flex justify-end">
                                         <v-icon
-                                            color="red"
-                                            icon="mdi-delete"
-                                            @click="borrarProducto(item.id)"
+                                            @click="pasos(2)"
+                                            icon="mdi-arrow-right"
                                         ></v-icon>
-                                    </td>
-                                </tr>
-                                <tr v-for="file in files" :key="file.id">
-                                    <td>
-                                        <p>{{ file.nombre }}</p>
-                                    </td>
-                                    <td>
-                                        <v-row>
-                                            <v-icon
-                                                @click="
-                                                    restarCantidadFile(file)
-                                                "
-                                                icon="mdi-minus"
-                                            ></v-icon>
-                                            <p>{{ file.cantidad }}</p>
-                                            <v-icon
-                                                @click="sumarCantidadFile(file)"
-                                                icon="mdi-plus"
-                                            ></v-icon>
-                                        </v-row>
-                                    </td>
-                                    <td>$ {{ file.precio }}</td>
-                                    <td class="text-center">
-                                        <v-icon
-                                            color="red"
-                                            icon="mdi-delete"
-                                            @click="borrarFile(file.id)"
-                                        ></v-icon>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </v-table>
-                        <v-divider></v-divider>
-                        <v-card-actions>
-                            <v-row>
-                                <v-col cols="2">
-                                    <v-text>Total:</v-text>
-                                </v-col>
-                                <v-col cols="2">
-                                    $
-                                    {{
-                                        Intl.NumberFormat("es-MX", {
-                                            type: "currency",
-                                            currency: "MXN",
-                                            minimumFractionDigits: 2,
-                                        }).format(total)
-                                    }}
-                                </v-col>
-                                <v-col cols="8" class="d-flex justify-end">
-                                    <v-icon @click="pasos(2)" icon="mdi-arrow-right"></v-icon>
-                                </v-col>
-                            </v-row>
-                        </v-card-actions>
-                    </v-container>
-                </v-card>
-            </template>
+                                    </v-col>
+                                </v-row>
+                            </v-card-actions>
+                        </v-container>
+                    </v-card>
+                </template>
 
-            <template v-slot:item.2>
-                <ElegirDireccion></ElegirDireccion>
-                <v-card-actions elevation="1">
+                <template v-slot:item.2>
+                    <ElegirDireccion @pasos="pasos"></ElegirDireccion>
+                </template>
+                <template v-slot:item.3>
+    <v-card>
+        <v-card-title class="headline">Detalles del Pedido</v-card-title>
+        <v-card-text>
+            <v-row>
+                <v-col cols="12">
+                    <v-subheader>Total del Pedido</v-subheader>
                     <v-row>
-                        <v-col class="d-flex justify-start" cols="6"> <v-icon @click="pasos(1)" icon="mdi-arrow-left"> </v-icon></v-col>
-                        <v-col class="d-flex justify-end" cols="6"><v-icon @click="pasos(3)" icon="mdi-arrow-right"></v-icon>
-
+                        <v-col cols="6">
+                            <span>Total:</span>
+                        </v-col>
+                        <v-col cols="6" class="text-right">
+                            <strong>
+                                {{
+                                    Intl.NumberFormat("es-MX", {
+                                        style: "currency",
+                                        currency: "MXN",
+                                        minimumFractionDigits: 2,
+                                    }).format(total)
+                                }}
+                            </strong>
                         </v-col>
                     </v-row>
-                                
-                    </v-card-actions>
-            </template>
-            <template v-slot:item.3> 
+                </v-col>
+                <v-col cols="12">
+                    <v-subheader>Información de Contacto</v-subheader>
+                    <p>
+                        <strong>Nombre:</strong> {{ customer.name }}<br>
+                        <strong>Correo:</strong> {{ customer.email }}<br>
+                        <strong>Teléfono:</strong> {{ customer.phone }}
+                    </p>
+                </v-col>
+                <v-col cols="12">
+                    <v-subheader>Dirección de Envío</v-subheader>
+                    <p>
+                        <strong>Calle:</strong> {{ shipping.address }}<br>
+                        <strong>Ciudad:</strong> {{ shipping.city }}<br>
+                        <strong>Estado:</strong> {{ shipping.state }}<br>
+                        <strong>Código Postal:</strong> {{ shipping.zip }}
+                    </p>
+                </v-col>
+            </v-row>
+        </v-card-text>
+        <v-card-actions>
+            <v-btn icon @click="pasos(2)">
+                <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="payment()" prepend-icon="mdi-credit-card-fast-outline">
+                Pagar
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</template>
 
-                <v-card>
-                    <v-card-actions>
-                        <v-col class="d-flex justify-start" cols="6"> <v-icon @click="pasos(2)" icon="mdi-arrow-left"> </v-icon></v-col>
-
-                    </v-card-actions>
-                </v-card>
-
-                 </template>
-        </v-stepper>
+            </v-stepper>
+        </div>
     </v-container>
 </template>
 
@@ -144,8 +204,25 @@ import axios from "axios";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import ElegirDireccion from "../Components/ElegirDireccion.vue";
-const step = ref(1);
 
+
+const customer = ref({
+    name: "Carlos Cabeza de Vaca",
+    email: "carlos@gmail.com",
+    phone: "9931790341"
+});
+
+const shipping = ref({
+    address: "Calle Falsa 123",
+    city: "Villahermosa",
+    state: "Tabasco",
+    zip: "86000"
+});
+
+
+const carritovacio = ref(false);
+const step = ref(1);
+let stripe = null;
 const router = useRouter();
 const cartStore = useCartStore();
 const token = document
@@ -180,6 +257,7 @@ const updateCart = async () => {
     await cartStore.fetchCart();
     fetchProductosCarrito();
     totalCarrito();
+    carritoVacio()
 };
 
 const restarCantidad = async (item) => {
@@ -228,6 +306,7 @@ const borrarFile = async (id) => {
                 { headers: { "X-CSRF-TOKEN": token } }
             );
             updateCart();
+          
         } catch (error) {
             console.error("Error deleting file:", error);
         }
@@ -252,7 +331,8 @@ const restarCantidadFile = async (file) => {
             { id: file.id, cantidad: file.cantidad },
             { headers: { "X-CSRF-TOKEN": token } }
         );
-        updateCart();
+        updateCart()
+        
     }
 };
 
@@ -277,17 +357,7 @@ const open = (id, type, callback) => {
         });
 };
 
-const finalizarCarrito = async () => {
-    const { data } = await axios.post(
-        "/finalizarCarrito",
-        {
-            id: cartStore.id,
-        },
-        { headers: { "X-CSRF-TOKEN": token } }
-    );
-    console.log(data);
-    updateCart();
-};
+
 
 const totalCarrito = () => {
     total.value = 0;
@@ -301,8 +371,37 @@ const totalCarrito = () => {
     }
     console.log(total.value);
 };
+
+const carritoVacio = () =>{
+    if (cartStore.items.length === 0 && cartStore.files.length === 0){
+        carritovacio.value = true
+    }else{
+        carritovacio.value=false
+    }
+}
+
+
+const payment = async () => {
+    try {
+        const { data } = await axios.post(
+            "/checkout",
+            { total: total.value },
+            { headers: { "X-CSRF-TOKEN": token } }
+        );
+        await stripe.redirectToCheckout({ sessionId: data.id });
+    } catch (error) {
+        console.error("Error during payment:", error);
+    }
+};
+
 watch([productos_carrito, files], totalCarrito, { immediate: true });
+
+
 onMounted(() => {
     updateCart();
+    carritoVacio()
+    stripe = Stripe(
+        "pk_live_51PXiT1Ctt7GPf4Lbd8Bx3koTzqCepRUoBdGfhQl67tXuU7QwAoG3TnAP8OmB1FjGB9g58Syl6oveq2gNj2IUkcgU00k6g3ujk9"
+    );
 });
 </script>

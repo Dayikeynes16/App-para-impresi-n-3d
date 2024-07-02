@@ -14,8 +14,6 @@ class ModelsController extends Controller
     {
         $ordenes = Orden::with('files')->where('usuario_id', $request->user()->id)
             ->where('status', 'activo')->first();
-        // $files = Files::query()->where('orden_id', $ordenes->id)->get();
-
         return response()->json(['data' => $ordenes]);
     }
 

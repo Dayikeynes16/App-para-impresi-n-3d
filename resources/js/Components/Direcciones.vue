@@ -52,12 +52,12 @@
                             v-model="form.codigo_postal"
                         >
                         </v-text-field>
-                        <v-text-field
+                        <v-textarea
                             v-model="form.referencias"
                             label="Añada referencias del lugar"
                             :error-messages="errorMessages.referencias"
                         >
-                        </v-text-field>
+                        </v-textarea>
                         <v-btn prepend-icon="mdi-Check-Outline" type="submit"
                             >Guardar</v-btn
                         >

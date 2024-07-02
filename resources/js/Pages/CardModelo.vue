@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card color="grey-lighten-3">
         <v-carousel show-arrows="hover" cycle>
             <v-carousel-item v-for="img in item.imagenes" cover :src="img.url">
             </v-carousel-item>

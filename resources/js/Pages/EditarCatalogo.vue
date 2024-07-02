@@ -1,31 +1,17 @@
 <template>
     <v-layout class="overflow-visible" style="height: 56px">
         <v-bottom-navigation v-model="value" active>
-            <v-btn>Home</v-btn>
-
-            <v-btn>Recents</v-btn>
-
-            <v-btn>Favorites</v-btn>
+            <v-btn
+            icon="mdi-add"
+            v-text="'Añadir  Productos'"
+            size="auto"
+            @click="router.push({ name: 'GuardarProducto' })"
+            ></v-btn>
         </v-bottom-navigation>
     </v-layout>
-
     <v-container>
         <v-row>
-            <v-col cols="2">
-                <v-card size="auto">
-                    <v-card-title
-                        v-text="'Añadir un nuevo producto'"
-                    ></v-card-title>
-                    <v-card-actions>
-                        <v-btn
-                            v-text="'Nuevo'"
-                            size="auto"
-                            @click="router.push({ name: 'GuardarProducto' })"
-                        ></v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-            <v-col cols="10">
+            <v-col cols="12">
                 <v-row>
                     <v-col v-for="imagen in imagenes" cols="4">
                         <CardModelo

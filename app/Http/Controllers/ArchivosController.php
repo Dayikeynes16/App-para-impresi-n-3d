@@ -17,7 +17,6 @@ class ArchivosController extends Controller
         $request->validate([
             'file' => 'file|required',
         ]);
-
         try {
             $response = $this->apiRequest($request->file('file'));
 
@@ -68,7 +67,6 @@ class ArchivosController extends Controller
             ]);
 
         if (!$response->json('http_code')) throw new Exception('Ocurrió un problema al procesar el archivo');
-
         return $response->json('result_data');
     }
 
@@ -100,10 +98,17 @@ class ArchivosController extends Controller
             'nombre' => $request->file('file')->getClientOriginalName()
         ]);
         $producto->files()->save($file);
-      
+    }
+    public function traerArchivos(Request $request)
+    {
+        $producto = Product::with('files')->find($request->input('id'));
 
-        
-        
+        if (!$producto) {
+            return response()->json(['message' => 'Producto no encontrado'], 404);
+        }
+        $files =$producto->files;
+
+        return response()->json(['data'=> $files]);
     }
 
 }

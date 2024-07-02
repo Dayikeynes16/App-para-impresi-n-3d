@@ -7,7 +7,9 @@ use App\Models\Files;
 use App\Models\Orden;
 use App\Models\Product;
 use App\Models\Producto_Carrito;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class CarritoController extends Controller
 {
@@ -62,7 +64,6 @@ class CarritoController extends Controller
 
     public function traerCarrito(Request $request)
     {
-
         $user = $request->user()->id;
         $carrito = $this->obtenerCarrito($user);
         return response()->json($carrito);
@@ -159,13 +160,13 @@ class CarritoController extends Controller
        
     }
 
-    public function finalizarCarrito(Request $request){
-        $carrito = Carrito::find($request->input('id'));
-        $carrito->status = 'pagada';
-        $carrito->save();
-        return response('todo bien');
+    // public function finalizarCarrito(Request $request){
+    //     $carrito = Carrito::find($request->input('id'));
+    //     $carrito->status = 'pagada';
+    //     $carrito->save();
+    //     return response('todo bien');
 
-    }
+    // }
 
     public function getCarritosPendientes(){
         $carritos = Carrito::with('usuario','orden.files','productos')->where('status', 'pagada')->get();
@@ -194,5 +195,32 @@ class CarritoController extends Controller
 
         return response()->json(['data'=>'exito']);
     }
+
+    public function ConfirmarVenta(Request $request){
+        $carrito = $this->obtenerCarrito($request->user()->id);
+        if($carrito->total == 0){
+            return response()->json(['data'=>'la venta ya ha sido cerrada', 'code'=>404]);
+        } else{
+            $carrito->status = 'pagada';
+            $carrito->save();
+            $this->enviarCorreoConfirmacion($request->user(), $carrito);
+            return response('la venta fue exitosa');
+        }
+
+    }
+
+    private function enviarCorreoConfirmacion(User $user, Carrito $carrito)
+    {
+        $data = [
+            'user' => $user,
+            'carrito' => $carrito,
+        ];
+
+        Mail::send('email.ventaConfirmada', $data, function($message) use ($user) {
+            $message->to($user->email, $user->name)
+                    ->subject('Confirmación de Compra');
+        });
+    }
+
     
 }

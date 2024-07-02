@@ -12,8 +12,18 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\WebhookController;
+
+Route::get('/checkout', [CheckoutController::class, 'checkout']);
+Route::post('/checkout', [CheckoutController::class, 'createSession']);
+
+Route::get('/cancel', function () {
+    return view('cancel');
+});
+
+Route::post('/webhook/stripe', [WebhookController::class, 'handleStripeWebhook']);
 
  //AuthController
  Route::get('/get_user', [AuthController::class, 'get_user']);
@@ -60,6 +70,9 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/actualizarDireccion',[DireccionesController::class, 'actualizarDireccion']);
     Route::get('/direccion/{direccion}',[DireccionesController::class, 'show']);
     Route::post('/updateDireccion/{direccion}',[DireccionesController::class, 'update']);
+    Route::post('/direccionEntrega',[DireccionesController::class, 'direccionEntrega']);
+    Route::post('/direccionEntregaSucursal',[DireccionesController::class, 'direccionEntregaSucursal']);
+
 
 
     //ProductosController
@@ -75,7 +88,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/deletefile', [ArchivosController::class, 'deletefile']);
     Route::post('/calculate', [ArchivosController::class, 'calculate']);
     Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);});
-    Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);   
+    Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);  
+    Route::get('/traerArchivos',[ArchivosController::class, 'traerArchivos']) ;
 
     //ModelsController
     Route::get('/traerarchivos', [ModelsController::class, 'traerarchivos']);
@@ -91,6 +105,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/getCarritosPendientes', [CarritoController::class, 'getCarritosPendientes']);
     Route::get('/carrito/{carrito}',[CarritoController::class, 'show']);
     Route::post('/listoParaEnvio/{id}',[CarritoController::class, 'listoParaEnvio']);
+    Route::post('ConfirmarVenta',[CarritoController::class, 'ConfirmarVenta']);
 
 
 

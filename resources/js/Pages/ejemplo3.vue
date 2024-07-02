@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols="4">
-                <v-card>
+                <v-card color="grey-lighten-4">
                     <v-card-title> Sube tu archivo aqui </v-card-title>
                     <v-card-text>
                         <el-upload
@@ -17,9 +17,9 @@
                             }"
                             :auto-upload="true"
                         >
-                            <el-icon class="el-icon--upload"
-                                ><upload-filled
-                            /></el-icon>
+                        <el-icon class="el-icon--upload">
+                                    <upload-filled />
+                                </el-icon>
                             <div class="el-upload__text">
                                 Arrastra tu archivo o
                                 <em>haz click para subir</em>

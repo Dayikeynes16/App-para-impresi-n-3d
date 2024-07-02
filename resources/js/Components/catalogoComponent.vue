@@ -4,7 +4,8 @@
             <v-col cols="12">
                 <v-row>
                     <v-col v-for="imagen in imagenes" :key="imagen.id" cols="4">
-                        <v-card style="width: 100%" elevation="1">
+                        <v-card color="grey-lighten-4"
+                            style="width: 100%; z-index: 1 !important   " elevation="1">
                             <div class="demo-image__preview">
                                 <el-image
                                     :src="imagen.urls[0]"

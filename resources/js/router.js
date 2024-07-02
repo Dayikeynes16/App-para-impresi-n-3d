@@ -18,7 +18,7 @@ import recuperarContraseña from './Pages/recuperarContraseña.vue'
 import Dashboard from './Pages/adminPages/Dashboard.vue'
 import pedidoDetalles from './Pages/adminPages/pedidoDetalles.vue'
 import EditarDireccion from './Components/EditarDireccion.vue'
-
+import VentaExitosa from './Pages/VentaExitosa.vue'
 
 
 const routes = [{
@@ -85,6 +85,10 @@ const routes = [{
     name: 'editarDireccion',
     path: '/editarDireccion/:id/editar',
     component: EditarDireccion
+},{
+    name: 'Exito',
+    path: '/success',
+    component: VentaExitosa
 }
 ]
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Carrito;
 use App\Models\Direccion;
 use Illuminate\Contracts\Support\ValidatedData;
 use Illuminate\Http\Request;
@@ -91,16 +92,60 @@ class DireccionesController extends Controller
         return response()->json(['data'=>$direccion]);
 
     }
+    public function direccionEntrega(Request $request)
+    {
+        $user = $request->user();
+        $user_id = $user->id;
+    
+     
+        $validatedData = $request->validate([
+            'direccion_id' => 'required|exists:direccions,id',
+        ]);
+    
+      
+        $carrito = $this->obtenerCarrito($user_id);
+        return $carrito;
+    
+
+        $direccion = Direccion::where('id', $request->input('direccion_id'))->where('usuario_id', $user_id)->first();
+    
+        if (!$direccion) {
+            return response()->json(['error' => 'Dirección no válida o no pertenece al usuario.'], 400);
+        }
+    
+
+        $carrito->direccion_id = $direccion->id;
+        // $carrito->status = 'pagada';
+        $carrito->save();
+    
+        return response()->json(['message' => 'Dirección asignada correctamente.', 'direccion' => $direccion, 'carrito' => $carrito], 200);
+    }
+    
 
 
-    // function update(Product $producto, Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string',
-    //         'description' => 'required|string',
-    //         'price' => 'required|numeric'
-    //     ]);
-    //     $producto->update($request->all());
-    //     return response()->json(['data' => $producto]);
-    // }
+    public function obtenerCarrito($user_id)
+    {
+        $carrito = Carrito::with('productos.producto','orden.files')->firstorCreate([
+            'status' => 'activo',
+            'usuario_id' => $user_id
+        ], [
+            'total' => 0,
+            'status' => 'activo',
+            'direccion_id' => null
+        ]);
+        return $carrito;
+       
+    }
+
+    public function direccionEntregaSucursal(Request $request)
+    {
+        $user = $request->user();
+        $user_id = $user->id;
+        $carrito = $this->obtenerCarrito($user_id);
+        $carrito->recoleccion = true;
+        // $carrito->status = 'pagada';
+        $carrito->save();
+    
+        return response()->json(['message' => 'Dirección asignada correctamente.',  'carrito' => $carrito], 200);
+    }
 }

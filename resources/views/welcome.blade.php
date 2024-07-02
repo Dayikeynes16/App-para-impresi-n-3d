@@ -12,4 +12,6 @@
     </div>
     @vite('resources/js/app.js')
 </body>
+<script src="https://js.stripe.com/v3/"></script>
+
 </html>
