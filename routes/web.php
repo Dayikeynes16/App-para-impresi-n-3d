@@ -90,6 +90,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);});
     Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);  
     Route::get('/traerArchivos',[ArchivosController::class, 'traerArchivos']) ;
+    Route::post('/eliminarArchivo',[ArchivosController::class, 'eliminarArchivo']);
 
     //ModelsController
     Route::get('/traerarchivos', [ModelsController::class, 'traerarchivos']);

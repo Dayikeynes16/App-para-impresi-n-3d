@@ -98,17 +98,27 @@ class ArchivosController extends Controller
             'nombre' => $request->file('file')->getClientOriginalName()
         ]);
         $producto->files()->save($file);
+        return response()->json(['data'=>200]);
     }
+
+    
     public function traerArchivos(Request $request)
     {
+        $request->validate(['id' => 'required']);
         $producto = Product::with('files')->find($request->input('id'));
+        return response($producto->files);
+        
+    }
 
-        if (!$producto) {
-            return response()->json(['message' => 'Producto no encontrado'], 404);
-        }
-        $files =$producto->files;
+    public function eliminarArchivo(Request $request){
+        $request->validate(['id' => 'required']);
 
-        return response()->json(['data'=> $files]);
+        $file = Files::find($request->input('id'));
+        Storage::delete($file->path);
+        $file->delete();
+
+        return response()->json(['code' => 200]);
+
     }
 
 }
