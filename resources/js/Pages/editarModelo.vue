@@ -1,145 +1,171 @@
 <template>
     <v-container>
-        <v-row>
-            <v-col cols="6">
-                <v-col cols="12">
-                    <v-card color="grey-lighten-2">
-                        <v-card-title>Actualizar Producto</v-card-title>
-                        <v-card-subtitle
-                            >Modifica los campos necesarios</v-card-subtitle
-                        >
-                        <v-card-text>
-                            <v-text-field
-                                v-model="product.name"
-                                label="Nombre"
-                                required
-                                :error-messages="errorMessages.name"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="product.description"
-                                label="Descripción"
-                                required
-                                :error-messages="errorMessages.description"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="product.price"
-                                label="Precio"
-                                required
-                                type="number"
-                                :error-messages="errorMessages.price"
-                            ></v-text-field>
-                            <v-btn @click="update" color="primary"
-                                >Guardar</v-btn
-                            >
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-                <v-col cols="12">
-                    <v-card color="grey-lighten-2">
-                        <v-card-title>Agregar imágenes</v-card-title>
-                        <v-card-text>
-                            <el-upload
-                                class="upload-demo"
-                                drag
-                                :http-request="guardarImagen"
-                                ref="loadform"
-                                accept=".jpeg,.jpg,.png,.gif"
-                                :headers="{ 'X-CSRF-TOKEN': token }"
-                                :auto-upload="true"
-                            >
-                                <el-icon class="el-icon--upload">
-                                    <upload-filled />
-                                </el-icon>
-                                <div class="el-upload__text">
-                                    Arrastra tu archivo o
-                                    <em>haz click para subir</em>
-                                </div>
-                                <template #tip>
-                                    <div class="el-upload__tip">
-                                        Archivos de imagen de menos de 30 MB
-                                    </div>
-                                </template>
-                            </el-upload>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-                <v-col cols="12">
-                    <v-card color="grey-lighten-2">
-                        <v-card-title>Agregar más archivos</v-card-title>
-                        <v-card-text>
-                            <el-upload
-                                class="upload-demo"
-                                drag
-                                :http-request="guardarSTL"
-                                ref="loadform"
-                                accept=".stl"
-                                :headers="{ 'X-CSRF-TOKEN': token }"
-                                :auto-upload="true"
-                            >
-                                <el-icon class="el-icon--upload">
-                                    <upload-filled />
-                                </el-icon>
-                                <div class="el-upload__text">
-                                    Arrastra tu archivo o
-                                    <em>haz click para subir</em>
-                                </div>
-                                <template #tip>
-                                    <div class="el-upload__tip">
-                                        Archivos STL de menos de 30 MB
-                                    </div>
-                                </template>
-                            </el-upload>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-            </v-col>
+            <v-col cols="12">
 
-            <v-col cols="6">
-                <v-row>
-                    <v-col cols="4" v-for="imagen in Imagenes" :key="imagen.id">
-                        <v-card>
-                            <v-img :src="imagen.url"></v-img>
-                            <v-card-actions>
-                                <el-button
-                                    type="danger"
-                                    icon="mdi-Delete"
-                                    circle
-                                    @click="eliminarImagen(imagen.id)"
-                                ></el-button>
-                            </v-card-actions>
+            <v-stepper :items="['Fotos', 'Archivos', 'Informació']">
+                <template v-slot:item.1>
+                    <v-card subtitle="Añade o elimina fotos" flat>
+                        <v-row>
+                            <v-col cols="6">
+                                <v-card color="grey-lighten-2">
+                                    <v-card-title>Agregar imágenes</v-card-title>
+                                    <v-card-text>
+                                        <el-upload
+                                            class="upload-demo"
+                                            drag
+                                            :http-request="guardarImagen"
+                                            ref="loadform"
+                                            accept=".jpeg,.jpg,.png,.gif"
+                                            :headers="{ 'X-CSRF-TOKEN': token }"
+                                            :auto-upload="true"
+                                        >
+                                            <el-icon class="el-icon--upload">
+                                                <upload-filled />
+                                            </el-icon>
+                                            <div class="el-upload__text">
+                                                Arrastra tu archivo o
+                                                <em>haz click para subir</em>
+                                            </div>
+                                            <template #tip>
+                                                <div class="el-upload__tip">
+                                                    Archivos de imagen de menos de 30 MB
+                                                </div>
+                                            </template>
+                                        </el-upload>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-row class="overflow-container">
+                                    <v-col cols="6" v-for="imagen in Imagenes" :key="imagen.id">
+                                        <v-card>
+                                            <v-img :src="imagen.url"></v-img>
+                                            <v-card-actions>
+                                                <el-button
+                                                    type="danger"
+                                                    icon="mdi-Delete"
+                                                    circle
+                                                    @click="eliminarImagen(imagen.id)"
+                                                ></el-button>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </template>
+                  <template v-slot:item.2>
+                    <v-card subtitle="Modifica los archivos" flat>
+                        <v-row>
+                            <v-col cols="6">
+                                <v-card color="grey-lighten-2">
+                                    <v-card-title>Agregar más archivos</v-card-title>
+                                    <v-card-text>
+                                        <el-upload
+                                            class="upload-demo"
+                                            drag
+                                            :http-request="guardarSTL"
+                                            ref="loadform"
+                                            accept=".stl"
+                                            :headers="{ 'X-CSRF-TOKEN': token }"
+                                            :auto-upload="true"
+                                        >
+                                            <el-icon class="el-icon--upload">
+                                                <upload-filled />
+                                            </el-icon>
+                                            <div class="el-upload__text">
+                                                Arrastra tu archivo o
+                                                <em>haz click para subir</em>
+                                            </div>
+                                            <template #tip>
+                                                <div class="el-upload__tip">
+                                                    Archivos STL de menos de 30 MB
+                                                </div>
+                                            </template>
+                                        </el-upload>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-card>
+                                    <v-card-title>Archivos</v-card-title>
+                                    <v-list v-for="archivo in archivos">
+                                            <v-list-item class="text-right">
+                                                <v-row>
+        
+                                                <v-col cols="6">
+                                                    {{ archivo.nombre }}
+                                                </v-col>
+        
+                                                <v-col cls="6">
+                                                    <v-icon
+                                                        icon="mdi-Delete"
+                                                        @click="
+                                                            eliminarArchivo(archivo.id)
+                                                        "
+                                                    >
+                                                    </v-icon>
+                                                </v-col>
+                                            </v-row>
+
+        
+                                            </v-list-item>
+                                            <v-divider></v-divider>
+
+
+                                    </v-list>
+                                </v-card>
+                            </v-col>
+
+
+
+                        </v-row>
+
+
+                    </v-card>
+                  </template>
+                  <template v-slot:item.3>
+                    <v-card subtitle="Informacion del producto" flat>
+                        <v-card color="grey-lighten-2">
+                            <v-card-title>Actualizar Producto</v-card-title>
+                            <v-card-subtitle
+                                >Modifica los campos necesarios</v-card-subtitle
+                            >
+                            <v-card-text>
+                                <v-text-field
+                                    v-model="product.name"
+                                    label="Nombre"
+                                    required
+                                    :error-messages="errorMessages.name"
+                                ></v-text-field>
+                                <v-text-field
+                                    v-model="product.description"
+                                    label="Descripción"
+                                    required
+                                    :error-messages="errorMessages.description"
+                                ></v-text-field>
+                                <v-text-field
+                                    v-model="product.price"
+                                    label="Precio"
+                                    required
+                                    type="number"
+                                    :error-messages="errorMessages.price"
+                                ></v-text-field>
+                                <v-btn @click="update" color="primary"
+                                    >Guardar</v-btn
+                                >
+                            </v-card-text>
                         </v-card>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col>
-                        <v-card>
-                            <v-card-title>Archivos</v-card-title>
-                            <v-list v-for="archivo in archivos">
-                                    <v-list-item class="text-right">
-                                        <v-row>
 
-                                        <v-col cols="6">
-                                            {{ archivo.nombre }}
-                                        </v-col>
 
-                                        <v-col cls="6">
-                                            <v-icon
-                                                icon="mdi-Delete"
-                                                @click="
-                                                    eliminarArchivo(archivo.id)
-                                                "
-                                            >
-                                            </v-icon>
-                                        </v-col>
-                                    </v-row>
+                    </v-card>
+                  </template>
 
-                                    </v-list-item>
-                            </v-list>
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-col>
-        </v-row>
+            </v-stepper>
+            
+            
+        </v-col>
     </v-container>
 </template>
 
@@ -261,3 +287,10 @@ onMounted(async () => {
     traerArchivos(id.value);
 });
 </script>
+<style scoped>
+.overflow-container {
+    max-height: 400px; 
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+</style>

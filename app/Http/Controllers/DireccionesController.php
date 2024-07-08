@@ -96,15 +96,10 @@ class DireccionesController extends Controller
     {
         $user = $request->user();
         $user_id = $user->id;
-    
-     
         $validatedData = $request->validate([
-            'direccion_id' => 'required|exists:direccions,id',
+            'direccion_id' => 'required',
         ]);
-    
-      
         $carrito = $this->obtenerCarrito($user_id);
-        return $carrito;
     
 
         $direccion = Direccion::where('id', $request->input('direccion_id'))->where('usuario_id', $user_id)->first();
@@ -115,6 +110,7 @@ class DireccionesController extends Controller
     
 
         $carrito->direccion_id = $direccion->id;
+        $carrito->recoleccion = false;
         // $carrito->status = 'pagada';
         $carrito->save();
     
@@ -143,8 +139,10 @@ class DireccionesController extends Controller
         $user_id = $user->id;
         $carrito = $this->obtenerCarrito($user_id);
         $carrito->recoleccion = true;
+        $carrito->direccion_id = null;
         // $carrito->status = 'pagada';
         $carrito->save();
+
     
         return response()->json(['message' => 'Dirección asignada correctamente.',  'carrito' => $carrito], 200);
     }

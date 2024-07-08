@@ -81,7 +81,7 @@ const traerarchivos = async () => {
     try {
         const { data } = await axios.get("/traerarchivos");
 
-        orden.value = data.data;
+        orden.value = data;
         correcto.value = true;
         calcularTotal();
     } catch (error) {
@@ -90,7 +90,7 @@ const traerarchivos = async () => {
 };
 
 const calcularTotal = () => {
-    total.value = orden.value.files
+    total.value = orden.value
         .map((file) => file.precio)
         .reduce((a, b) => a + b, 0);
 };

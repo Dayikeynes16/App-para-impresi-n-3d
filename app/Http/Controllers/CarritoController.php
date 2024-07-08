@@ -7,6 +7,8 @@ use App\Models\Files;
 use App\Models\Orden;
 use App\Models\Product;
 use App\Models\Producto_Carrito;
+use App\Models\Direccion;
+
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -51,13 +53,12 @@ class CarritoController extends Controller
 
     public function obtenerCarrito($user_id)
     {
-        $carrito = Carrito::with('productos.producto','orden.files')->firstorCreate([
+        $carrito = Carrito::with('productos.producto.files','orden.files')->firstorCreate([
             'status' => 'activo',
             'usuario_id' => $user_id
         ], [
             'total' => 0,
             'status' => 'activo',
-            'direccion_id' => null
         ]);
         return $carrito;
     }
@@ -66,7 +67,8 @@ class CarritoController extends Controller
     {
         $user = $request->user()->id;
         $carrito = $this->obtenerCarrito($user);
-        return response()->json($carrito);
+        $direccion = Direccion::find($carrito->direccion_id);
+        return response()->json(['data'=>$carrito, 'direccion'=>$direccion]);
     }
 
     public function borrarProducto(Request $request)
@@ -160,13 +162,6 @@ class CarritoController extends Controller
        
     }
 
-    // public function finalizarCarrito(Request $request){
-    //     $carrito = Carrito::find($request->input('id'));
-    //     $carrito->status = 'pagada';
-    //     $carrito->save();
-    //     return response('todo bien');
-
-    // }
 
     public function getCarritosPendientes(){
         $carritos = Carrito::with('usuario','orden.files','productos')->where('status', 'pagada')->get();
@@ -185,7 +180,14 @@ class CarritoController extends Controller
                 $files[] = $file;
             }
         }
-        return response()->json(['carrito' => $carritos, 'files' => $files, 'productos'=>$productos]);
+        $direccion = Direccion::find($carritos->direccion_id);
+        if ($direccion){
+            return response()->json(['carrito' => $carritos, 'files' => $files, 'productos'=>$productos, 'direccion'=>$direccion]);
+
+        }else{
+            return response()->json(['carrito' => $carritos, 'files' => $files, 'productos'=>$productos]);
+
+        }
     }
 
     public function listoParaEnvio($id){
@@ -220,6 +222,13 @@ class CarritoController extends Controller
             $message->to($user->email, $user->name)
                     ->subject('Confirmación de Compra');
         });
+    }
+
+
+    public function traerPedidosViejos(Request $request){
+        $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'Listo Para Enviar')->get();
+        return response()->json(['data'=>$pedidosViejos]);
+
     }
 
     

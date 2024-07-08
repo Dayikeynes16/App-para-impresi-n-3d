@@ -11,7 +11,7 @@ class Carrito extends Model
     protected $fillable= ['usuario_id','status','direccion_id','total','recoleccion'];
 
     public function direccion(){
-        return $this->hasOne(Direccion::class,'direccion_id');
+        return $this->HasOne(Direccion::class,'direccion_id');
     }
 
     public function productos(){

@@ -7,15 +7,35 @@ export const useCartStore = defineStore('cart', {
     items: [],
     files: [],
     visible: false,
-    domicilio: false
+    domicilio: false,
+    direccion: {
+      nombre: null,
+      direccion: null,
+      referencias: null,
+      telefono: null,
+      destinatario: null,
+      codigo_postal: null
+    }
   }),
   actions: {
     async fetchCart() {
       try {
         const { data } = await axios.get('/traerCarrito');
-        this.items = data.productos;
-        this.id = data.id;
-        if (data.recoleccion === false){
+        console.log(data.data)
+        this.items = data.data.productos;
+        this.id = data.data.id;
+
+
+        this.direccion.nombre = data.direccion.nombre
+        this.direccion.direccion = data.direccion.nombre
+        this.direccion.nombre = data.direccion.direccion
+        this.direccion.referencias = data.direccion.referencias
+        this.direccion.telefono = data.direccion.telefono
+        this.direccion.destinatario = data.direccion.destinatario
+        this.direccion.codigo_postal = data.direccion.codigo_postal
+
+
+        if (data.data.recoleccion === false){
           this.domicilio = false
         } else{
           this.domicilio = true

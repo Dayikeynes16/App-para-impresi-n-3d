@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\User;
-use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -14,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -34,6 +34,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
           
             $request->session()->regenerate();
+
             return response()->json([
                 'data' => Auth::user(), 'code'=>200
 
@@ -45,11 +46,24 @@ class AuthController extends Controller
         
     }
 
+    public function addPermissionsToRole(Request $request)
+    {
+        $request->validate([
+            'role' => 'required',
+            'permission' => 'required'
+        ]);
+        $role = Role::find($request->role);
+        $role->hasPermissionTo($request->permission);
+        return response()->json(['data'=>$role]);
+
+    }
+
     public function get_user(Request $request){
         $id = $request->user()->id;
-        $user = User::with('direcciones')->find($id);
+        $user = User::find($id);
+        $user->getPermissionsViaRoles();
 
-        return response()->json($user);
+        return response()->json(['data' => $user]);
 
     }
 
@@ -61,13 +75,8 @@ class AuthController extends Controller
     }
 
     public function auth(Request $request){
-        $user = $request->user();
-
-        if($user){
-            return response('200');
-        }else{
-            return response('404');
-        }
+        return Auth::check();
+      
     }
     
     public function enviarRecuperarContraseña(Request $request)
@@ -141,12 +150,18 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)
             ->update(['password' => Hash::make($request->password)]);
-
-
-  
         DB::table('password_reset_tokens')->where(['email' => $request->email])->delete();
 
         return redirect('/login')->with('message', 'Tu contraseña se ha cambiado correctamente');
+    }
+
+
+    public function addRole(User $user, Request $request){
+
+        $user->syncRoles($request->all());
+
+        return response()->json(['user'=>$user]);
+
     }
 }
 

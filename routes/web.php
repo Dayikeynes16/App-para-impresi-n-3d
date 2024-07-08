@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Foundation\Configuration\Middleware;
+
+
 
 use App\Http\Controllers\DireccionesController;
 use App\Http\Controllers\ImagenesController;
@@ -10,12 +13,18 @@ use App\Http\Controllers\CarritoController;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WebhookController;
 
+Route::apiResource('/roles',RoleController::class);
+Route::post('/addRole/{user}', [AuthController::class,'addRole']);
+
+
+
+Route::post('/addPermissionsToRole', [AuthController::class,'addPermissionsToRole']);
 Route::get('/checkout', [CheckoutController::class, 'checkout']);
 Route::post('/checkout', [CheckoutController::class, 'createSession']);
 
@@ -107,6 +116,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/carrito/{carrito}',[CarritoController::class, 'show']);
     Route::post('/listoParaEnvio/{id}',[CarritoController::class, 'listoParaEnvio']);
     Route::post('ConfirmarVenta',[CarritoController::class, 'ConfirmarVenta']);
+    Route::get('/traerPedidosViejos', [CarritoController::class, 'traerPedidosViejos']);
 
 
 

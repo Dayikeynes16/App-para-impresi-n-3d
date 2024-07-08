@@ -95,8 +95,11 @@
 
 <script setup>
 
-import { ref } from 'vue';
-import  {useRouter} from 'vue-router'; 
+import { ref, onMounted } from 'vue';
+import  {useRouter} from 'vue-router';
+import { useLoginStore } from '../stores/login'; 
+
+const loginStore = useLoginStore();
 const router = useRouter()
 
 const errorMessages = ref({})
@@ -123,6 +126,13 @@ const registrar = async () => {
     } 
   }
 };
+
+
+
+onMounted(() => {
+  loginStore.setAutenticado(false)
+})
+
 </script>
 
 <style>

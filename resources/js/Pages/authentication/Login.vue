@@ -1,7 +1,7 @@
 <template>
-  <div v-if="resultado">
+  <div>
     <v-img class="mx-auto my-6" max-width="150">
-      <img style="max-width:100%;" src="../../images/logo horizontal aps creativas2.png" />
+      <img style="max-width:100%;" src="../../../images/logo horizontal aps creativas (1).png" />
     </v-img>
 
     <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
@@ -61,13 +61,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { useLoginStore } from '../stores/login';
+// import { useLoginStore } from '@/stores/login';
 
 const router = useRouter();
-const loginStore = useLoginStore();
+// const loginStore = useLoginStore();
 const errorMessages = ref({});
 const visible = ref(false);
 const resultado = ref(true);
@@ -82,7 +82,7 @@ const login = async () => {
   try {
     const { data } = await axios.post('/login', form.value);
     if (data.code === 200) {
-      loginStore.setAutenticado(true);
+
       if (data.data.email === 'javierMay@appscreativas.com'){
         router.push({ name: 'Dashboard' });
       } else{
@@ -98,6 +98,10 @@ const login = async () => {
   }
 };
 
+
+onMounted(() => {
+  // loginStore.setAutenticado(false)
+})
 
 
 

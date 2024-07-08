@@ -20,7 +20,7 @@ class CheckoutController extends Controller
 
     public function createSession(Request $request)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
 
         $session = Session::create([
             'payment_method_types' => ['card'],

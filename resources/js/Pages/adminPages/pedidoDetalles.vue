@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols="8">
-                <v-card>
+                <v-card elevation="4">
             <v-card-title> Archivos del cliente </v-card-title>
             <v-card-text>
                 <v-table>
@@ -31,7 +31,7 @@
             </v-card-text>
         </v-card>
         <v-divider></v-divider>
-        <v-card>
+        <v-card elevation="4">
             <v-card-title> Productos </v-card-title>
             <v-card-subtitle>
                 Abrir para ver los archivos correspondientes
@@ -102,8 +102,22 @@
                     <v-card-subtitle>
                         Verifica la dirección
                     </v-card-subtitle>
-                    <v-card-text>
-                        Dirección: Carretera la isla km5+300
+                    <v-card-text v-if="sucursal">
+                        Pedido Programado para su Recolección en sucursal
+                    </v-card-text>
+                    <v-card-text v-else>
+                        <v-subheader>Método de Entrega</v-subheader>
+                    <p>
+                        <strong>Envío a Domicilio</strong><br>
+                        <strong>dirección:</strong> {{ direccion.direccion }}<br>
+                        <strong>Destinatario:</strong> {{ direccion.destinatario }}<br>
+                        <strong>Estado:</strong> {{ direccion.estado }}<br>
+                        <strong>Telefono:</strong> {{ direccion.telefono }}<br>
+                        <strong>Codigo Postal:</strong> {{ direccion.codigo_postal }}<br>
+
+
+                    </p>
+
                     </v-card-text>
                     <v-card-actions>
                         <v-btn @click="terminarTarea(carrito.id)" prepend-icon="mdi-check-outline">Finalizado</v-btn>
@@ -131,6 +145,8 @@ const route = useRoute();
 const files = ref([]);
 const productos = ref([]);
 const carrito = ref({});
+const sucursal = ref(false);
+const direccion = ref({})
 
 onMounted(async () => {
     try {
@@ -138,10 +154,19 @@ onMounted(async () => {
         files.value = data.files;
         productos.value = data.productos;
         carrito.value = data.carrito;
+
+        if(data.carrito.recoleccion){
+            sucursal.value = true
+        }else{
+            sucursal.value = false
+            direccion.value = data.direccion
+        }
     } catch (error) {
         console.error("Error fetching data:", error);
     }
 });
+
+
 
 const download = async (id, nombre) => {
     try {

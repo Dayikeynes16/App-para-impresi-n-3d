@@ -1,5 +1,5 @@
 <template>
-    <v-card color="blue-grey-lighten-4">
+    <v-card color="blue-grey-lighten-5" elevation="6">
         <v-card-title class="text-center">
             <v-text >Pedidos Pendientes</v-text>
         </v-card-title>

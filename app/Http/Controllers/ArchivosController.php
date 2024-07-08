@@ -50,7 +50,7 @@ class ArchivosController extends Controller
         $url = "https://stl-info-insight.p.rapidapi.com/3dslicer-02/calculate_volume";
 
         $headers = [
-            "X-RapidAPI-Key" => "97016016d1msh22a2de77d63209bp14b5e9jsn6a63ea5210dc",
+            "X-RapidAPI-Key" => "987632cf0emsh756b8484307fe63p130018jsnf063dff1b8f7",
             "X-RapidAPI-Host" => "stl-info-insight.p.rapidapi.com",
         ];
 
@@ -91,8 +91,6 @@ class ArchivosController extends Controller
         ]);
         $producto = Product::find($request->input('producto_id'));
         $filePath = $request->file('file')->store('files');
-
-
         $file = new Files([
             'path' => $filePath,
             'nombre' => $request->file('file')->getClientOriginalName()

@@ -4,7 +4,7 @@
     <v-app-bar-title>Applicaciones Creativas</v-app-bar-title>
 
     <template  v-slot:append>
-      <div v-if="!admin "  style="margin-right: 10px; margin-top: 10px;">
+      <div v-if="cliente"  style="margin-right: 10px; margin-top: 10px;">
         <el-badge :value="cartStore.items.length + cartStore.files.length" :max="99" class="item">
           <v-btn  @click="handleCartClick" icon="mdi-cart"></v-btn>
         </el-badge>
@@ -17,7 +17,6 @@
           </v-card-text>
           <v-card-text v-else>
             No has añadido nada aún
-            
           </v-card-text>
         </v-card>
       </v-dialog>
@@ -28,17 +27,12 @@
     <v-list-item prepend-icon="mdi-account-circle" @click='router.push({ name: "Cuenta" })' :title="user.name"></v-list-item>
     <v-divider class="my-0"></v-divider>
 
-    <v-list-item v-if="admin" @click='router.push({ name: "Dashboard" })' title="Dashboard"></v-list-item>
-    <v-divider class="my-0" v-if="admin"></v-divider>
-    
-    <v-list-item v-if="!admin" @click='router.push({ name: "catalogo" })' title="Catalogo"></v-list-item>
-    <v-divider v-if="!admin" class="my-0"></v-divider>
-
-    <v-list-item v-if="!admin" @click='router.push({ name: "cotizar" })' title="Cotizar"></v-list-item>
-    <v-divider class="my-0"></v-divider>
-  
-    <v-list-item v-if="admin" @click='router.push({ name: "editarcatalogo" })' title="Editar Catalogo"></v-list-item>
-    <v-divider class="my-0" v-if="admin"></v-divider>
+    <template v-for="item in menu" :key="item.nombre">
+      <div v-if="loginStore.getPermissions.includes(item.permiso)">
+        <v-list-item :to="item.ruta" :title="item.nombre"></v-list-item>
+        <v-divider class="my-0" ></v-divider>
+      </div>
+    </template>
 
     <v-list-item @click="cerrarSesion" title="Cerrar sesión"></v-list-item>
     <v-divider class="my-0"></v-divider>
@@ -49,43 +43,56 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { useLoginStore } from '../stores/login';
+import { useLoginStore } from '@/stores/login';
 import { useCartStore } from '../stores/carrito';
 import Carrito from './Carrito.vue';
 
 const dialog = ref(false);
 const drawer = ref(null);
-const user = ref({ name: null, correo: null });
+
+const user = ref({});
+
 const router = useRouter();
 const cartStore = useCartStore();
+
 const loginStore = useLoginStore();
+
 const lastRoute = ref(null);
 const admin = ref(false);
 const cliente = ref(false);
-
-const get_user = async () => {
-  try {
-    const { data } = await axios.get('/get_user');
-    user.value.name = data.name;
-    user.value.correo = data.email;
-    loginStore.setAutenticado(true);
-    if (user.value.correo === 'javierMay@appscreativas.com') {
-      admin.value = true;
-      cliente.value = true;
-    } else {
-      cliente.value = true;
-    }
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      router.push({ name: 'logear' });
-    }
+const menu = ref([
+  {
+    nombre: 'Cotizar',
+    permiso: 'cotizar',
+    ruta: { name: "cotizar" }
+  },
+  {
+    nombre: 'Dashboard',
+    permiso: 'dashboard',
+    ruta: { name: "Dashboard" }
+  },
+  {
+    nombre: 'Historial',
+    permiso: 'historial',
+    ruta: { name: "PedidosPagados" }
+  },
+  {
+    nombre: 'Catalogo',
+    permiso: 'catalogo',
+    ruta: { name: "catalogo" }
+  },
+  {
+    nombre: 'Editar Catalogo',
+    permiso: 'catalogo.editar',
+    ruta: { name: "editarcatalogo" }
   }
-};
+  
+])
+
 
 const cerrarSesion = async () => {
   try {
     await axios.post('/cerrarSesion');
-    loginStore.setAutenticado(false);
     router.push({ name: 'logear' });
   } catch (error) {
     console.error('Error cerrando sesión:', error);
@@ -102,7 +109,17 @@ const handleCartClick = () => {
 };
 
 onMounted(() => {
-  get_user();
+  setTimeout(() => {
+  user.value = loginStore.getUserData
+  if (user.value.admin === true){
+      admin.value = true;
+    } else {
+      cliente.value = true;
+    }
+    
+  }, 500);
+  
+
   cartStore.fetchCart();
 });
 </script>

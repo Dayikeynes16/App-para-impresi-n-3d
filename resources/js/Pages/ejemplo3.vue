@@ -15,8 +15,10 @@
                             :headers="{
                                 'X-CSRF-TOKEN': token,
                             }"
-                            :auto-upload="true"
+    
+:auto-upload="true"
                         >
+                        
                         <el-icon class="el-icon--upload">
                                     <upload-filled />
                                 </el-icon>
@@ -72,7 +74,7 @@
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import axios from "axios";
 import { UploadFilled } from "@element-plus/icons-vue";
 const token = document
@@ -132,7 +134,7 @@ const limpiarArchivos = () => {
 const traerarchivos = async () => {
 
     const { data } = await axios.get('/traerarchivos');
-    if(data.data.files.length){
+    if(data.length){
         resultado.value = true;
     }else{
         resultado.value = false
@@ -140,7 +142,12 @@ const traerarchivos = async () => {
     
 
 };
-traerarchivos()
+
+onMounted(() => {
+    traerarchivos()
+})
+
+
 
 
 </script>

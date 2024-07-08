@@ -160,6 +160,20 @@
                             </strong>
                         </v-col>
                     </v-row>
+                    <v-row v-if="domicilio === true">
+                        <v-col cols="6">Costo de Envío</v-col>
+                        <v-col cols="6" class="text-right">
+                            <strong>
+                                {{
+                                    Intl.NumberFormat("es-MX", {
+                                        style: "currency",
+                                        currency: "MXN",
+                                        minimumFractionDigits: 2,
+                                    }).format(250)
+                                }}
+                            </strong>
+                        </v-col>
+                    </v-row>
                 </v-col>
                 <v-col cols="12">
                     <v-subheader>Información de Contacto</v-subheader>
@@ -170,25 +184,29 @@
                     </p>
                 </v-col>
                 <v-col cols="12">
-                    <v-subheader>Dirección de Envío</v-subheader>
-                    <p>
-                        <strong>Calle:</strong> {{ shipping.address }}<br>
-                        <strong>Ciudad:</strong> {{ shipping.city }}<br>
-                        <strong>Estado:</strong> {{ shipping.state }}<br>
-                        <strong>Código Postal:</strong> {{ shipping.zip }}
+                    <v-subheader>Método de Entrega</v-subheader>
+                    <p v-if="cartStore.domicilio">
+                        <strong>Envío a Domicilio</strong><br>
+                        <strong>Calle:</strong> {{ cartStore.direccion.nombre }}<br>
+                        <strong>Ciudad:</strong> {{ cartStore.direccion.estado }}<br>
+                        <strong>Estado:</strong> {{ cartStore.direccion.referencias }}<br>
+                    </p>
+                    <p v-else>
+                        <strong>Recolección en Sucursal</strong><br>
+                        Se te enviará un correo con las indicaciones al finalizar tu compra.
                     </p>
                 </v-col>
             </v-row>
         </v-card-text>
         <v-card-actions>
             <v-btn icon @click="pasos(2)">
-                <v-icon>mdi-arrow-left</v-icon>
+              <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn color="primary" @click="payment()" prepend-icon="mdi-credit-card-fast-outline">
-                Pagar
+              Pagar
             </v-btn>
-        </v-card-actions>
+          </v-card-actions>
     </v-card>
 </template>
 
@@ -212,12 +230,7 @@ const customer = ref({
     phone: "9931790341"
 });
 
-const shipping = ref({
-    address: "Calle Falsa 123",
-    city: "Villahermosa",
-    state: "Tabasco",
-    zip: "86000"
-});
+
 
 
 const carritovacio = ref(false);
@@ -232,9 +245,17 @@ const token = document
 const productos_carrito = ref([]);
 const files = ref([]);
 const total = ref(0);
+const domicilio = ref(false);
 
 const pasos = (value) => {
+  if (value >= 1 && value <= 3) {  
     step.value = value;
+    
+    if (step.value === 3 || step.value === 2) {
+      domicilio.value = cartStore.domicilio;
+      cartStore.fetchCart();
+    }
+  }
 };
 
 const fetchProductosCarrito = () => {
@@ -360,6 +381,8 @@ const open = (id, type, callback) => {
 
 
 const totalCarrito = () => {
+
+
     total.value = 0;
     for (let i = 0; i < productos_carrito.value.length; i++) {
         total.value +=
@@ -370,6 +393,8 @@ const totalCarrito = () => {
         total.value += files.value[i].precio;
     }
     console.log(total.value);
+    
+
 };
 
 const carritoVacio = () =>{
@@ -383,9 +408,10 @@ const carritoVacio = () =>{
 
 const payment = async () => {
     try {
+        const envio = domicilio.value ? 250 : 0;
         const { data } = await axios.post(
             "/checkout",
-            { total: total.value },
+            { total: total.value + envio },
             { headers: { "X-CSRF-TOKEN": token } }
         );
         await stripe.redirectToCheckout({ sessionId: data.id });
@@ -401,7 +427,8 @@ onMounted(() => {
     updateCart();
     carritoVacio()
     stripe = Stripe(
-        "pk_live_51PXiT1Ctt7GPf4Lbd8Bx3koTzqCepRUoBdGfhQl67tXuU7QwAoG3TnAP8OmB1FjGB9g58Syl6oveq2gNj2IUkcgU00k6g3ujk9"
+        "pk_test_51PXiT1Ctt7GPf4Lb8cBVnDt1p6fvT5Bqkvq7LRE8J1y21b48ekwmvyMRcD7XbzcRFA31G6J7YxRgr8XxKEvomNx500mUHyxI1A"
     );
+
 });
 </script>
