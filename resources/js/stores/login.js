@@ -11,19 +11,14 @@ export const useLoginStore = defineStore('login', () => {
     axios.get('/get_user')
       .then((data) => {
         user.value = data.data
-     
+
 
       permissions.value = []
         data.data.data.roles.forEach(element => {
-          console.log(element);
           element.permissions.forEach(element => {
             permissions.value.push(element.name)
           });
-          
-          
         });
-
-
 
       })
       .catch((error) => {

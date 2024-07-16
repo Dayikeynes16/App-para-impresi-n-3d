@@ -24,6 +24,9 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string'
+        ]);
         return response()->json([
             'data' =>  Permission::create(['name' => $request->name])
         ]);

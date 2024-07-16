@@ -50,7 +50,6 @@ const get_user = async () => {
     user.value.name = data.name;
     user.value.correo = data.email;
 
-    console.log(data.direcciones);
 };
 
 get_user();

@@ -108,7 +108,6 @@ const recogerSucursal = async () => {
                 }
             );
             cartStore.domicilio = false
-            console.log('Recolección en sucursal', data);
         } catch (error) {
             console.error("Error during pickup option selection:", error);
         }

@@ -7,11 +7,10 @@
                     Su carrito está vacío. Por favor, añada productos.
                 </v-card-text>
             </v-card>
-            
         </div>
         <div v-else>
             <v-stepper
-            olor="grey-lighten-4"
+                color="grey-lighten-4"
                 v-model="step"
                 hide-actions
                 :items="['Productos', 'Direccion', 'Pago']"
@@ -392,7 +391,6 @@ const totalCarrito = () => {
     for (let i = 0; i < files.value.length; i++) {
         total.value += files.value[i].precio;
     }
-    console.log(total.value);
     
 
 };
@@ -425,6 +423,7 @@ watch([productos_carrito, files], totalCarrito, { immediate: true });
 
 onMounted(() => {
     updateCart();
+    fetchProductosCarrito()
     carritoVacio()
     stripe = Stripe(
         "pk_test_51PXiT1Ctt7GPf4Lb8cBVnDt1p6fvT5Bqkvq7LRE8J1y21b48ekwmvyMRcD7XbzcRFA31G6J7YxRgr8XxKEvomNx500mUHyxI1A"

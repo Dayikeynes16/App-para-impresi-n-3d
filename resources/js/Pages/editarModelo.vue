@@ -249,7 +249,6 @@ const guardarSTL = async (file) => {
             },
         });
         if (data.data === 200) {
-            console.log("esperandojshshs");
             await traerArchivos(id.value);
         }
     } catch (error) {

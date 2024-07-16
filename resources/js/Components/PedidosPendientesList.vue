@@ -41,7 +41,6 @@ const existenPedidos = ref(false);
 const traerPendientes = async () => {
     const { data } = await axios.get("/getCarritosPendientes");
     pedidos.value = data;
-    console.log(pedidos.value.length);
     if (pedidos.value.length > 0) {
         existenPedidos.value = true;
     }

@@ -209,7 +209,6 @@ const savemodel = async () => {
     });
 
     if (data.code === 200) {
-      console.log(data.data);
       Producto.value.producto_id = data.data.id;
       step.value = 2;
     }

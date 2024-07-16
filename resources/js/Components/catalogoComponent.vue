@@ -126,8 +126,6 @@ const cartStore = useCartStore();
 
 const modelos = async () => {
     const { data } = await axios.get(`/modelos?page=${page.value}`);
-    console.log("hola");
-    console.log(data.data);
     imagenes.value = data.data.map((imagen) => {
         return {
             ...imagen,

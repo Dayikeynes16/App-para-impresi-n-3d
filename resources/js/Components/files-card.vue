@@ -19,11 +19,37 @@
                         </v-card-text>
 
                         <v-card-actions>
-                            <v-btn
-                                v-model="form.id"
-                                icon="mdi-delete-outline"
-                                @click="open(file.id)"
-                            ></v-btn>
+                            <v-row>
+                                    <v-col cols="6">
+                                        <v-icon
+                                            v-model="form.id"
+                                            icon="mdi-delete-outline"
+                                            @click="open(file.id)">
+                                        </v-icon>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <v-row>
+                                            <v-col class="text-right" cols="3">
+                                                <v-icon
+                                                    circle
+                                                    icon="mdi-plus">
+                                                </v-icon
+                                            ></v-col>
+                                        <v-col class="text-center" cols="3">
+                                            1
+                                        </v-col>
+                                        <v-col class="text-left" cols="3"
+                                                ><v-icon
+                                                    circle
+                                                    icon="mdi-minus"
+                                                ></v-icon> 
+                                            </v-col>
+
+                                        </v-row>      
+                                </v-col>
+
+                              
+                            </v-row>
                         </v-card-actions>
                     </v-card>
                 </div>
@@ -81,13 +107,15 @@ const traerarchivos = async () => {
     try {
         const { data } = await axios.get("/traerarchivos");
 
-        orden.value = data;
+        orden.value = data.data;
         correcto.value = true;
         calcularTotal();
     } catch (error) {
         console.error(error);
     }
 };
+
+
 
 const calcularTotal = () => {
     total.value = orden.value
@@ -98,7 +126,7 @@ const calcularTotal = () => {
 const eliminarArchivo = async (id) => {
     try {
         await axios.post(
-            "/deletefile",
+            "/eliminarArchivo",
             { id },
             {
                 headers: {

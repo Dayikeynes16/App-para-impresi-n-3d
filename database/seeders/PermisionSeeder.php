@@ -16,13 +16,16 @@ class PermisionSeeder extends Seeder
     public function run(): void
     {
  
+        Permission::query()->updateOrCreate(['name' => 'usuario']);
+        Permission::query()->updateOrCreate(['name' => 'cotizar']);
+        Permission::query()->updateOrCreate(['name' => 'catalogo']);
+        Permission::query()->updateOrCreate(['name' => 'catalogo.editar']);
+        Permission::query()->updateOrCreate(['name' => 'user.historial']);
+        Permission::query()->updateOrCreate(['name' => 'admin.historial']);
+        Permission::query()->updateOrCreate(['name' => 'dashboard']);
+        Permission::query()->updateOrCreate(['name' => 'roles.permisos']);
 
-        Permission::create(['name' => 'cotizar']);
-        Permission::create(['name' => 'catalogo']);
-        Permission::create(['name' => 'catalogo.editar']);
-        Permission::create(['name' => 'user.historial']);
-        Permission::create(['name' => 'admin.historial']);
-        Permission::create(['name' => 'dashboard']);
+        
 
         
 

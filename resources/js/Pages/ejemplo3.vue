@@ -3,25 +3,17 @@
         <v-row>
             <v-col cols="4">
                 <v-card color="grey-lighten-4">
-                    <v-card-title> Sube tu archivo aqui </v-card-title>
+                    <v-card-title> Sube tu archivo aquí </v-card-title>
                     <v-card-text>
-                        <el-upload
-                            class="upload-demo"
-                            drag
-                            :http-request="cotizar"
-                            ref="loadform"
-                            :data="{ material: 1 }"
-                            accept=".stl"
-                            :headers="{
+                        <el-upload class="upload-demo" drag :http-request="cotizar" ref="loadform"
+                            accept=".stl" :headers="{
                                 'X-CSRF-TOKEN': token,
-                            }"
-    
-:auto-upload="true"
-                        >
-                        
-                        <el-icon class="el-icon--upload">
-                                    <upload-filled />
-                                </el-icon>
+                            }" :auto-upload="true">
+
+                            <el-icon class="el-icon--upload">
+                                <upload-filled />
+                            </el-icon>
+
                             <div class="el-upload__text">
                                 Arrastra tu archivo o
                                 <em>haz click para subir</em>
@@ -34,15 +26,8 @@
                         </el-upload>
                     </v-card-text>
                 </v-card>
-                <v-overlay
-                    :model-value="loading"
-                    class="align-center justify-center"
-                >
-                    <v-progress-circular
-                        color="primary"
-                        size="64"
-                        indeterminate
-                    ></v-progress-circular>
+                <v-overlay :model-value="loading" class="align-center justify-center">
+                    <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
                 </v-overlay>
             </v-col>
             <v-col cols="8">
@@ -51,19 +36,11 @@
         </v-row>
 
         <v-dialog v-model="dialog" width="auto">
-            <v-card
-                max-width="400"
-                
-                prepend-icon="mdi-alert"
+            <v-card max-width="400" prepend-icon="mdi-alert"
                 text="Lamentamos estos problemas, el archivo que has subido es incompatible"
-                title="Error con el archivo"
-            >
+                title="Error con el archivo">
                 <template v-slot:actions>
-                    <v-btn
-                        class="ms-auto"
-                        text="Ok"
-                        @click="dialog = false"
-                    ></v-btn>
+                    <v-btn class="ms-auto" text="Ok" @click="dialog = false"></v-btn>
                 </template>
             </v-card>
         </v-dialog>
@@ -86,20 +63,20 @@ const costo = ref("");
 const tiempo_impresion = ref(0);
 const loading = ref(false);
 const errorMessage = ref("");
-const dialog = ref(false)
+const dialog = ref(false);
 
 import filesCard from "../Components/files-card.vue";
 
 const cotizar = async (file) => {
     loading.value = true;
     resultado.value = false;
+
     errorMessage.value = "";
+
+    const formData = new FormData();
+    formData.append('file', file.file);
     try {
-        const { data } = await axios.post(
-            "/calculate",
-            {
-                file: file.file,
-            },
+        const {data} = await axios.post("/calculate",formData,
             {
                 headers: {
                     "X-CSRF-TOKEN": token,
@@ -108,8 +85,7 @@ const cotizar = async (file) => {
             }
         );
         loading.value = false;
-        resultado.value=true
-        
+        resultado.value = true;
     } catch (error) {
         loading.value = false;
         if (
@@ -120,34 +96,25 @@ const cotizar = async (file) => {
             errorMessage.value = error.response.data.message;
         }
         resultado.value = true;
-        dialog.value = true
+        dialog.value = true;
     }
 };
 
-
 const limpiarArchivos = () => {
-  
     resultado.value = false;
-   
 };
 
 const traerarchivos = async () => {
-
     const { data } = await axios.get('/traerarchivos');
-    if(data.length){
+    if (data.data.files.length) {
         resultado.value = true;
-    }else{
-        resultado.value = false
-    }
-    
 
+    } else {
+        resultado.value = false;
+    }
 };
 
 onMounted(() => {
-    traerarchivos()
-})
-
-
-
-
+    traerarchivos();
+});
 </script>

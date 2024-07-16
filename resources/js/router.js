@@ -1,5 +1,4 @@
 import * as VueRouter from "vue-router";
-import Index from "./Pages/Index.vue";
 import Ejemplo from "./Pages/ejemplo3.vue";
 import Register from "./Pages/Register.vue";
 import Cotizar from "./Pages/Cotizacion.vue";
@@ -21,7 +20,8 @@ import EditarDireccion from "./Components/EditarDireccion.vue";
 import VentaExitosa from "./Pages/VentaExitosa.vue";
 import PedidosPagados from "./Pages/adminPages/PedidosPagados.vue";
 import Test from "./Pages/test.vue";
-
+import Usuarios from "./Pages/adminPages/Usuarios.vue"
+import RolesPermisssions from "./Pages/adminPages/RolesPermisssions.vue";
 import Main from "./Pages/layout/Main.vue";
 
 const routes = [
@@ -36,7 +36,6 @@ const routes = [
         path: "/registrar",
         component: Register,
     },
-
     {
         name: "Home",
         path: "/",
@@ -126,6 +125,14 @@ const routes = [
                 name: "PedidosPagados",
                 path: "/pedidosPagados",
                 component: PedidosPagados,
+            },{
+                name: "CrearUsuarios",
+                path: "/crearUsuarios",
+                component: Usuarios
+            },{
+                name: "RolesPermissions",
+                path: "/RolesPermissions",
+                component: RolesPermisssions
             }
         ],
     },

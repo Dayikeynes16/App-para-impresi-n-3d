@@ -14,7 +14,6 @@ const loginStore = useLoginStore();
 
 
 onMounted(() => {
-    console.log('en efecto, esta pasando por el main')
     loginStore.setUser()
 })
 

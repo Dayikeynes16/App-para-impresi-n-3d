@@ -54,7 +54,6 @@
     try {
       const { data } = await axios.get('/traerPedidosViejos');
       Pedidos.value = data.data;
-      console.log(Pedidos.value[0].total);
     } catch (error) {
       console.error('Error fetching orders:', error);
     }

@@ -19,7 +19,7 @@ class Carrito extends Model
     }
 
     public function orden(){
-        return $this->hasMany(Orden::class,'carrito_id');
+        return $this->hasOne(Orden::class,'carrito_id');
     }
 
     public function usuario(){

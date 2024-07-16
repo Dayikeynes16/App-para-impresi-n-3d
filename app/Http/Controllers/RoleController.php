@@ -10,10 +10,11 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    public function index(){
+    $role = Role::with('permissions')->get();
+    
         return response()->json([
-            'data' => Role::all()
+            'data' => $role
         ]);
     }
 
@@ -52,11 +53,7 @@ class RoleController extends Controller
      */
     public function update(Role $role, Request $request)
     {
-        // $request->validate([
-        //     'name' => 'required',
-        //     'permission' => 'required|array',
-        //     'permission.*' => 'integer'
-        // ]);
+   
         $role->update($request->all());
         $role->syncPermissions($request->permission);
 
@@ -68,9 +65,10 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy()
+    public function destroy(Role $role)
     {
- 
+       $role->delete();
+       return response()->json(['data'=>200]);
     }
 
     

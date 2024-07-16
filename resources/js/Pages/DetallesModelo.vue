@@ -37,6 +37,5 @@ const addImages = async ()=>{
 onMounted(async () => {
     const { data } = await axios.get(`/productos/${route.params.id}`)
     product.value = data.data
-    console.log(product.value.id)
 })
 </script>

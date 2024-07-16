@@ -16,10 +16,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UsuariosRolesController;
 use App\Http\Controllers\WebhookController;
 
+Route::post('/deleteprueba',[AuthController::class, 'deleteprueba']);
+
 Route::apiResource('/roles',RoleController::class);
+Route::apiResource('/permissions',PermissionController::class);
+
+Route::post('/deleteUser/{user}',[UsuariosRolesController::class, 'delete']);
+Route::put('/actualizarRolesUsuario/{user}',[UsuariosRolesController::class, 'update']);
 Route::post('/addRole/{user}', [AuthController::class,'addRole']);
 
 
@@ -35,22 +43,13 @@ Route::get('/cancel', function () {
 Route::post('/webhook/stripe', [WebhookController::class, 'handleStripeWebhook']);
 
  //AuthController
+ Route::get('/getUsersRoles',[AuthController::class, 'getUsersRoles']);
  Route::get('/get_user', [AuthController::class, 'get_user']);
  Route::get('/auth', [AuthController::class, 'auth']);
  Route::post('/login', [AuthController::class, 'login']);
  Route::post('/cerrarSesion', [AuthController::class, 'cerrarSesion']);
- Route::post('/usuarios', function (Request $request) {
-     $request->validate([
-         'name' => 'required',
-         'email' => 'required|email|unique:users,email',
-         'password' => 'required|confirmed'
-     ]);
- 
-     $usuario = User::create($request->all());
-     return response()->json([
-         'data' => $usuario, 'message' => 'Usuario guardado con éxito'
-     ], 200);
- });
+ Route::post('/crearUsuariosRoles',[AuthController::class, 'crearUsuariosRoles']);
+ Route::post('/usuarios', [AuthController::class, 'crear']);
 
 Route::get('/formulario-recuperar-contrasenia', [AuthController::class, 'formularioRecuperarContrasenia'])->name('formulario-recuperar-contrasenia');
 Route::post('/enviar-recuperar-contrasenia', [AuthController::class, 'enviarRecuperarContraseña'])->name('enviar-recuperacion');

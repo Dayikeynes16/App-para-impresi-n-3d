@@ -65,7 +65,6 @@ onMounted(() => {
 });
 
 const eliminar = (id) => {
-    console.log("hdfjhdh");
     imagenes.value = imagenes.value.filter((imagen) => imagen.id != id);
 };
 </script>

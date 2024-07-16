@@ -19,40 +19,48 @@ export const useCartStore = defineStore('cart', {
   }),
   actions: {
     async fetchCart() {
-      try {
-        const { data } = await axios.get('/traerCarrito');
-        console.log(data.data)
-        this.items = data.data.productos;
-        this.id = data.data.id;
+ 
+        axios.get('/traerCarrito')
+          .then(({data}) => {
+            this.items = data.data.productos;
+            this.files = data.data.orden.files
+            this.id = data.data.id;
 
 
-        this.direccion.nombre = data.direccion.nombre
-        this.direccion.direccion = data.direccion.nombre
-        this.direccion.nombre = data.direccion.direccion
-        this.direccion.referencias = data.direccion.referencias
-        this.direccion.telefono = data.direccion.telefono
-        this.direccion.destinatario = data.direccion.destinatario
-        this.direccion.codigo_postal = data.direccion.codigo_postal
+            // this.direccion.nombre = data.direccion.nombre
+            // this.direccion.direccion = data.direccion.nombre
+            // this.direccion.nombre = data.direccion.direccion
+            // this.direccion.referencias = data.direccion.referencias
+            // this.direccion.telefono = data.direccion.telefono
+            // this.direccion.destinatario = data.direccion.destinatario
+            // this.direccion.codigo_postal = data.direccion.codigo_postal
 
+              // if (data.data.recoleccion === false){
+        //   this.domicilio = false
+        // } else{
+        //   this.domicilio = true
+        // }
 
-        if (data.data.recoleccion === false){
-          this.domicilio = false
-        } else{
-          this.domicilio = true
-        }
+            // for (file in data.data.orden.files) {
+            //   this.files.push(file);
+            //   console.log('probando si puedo asignar los archivos al carrito', this.files);
+            // } 
+        // else {
+        //   this.files = [];
+        // }
+
+          }) 
+          .catch((error) => {
+            console.error('Error fetching cart:', error);
+
+          });
 
         
-   
-        if (data.orden && data.orden.length > 0) {
-          this.files = data.orden.flatMap(orden => orden.files);
-        } else {
-          this.files = [];
-        }
+
+
+      
         
-        this.visible = this.items.length > 0 || this.files.length > 0;
-      } catch (error) {
-        console.error('Error fetching cart:', error);
-      }
+      
     },
     async addToCart(id, cantidad) {
       try {

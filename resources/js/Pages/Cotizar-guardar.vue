@@ -88,14 +88,10 @@ const cotizar = async (file) => {
             }
         })
         loading.value = false
-        console.log(data.data)
         archivos.push(data.data);
         tiempo_impresion.value = 0
-        console.log(archivos)
         for (let i = 0; i < archivos.length; i++) {
             tiempo_impresion.value += archivos[i].minutos
-            console.log(archivos[i].nombre)
-            console.log('hola')
         }
         costo.value = Math.round(((tiempo_impresion.value / 60) / 3.46) * 1.5);
         resultado.value = true

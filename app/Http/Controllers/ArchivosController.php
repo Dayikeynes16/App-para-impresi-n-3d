@@ -27,48 +27,53 @@ class ArchivosController extends Controller
                 'total' => 0,
                 'status' => 'activo',
             ]);
-
+    
             $filePath = $request->file('file')->store('files');
             $file = new Files([
                 'path' => $filePath,
                 'nombre' => $request->file('file')->getClientOriginalName(),
-                'minutos' => ($response['print_time'] / 60) / 3.5,
-                'precio' => (($response['print_time'] / 60) / 3.5) * 1.5,
+                'minutos' => ($response['estimated_printing_time_seconds'] / 60) / 3.5,
+                'precio' => (($response['estimated_printing_time_seconds'] / 60) / 3.5) * 1.5,
             ]);
             $orden->files()->save($file);
-
+    
             return response()->json(['data' => $file]);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 409);
         }
-
+    
         return response()->json(['message' => 'Error al subir el archivo.']);
     }
-
+    
     public function apiRequest($file)
     {
-        $url = "https://stl-info-insight.p.rapidapi.com/3dslicer-02/calculate_volume";
+        $url = "https://3d-print-stl-estimation.p.rapidapi.com/slice_and_extract?rotate_y=0&rotate_x=0&config_file=config.ini";
 
         $headers = [
-            "X-RapidAPI-Key" => "987632cf0emsh756b8484307fe63p130018jsnf063dff1b8f7",
-            "X-RapidAPI-Host" => "stl-info-insight.p.rapidapi.com",
+            'x-rapidapi-host' => '3d-print-stl-estimation.p.rapidapi.com',
+            'x-rapidapi-key' => '987632cf0emsh756b8484307fe63p130018jsnf063dff1b8f7',
         ];
 
-        $response = Http::withHeaders($headers)
-            ->timeout(60)
-            ->attach(
-                'stl_file',
-                file_get_contents($file->getRealPath()),
-                $file->getClientOriginalName(),
-                ['Content-Type' => $file->getMimeType()]
-            )
-            ->post($url, [
-                'material_type' => 'ABS'
-            ]);
+        $client = new \GuzzleHttp\Client();
 
-        if (!$response->json('http_code')) throw new Exception('Ocurrió un problema al procesar el archivo');
-        return $response->json('result_data');
+        $response = $client->post($url, [
+            'headers' => $headers,
+            'multipart' => [
+                [
+                    'name'     => 'stl_file',
+                    'contents' => fopen($file->getRealPath(), 'r'),
+                    'filename' => $file->getClientOriginalName()
+                ]
+            ]
+        ]);
+
+        if ($response->getStatusCode() != 200) {
+            throw new Exception('Ocurrió un problema al procesar el archivo: ' . $response->getBody()->getContents());
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
     }
+
 
     public function downloadFile($id)
     {
