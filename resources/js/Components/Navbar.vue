@@ -6,7 +6,7 @@
         <template v-slot:append>
             <div v-if="cliente" style="margin-right: 10px; margin-top: 10px">
                 <el-badge
-                    :value="cartStore.items.length + cartStore.files.length"
+                    :value="2"
                     :max="99"
                     class="item"
                 >

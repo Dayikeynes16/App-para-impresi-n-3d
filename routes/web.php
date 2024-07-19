@@ -18,6 +18,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UsuarioCotizacionController;
 use App\Http\Controllers\UsuariosRolesController;
 use App\Http\Controllers\WebhookController;
 
@@ -90,22 +91,33 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/productos/{producto}', [ProductosController::class, 'show']);
     Route::post('/productos/{producto}', [ProductosController::class, 'update']);
 
-   
-
+    Route::post('/cotizar', [UsuarioCotizacionController::class, 'cotizar']);
+    Route::get('/archivo-cotizados', [UsuarioCotizacionController::class, 'index']);
+    
     //ArchivosController
     Route::post('/deletefile', [ArchivosController::class, 'deletefile']);
     Route::post('/calculate', [ArchivosController::class, 'calculate']);
     Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);});
     Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);  
     Route::get('/traerArchivos',[ArchivosController::class, 'traerArchivos']) ;
-    Route::post('/eliminarArchivo',[ArchivosController::class, 'eliminarArchivo']);
+    Route::post('/borrarArchivo',[ArchivosController::class, 'eliminarArchivo']);
 
     //ModelsController
     Route::get('/traerarchivos', [ModelsController::class, 'traerarchivos']);
 
     //CarritoController
-    Route::post('/añadirCarrito', [CarritoController::class, 'añadirCarrito']);
-    Route::get('/traerCarrito', [CarritoController::class, 'traerCarrito']);
+
+    Route::group(['prefix' => '/carrito'], static function () {
+        Route::get('/', [CarritoController::class, 'index']);
+        Route::post('/borrar', [CarritoController::class, 'borrar']);
+        Route::post('/agregar', [CarritoController::class, 'agregar']);
+
+        // Route::get('/add', [CarritoController::class, 'get']);
+        // Route::get('/remove', [CarritoController::class, 'get']);
+    });
+
+    // Route::get('/traerCarrito', [CarritoController::class, 'traerCarrito']);
+    
     Route::post('/borrarProducto', [CarritoController::class, 'borrarProducto']);
     Route::post('/actualizarProductoCarrito', [CarritoController::class, 'actualizar']);
     Route::post('/añadirStlCarrito', [CarritoController::class, 'añadirStlCarrito']);

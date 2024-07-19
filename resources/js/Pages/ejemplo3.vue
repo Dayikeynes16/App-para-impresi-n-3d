@@ -76,7 +76,7 @@ const cotizar = async (file) => {
     const formData = new FormData();
     formData.append('file', file.file);
     try {
-        const {data} = await axios.post("/calculate",formData,
+        const {data} = await axios.post("/cotizar",formData,
             {
                 headers: {
                     "X-CSRF-TOKEN": token,

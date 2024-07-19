@@ -11,24 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('files', function (Blueprint $table) {
+        Schema::create('producto_carrito_archivos', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('producto_carrito_id')->constrained('producto_carritos');
             $table->string('nombre');
             $table->string('path');
             $table->integer('cantidad')->default(1)->nullable();
             $table->unsignedInteger('minutos')->nullable();
             $table->decimal('precio')->nullable();
-            $table->unsignedBigInteger('morphable_id');
-            $table->string('morphable_type');
+            $table->timestamps();
         });
     }
 
-    /**0
+    /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('files');
+        Schema::dropIfExists('producto_carrito_archivos');
     }
 };

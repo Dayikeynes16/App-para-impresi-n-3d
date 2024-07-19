@@ -2,30 +2,87 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Carrito\StoreRequest;
 use App\Models\Carrito;
 use App\Models\Files;
 use App\Models\Orden;
 use App\Models\Product;
 use App\Models\Producto_Carrito;
 use App\Models\Direccion;
-
+use App\Models\ProductoCarritoArchivo;
 use App\Models\User;
+use App\Models\UsuarioCotizacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class CarritoController extends Controller
 {
-    
-    public function añadirCarrito(Request $request)
+    // listar los items del modelo
+    public function index()
     {
-        $producto = Product::find($request->input('id'));
-        $cantidad = $request->input('cantidad');
+        return response()->json(['data' => $this->getUserItems()]);
+    }
 
 
+    public function getUserItems()
+    {
+        $userId = Auth::user()->id;
+        return $carrito = Carrito::with(['productos.producto', 'productos.productoCarritoArchivos'])
+            ->where('usuario_id', $userId)
+            ->where('status', 'activo')
+            ->first();
 
-        if (!$producto) {
-            return response()->json(['error' => 'Producto no encontrado'], 404);
+        $orden = [];
+        $orden['id'] = $carrito->id;
+        $orden['total'] = $carrito->total;
+        if ($carrito->productos) {
+            $orden['articulos'] = $carrito->productos->map(static function($item) {
+                return [
+                    'id' => $item->id,
+                    'nombre' => $item->producto->name,
+                    'precio' => $item->producto->price,
+                    'cantidad' => $item->cantidad,
+                    'is_file' => $item->producto->files()->exists(),
+                    'files' => $item->productoCarritoArchivos ?? [],
+                    'total' => $item->total,
+                ];
+            });
         }
+
+        return $orden;
+    }
+
+    public function borrar(Request $request)
+    {
+        $producto = Producto_Carrito::find($request->input('id'))->first();
+        $producto->delete();
+
+        $this->calcularCarrito();
+
+        return response()->json('exito');
+    }
+
+    public function calcularCarrito()
+    {
+        $total = 0;
+        $carrito = $this->getUserItems();
+
+        foreach ($carrito['articulos'] as $item) {
+            $total += $item['total'];
+        }
+
+        $carritoM = Carrito::find($carrito['id']);
+        $carritoM->update(['total' => $total]);
+
+        return response()->json(['data' => $carritoM]);
+    }
+
+    public function agregar(StoreRequest $request)
+    {
+        $producto = Product::find($request->input('producto_id'));
+        $cantidad = $request->input('cantidad');
 
         $carrito = Carrito::firstOrCreate(
             [
@@ -41,15 +98,35 @@ class CarritoController extends Controller
 
         $productoCarrito = Producto_Carrito::create([
             'producto_id' => $producto->id,
+            'is_file' =>  true, //$producto->files()->exists(),
             'carrito_id' => $carrito->id,
             'total' => $producto->price * $cantidad,
             'cantidad' => $cantidad
         ]);
+        
+        if ($request->has('files')) {
+            ProductoCarritoArchivo::upsert(
+               collect($request->files)->map(static function($item) use ($productoCarrito) {
+                    return [
+                        'nombre' => $item->nombre, 
+                        'path' => $item->path, 
+                        'minutos' => $item->minutos, 
+                        'precio' => $item->precio,
+                        'cantidad' => $item->cantidad, 
+                        'producto_carrito_id' => $productoCarrito->id,
+                    ];
+               })->toArray(),
+               ['producto_carrito_id']
+            );
+        }
 
-        $this->calcularCarrito($carrito->id);
+        // $this->calcularCarrito($carrito->id);
 
         return response()->json($carrito);
     }
+
+    // ---------------------------------------------------
+    
 
     public function obtenerCarrito($user_id)
     {
@@ -71,14 +148,7 @@ class CarritoController extends Controller
         return response()->json(['data'=>$carrito, 'direccion'=>$direccion]);
     }
 
-    public function borrarProducto(Request $request)
-    {
-        $producto = Producto_Carrito::find($request->input('id'))->first();
-        $carritoId = $producto->carrito_id;
-        $producto->delete();
-        $this->calcularCarrito($carritoId);
-        return response()->json('exito');
-    }
+
     public function actualizar(Request $request)
     {
         $productoCarrito = Producto_Carrito::with('producto')->find($request->input('id'));
@@ -91,31 +161,7 @@ class CarritoController extends Controller
         return response('exito');
     }
 
-    public function calcularCarrito($id)
-    {
-        $carrito = Carrito::with('productos.producto', 'orden.files')->find($id);
 
-        if ($carrito) {
-            $total = 0;
-
-         
-            foreach ($carrito->productos as $item) {
-                $total += $item->producto->price * $item->cantidad;
-            }
-
-
-
-          
-            foreach ($carrito->orden as $orden) {
-                foreach ($orden->files as $file) {
-                    $total += $file->precio;
-                }
-            }
-
-            $carrito->total = $total;
-            $carrito->save();
-        }
-    }
     
 
     public function añadirStlCarrito( Request $request){

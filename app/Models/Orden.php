@@ -11,7 +11,6 @@ class Orden extends Model
     protected $fillable = ['id','status', 'usuario_id', 'total','carrito_id'];
 
     protected $table = 'ordenes';
-
     
     public function files (){
         return $this->morphMany(Files::class, 'morphable');

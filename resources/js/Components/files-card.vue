@@ -30,16 +30,16 @@
                                     <v-col cols="6">
                                         <v-row>
                                             <v-col class="text-right" cols="3">
-                                                <v-icon
+                                                <v-icon @click="sumarCantidadFile(file)"
                                                     circle
                                                     icon="mdi-plus">
                                                 </v-icon
                                             ></v-col>
                                         <v-col class="text-center" cols="3">
-                                            1
+                                            {{ file.cantidad }}
                                         </v-col>
                                         <v-col class="text-left" cols="3"
-                                                ><v-icon
+                                                ><v-icon @click="restarCantidadFile(file)"
                                                     circle
                                                     icon="mdi-minus"
                                                 ></v-icon> 
@@ -56,7 +56,7 @@
             </v-col>
             <v-col cols="6">
                 <v-card>
-                    <v-card-title> N. de orden: #{{ orden.id }} </v-card-title>
+                    <v-card-title> N. de orden: # </v-card-title>
                     <v-card-text>
                         Total:
                         {{
@@ -64,12 +64,12 @@
                                 style: "currency",
                                 currency: "MXN",
                                 minimumFractionDigits: 2,
-                            }).format(total)
+                            }).format()
                         }}
                     </v-card-text>
                     <v-card-actions>
                         <v-btn
-                            @click="añadirCarrito(orden.id)"
+                            @click="añadirCarrito()"
                             icon="mdi-cart"
                         ></v-btn>
                     </v-card-actions>
@@ -105,11 +105,11 @@ const form = ref({
 
 const traerarchivos = async () => {
     try {
-        const { data } = await axios.get("/traerarchivos");
+        const { data } = await axios.get("/archivo-cotizados");
 
-        orden.value = data.data;
+        orden.value.files = data.data;
         correcto.value = true;
-        calcularTotal();
+        // calcularTotal();
     } catch (error) {
         console.error(error);
     }
@@ -165,16 +165,35 @@ const open = (id) => {
         });
 };
 
-const añadirCarrito = async (id) => {
-    const { data } = await axios.post(
-        "/añadirStlCarrito",
-        { id },
-        {
-            headers: {
-                "X-CSRF-TOKEN": token,
-            },
-        }
+const sumarCantidadFile = async (file) => {
+    file.cantidad++;
+    await axios.post(
+        "/actualizarFileCarrito",
+        { id: file.id, cantidad: file.cantidad },
+        { headers: { "X-CSRF-TOKEN": token } }
     );
+    updateCart();
+};
+
+const restarCantidadFile = async (file) => {
+    if (file.cantidad > 1) {
+        file.cantidad--;
+        await axios.post(
+            "/actualizarFileCarrito",
+            { id: file.id, cantidad: file.cantidad },
+            { headers: { "X-CSRF-TOKEN": token } }
+        );
+        updateCart()
+        
+    }
+};
+
+const añadirCarrito = async () => {
+    const { data } = await axios.post("/carrito/agregar", {
+        producto_id: 1,
+        cantidad: 1,
+        files: orden.value.files
+    });
     emit("añadido");
     cartStore.fetchCart();
 };

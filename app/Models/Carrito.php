@@ -19,11 +19,10 @@ class Carrito extends Model
     }
 
     public function orden(){
-        return $this->hasOne(Orden::class,'carrito_id');
+        return $this->hasMany(Orden::class,'carrito_id');
     }
 
     public function usuario(){
         return $this->belongsTo(User::class,'usuario_id');
     }
-    
 }
