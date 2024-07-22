@@ -172,7 +172,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "axios";
+import axios from "@/axios.js";
 import { Delete, UploadFilled } from "@element-plus/icons-vue";
 
 import ListaDeArchivos from "../Components/ListaDeArchivos.vue";
@@ -182,9 +182,6 @@ const product = ref({});
 const errorMessages = ref({});
 const route = useRoute();
 const Imagenes = ref([]);
-const token = document
-    .querySelector("meta[name='csrf-token']")
-    .getAttribute("value");
 const router = useRouter();
 const id = ref();
 const archivos = ref([]);
@@ -209,9 +206,7 @@ const eliminarImagen = async (id) => {
     try {
         await axios.post(
             "/eliminarImagen",
-            { id },
-            { headers: { "X-CSRF-TOKEN": token } }
-        );
+            { id }        );
         Imagenes.value = Imagenes.value.filter((imagen) => imagen.id !== id);
     } catch (error) {
         alert("Error al eliminar el archivo");
@@ -226,7 +221,6 @@ const guardarImagen = async (file) => {
     try {
         const { data } = await axios.post("/guardarImagen", formData, {
             headers: {
-                "X-CSRF-TOKEN": token,
                 "Content-Type": "multipart/form-data",
             },
         });
@@ -244,7 +238,6 @@ const guardarSTL = async (file) => {
     try {
         const { data } = await axios.post("/guardarSTLproducto", formData, {
             headers: {
-                "X-CSRF-TOKEN": token,
                 "Content-Type": "multipart/form-data",
             },
         });
@@ -261,7 +254,6 @@ const eliminarArchivo = async (id) => {
         await axios.post(
             "/eliminarArchivo",
             { id },
-            { headers: { "X-CSRF-TOKEN": token } }
         );
         archivos.value = archivos.value.filter((file) => file.id !== id);
     } catch (error) {

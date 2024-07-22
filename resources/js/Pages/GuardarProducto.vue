@@ -170,7 +170,7 @@
 
 <script setup>
 import { UploadFilled } from '@element-plus/icons-vue'
-import axios from 'axios';
+import axios from "@/axios.js";
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
@@ -202,11 +202,7 @@ const Producto = ref({
 
 const savemodel = async () => {
   try {
-    const { data } = await axios.post('/savemodel', form.value, {
-      headers: {
-        'X-CSRF-TOKEN': token
-      }
-    });
+    const { data } = await axios.post('/savemodel', form.value);
 
     if (data.code === 200) {
       Producto.value.producto_id = data.data.id;
@@ -228,7 +224,6 @@ const guardarImagen = async (file) => {
   try {
     const { data } = await axios.post('/guardarImagen', formData, {
       headers: {
-        'X-CSRF-TOKEN': token,
         'Content-Type': 'multipart/form-data'
       }
     });
@@ -250,7 +245,6 @@ const guardarSTL = async (file) => {
     try {
         const { data } = await axios.post("/guardarSTLproducto", formData, {
             headers: {
-                "X-CSRF-TOKEN": token,
                 "Content-Type": "multipart/form-data",
             },
         });
@@ -275,8 +269,7 @@ const eliminarArchivo = async (id) => {
     try {
         await axios.post(
             "/eliminarArchivo",
-            { id },
-            { headers: { "X-CSRF-TOKEN": token } }
+            { id }
         );
         archivos.value = archivos.value.filter((file) => file.id !== id);
     } catch (error) {
@@ -286,9 +279,7 @@ const eliminarArchivo = async (id) => {
 
 const eliminarImagen = async(id) =>{
   try {
-    await axios.post('/eliminarImagen',{id},{headers:{
-      'X-CSRF-TOKEN': token}
-  })
+    await axios.post('/eliminarImagen',{id})
   Producto.value.imagenes = Producto.value.imagenes.filter(imagen => imagen.id !== id)
   } catch (error) {
     alert('error al eliminar el archivo')

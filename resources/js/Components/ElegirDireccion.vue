@@ -1,9 +1,7 @@
 <template>
-    <v-card>
+    <v-card subtitle="¿A dónde se enviará? Elige">
         <v-card-text>
-            <v-row>
-                <p>¿A dónde se enviará? Elige</p>
-            </v-row>
+    
             <v-row>
                 <v-radio-group v-model="envioOption">
                     <v-col>
@@ -59,12 +57,8 @@
 </template>
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
-import axios from "axios";
+import axios from "@/axios.js";
 import { useCartStore } from "../stores/carrito";
-
-const token = document
-    .querySelector("meta[name='csrf-token']")
-    .getAttribute("value");
 
 const sucursal = ref(false);
 const emit = defineEmits(["pasos"]);
@@ -96,22 +90,8 @@ const mappedDirecciones = computed(() => {
 });
 
 const recogerSucursal = async () => {
-  
-        try {
-            const { data } = await axios.post(
-                "/direccionEntregaSucursal",
-                {},
-                {
-                    headers: {
-                        "X-CSRF-TOKEN": token,
-                    },
-                }
-            );
+            await axios.post("/direccionEntregaSucursal");
             cartStore.domicilio = false
-        } catch (error) {
-            console.error("Error during pickup option selection:", error);
-        }
-    
 };
 
 const emitPasos = (value) => {
@@ -123,12 +103,7 @@ const direccionSeleccionada = async () => {
         if (envioOption.value === "domicilio") {
             await axios.post(
                 "/direccionEntrega",
-                { direccion_id: selectedDireccion.value },
-                {
-                    headers: {
-                        "X-CSRF-TOKEN": token,
-                    },
-                }
+                { direccion_id: selectedDireccion.value }
             );
             cartStore.fetchCart();
         }

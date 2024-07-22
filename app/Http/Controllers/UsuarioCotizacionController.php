@@ -25,6 +25,7 @@ class UsuarioCotizacionController extends Controller
                 'minutos' => ($response['estimated_printing_time_seconds'] / 60) / 3.5,
                 'precio' => (($response['estimated_printing_time_seconds'] / 60) / 3.5) * 1.5,
                 'usuario_id' => Auth::user()->id,
+                'total' => (($response['estimated_printing_time_seconds'] / 60) / 3.5) *1.5,
 
             ]);
 
@@ -69,15 +70,38 @@ class UsuarioCotizacionController extends Controller
     {
         //solamente puede devolver-imprimir archivos que tengan maximo 1 mes de cotizado
         // @todo: identificar el tiempo de validez de una cotizacion
-        
+
         return response()->json([
             'data' => UsuarioCotizacion::where('usuario_id', Auth::user()->id)->get(),
         ]); 
     }
 
 
+    public function update(Request $request) {
+        $request->validate([
+            'cantidad' => 'required|integer',
+            'id' => 'required|integer'
+        ]);
+
+        $cotizacion = UsuarioCotizacion::find($request->input('id'));
+        $cotizacion->cantidad = $request->input('cantidad');
+        $cotizacion->total = $cotizacion->precio * $cotizacion->cantidad;
+        $cotizacion->save();
+
+        return response()->json(['data'=>$cotizacion]);
+    }
+
     public function store()
     {
     
+    }
+
+    public function delete(UsuarioCotizacion $id) {
+        // $request->validate([
+        //     'id' => 'required|integer'
+        // ]);
+        // $usuarioCotizacion = UsuarioCotizacion::find($id);
+        $id->delete();
+        return response()->json(['data' => 'ctixacion eliminada con exito']);
     }
 }

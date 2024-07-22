@@ -34,12 +34,10 @@
 </template>
 
 <script setup>
-import axios from "axios";
+import axios from "@/axios.js";
 import { ref, onMounted } from "vue";
 
 const emit = defineEmits(["añadido"]);
-
-const token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 const errorMessages = ref({});
 const permisos = ref([]);
 const permisosSeleccionados = ref([]);
@@ -59,9 +57,6 @@ const guardarRol = async () => {
       {
         name: name.value.name,
         permission: permisosSeleccionados.value
-      },
-      {
-        headers: { "X-CSRF-TOKEN": token }
       }
     );
     emit("añadido");

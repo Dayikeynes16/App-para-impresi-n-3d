@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import axios from "axios";
+import axios from "@/axios.js";
 import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 const visible = ref(false);

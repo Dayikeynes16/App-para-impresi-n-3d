@@ -32,7 +32,7 @@
     </v-row>
 </template>
 <script setup>
-import axios from "axios";
+import axios from "@/axios.js";
 import { defineProps, onMounted, ref } from "vue";
 
 const emit = defineEmits(["añadido"]);

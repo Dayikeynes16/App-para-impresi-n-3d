@@ -19,6 +19,7 @@ class UsuarioCotizacion extends Model
         'cantidad',
         'path',
         'usuario_id',
+        'total',
     ];
 
     public function usuario() 

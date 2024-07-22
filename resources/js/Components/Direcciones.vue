@@ -58,9 +58,16 @@
                             :error-messages="errorMessages.referencias"
                         >
                         </v-textarea>
-                        <v-btn prepend-icon="mdi-Check-Outline" type="submit"
-                            >Guardar</v-btn
-                        >
+                        <v-row>
+                            <v-col class="text-left" cols="6">
+                                <v-btn @click="closeDialog()" prepend-icon="mdi-close">Cancelar</v-btn>
+                            </v-col>
+                            <v-col class="text-right" cols="6">
+                                <v-btn prepend-icon="mdi-Check-Outline" type="submit">
+                                    Guardar</v-btn>
+                            </v-col>
+                        </v-row>
+                    
                     </v-form>
                 </v-card-text>
             </v-card>
@@ -70,16 +77,12 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import axios from "axios";
+import axios from "@/axios.js";
 import { useRouter } from "vue-router";
 
 const props = defineProps({ item: Object });
-const emit = defineEmits(["añadido"]);
+const emit = defineEmits(["añadido", "cancelado"]);
 const router = useRouter();
-const token = document
-    .querySelector("meta[name='csrf-token']")
-    .getAttribute("content");
-
 const errorMessages = ref({});
 const estadosDeMexico = [
     "Aguascalientes",
@@ -137,17 +140,14 @@ watch(
     { immediate: true }
 );
 
+const closeDialog = () => {
+    emit("cancelado")
+}
+
 const submitDireccion = async () => {
     try {
-        const { data } = await axios.post("/guardarDireccion", form.value, {
-            headers: {
-                "X-CSRF-TOKEN": token,
-            },
-        });
-
-        if (data) {
+        const { data } = await axios.post("/guardarDireccion", form.value); 
             emit("añadido");
-        }
     } catch (error) {
         if (error.response && error.response.status === 422) {
             errorMessages.value = error.response.data.errors;

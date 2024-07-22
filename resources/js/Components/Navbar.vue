@@ -5,13 +5,12 @@
 
         <template v-slot:append>
             <div v-if="cliente" style="margin-right: 10px; margin-top: 10px">
-                <el-badge
-                    :value="2"
-                    :max="99"
-                    class="item"
-                >
-                    <v-btn @click="handleCartClick" icon="mdi-cart"></v-btn>
-                </el-badge>
+                <v-badge color="danger" :content="cartStore.items.length">
+                    <v-btn @click="handleCartClick" icon="mdi-cart">
+                        
+                    </v-btn>
+                </v-badge>
+                
             </div>
 
             <v-dialog v-model="dialog" width="auto">
@@ -47,7 +46,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import axios from "@/axios.js";
 import { useRouter } from "vue-router";
 import { useLoginStore } from "@/stores/login";
 import { useCartStore } from "../stores/carrito";
@@ -104,12 +103,11 @@ const menu = ref([
 ]);
 
 const cerrarSesion = async () => {
-    try {
         await axios.post("/cerrarSesion");
-        router.push({ name: "logear" });
-    } catch (error) {
-        console.error("Error cerrando sesión:", error);
-    }
+        then(() => {
+            router.push({ name: "logear" });ß
+        })
+ 
 };
 
 const handleCartClick = () => {

@@ -59,9 +59,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import axios from 'axios';
+import axios from "@/axios.js";
 import { UploadFilled } from '@element-plus/icons-vue'
-const token = document.querySelector("meta[name='csrf-token']").getAttribute('value')
 const loadform = ref()
 const resultado = ref(false)
 const costo = ref('');
@@ -81,11 +80,6 @@ const cotizar = async (file) => {
     try {
         const { data } = await axios.post('/calculate', {
             file: file.file
-        }, {
-            headers: {
-                'X-CSRF-TOKEN': token,
-                'Content-Type': 'multipart/form-data'
-            }
         })
         loading.value = false
         archivos.push(data.data);

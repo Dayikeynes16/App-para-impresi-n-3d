@@ -31,6 +31,7 @@
     </v-card>
 </template>
 <script setup>
+import axios from "@/axios.js";
 import { ElMessage, ElMessageBox } from "element-plus";
 const props = defineProps({ item: Object });
 import router from "../router";

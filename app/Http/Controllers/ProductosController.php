@@ -25,7 +25,7 @@ class ProductosController extends Controller
     }
     function traerProductos(Request $request)
     {
-        $productos =  Product::with('Imagenes')->paginate(3);
+        $productos =  Product::with('Imagenes')->where('is_custom',false)->paginate(3);
 
         return $productos;
 

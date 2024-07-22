@@ -106,13 +106,9 @@
 </template>
 
 <script setup>
-import axios from "axios";
+import axios from "@/axios.js";
 import { ref, watch, onMounted } from "vue";
 import { useCartStore } from "@/stores/carrito";
-
-const token = document
-    .querySelector("meta[name='csrf-token']")
-    .getAttribute("value");
 const page = ref(1);
 const paginastotales = ref(1);
 const imagenes = ref([]);

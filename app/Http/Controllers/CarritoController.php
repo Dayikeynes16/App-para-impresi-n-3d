@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Console\Input\Input;
 
 class CarritoController extends Controller
 {
@@ -29,7 +30,7 @@ class CarritoController extends Controller
     public function getUserItems()
     {
         $userId = Auth::user()->id;
-        return $carrito = Carrito::with(['productos.producto', 'productos.productoCarritoArchivos'])
+        $carrito = Carrito::with(['productos.producto', 'productos.productoCarritoArchivos'])
             ->where('usuario_id', $userId)
             ->where('status', 'activo')
             ->first();
@@ -57,6 +58,9 @@ class CarritoController extends Controller
     public function borrar(Request $request)
     {
         $producto = Producto_Carrito::find($request->input('id'))->first();
+        if ($producto->has('productoCarritoArchivos')) {
+            $producto->productoCarritoArchivos()->delete();
+        }
         $producto->delete();
 
         $this->calcularCarrito();
@@ -70,7 +74,13 @@ class CarritoController extends Controller
         $carrito = $this->getUserItems();
 
         foreach ($carrito['articulos'] as $item) {
-            $total += $item['total'];
+            $totalArticulo = $item['total'];
+
+            if(isset($carrito['articulos']['files']) && count($carrito['articulos']['files']) > 0) {
+                $totalArticulo = $this->calcularTotalArchivos($carrito['articulos']['files']);
+            }
+
+            $total += $totalArticulo;
         }
 
         $carritoM = Carrito::find($carrito['id']);
@@ -105,19 +115,23 @@ class CarritoController extends Controller
         ]);
         
         if ($request->has('files')) {
-            ProductoCarritoArchivo::upsert(
-               collect($request->files)->map(static function($item) use ($productoCarrito) {
+            ProductoCarritoArchivo::insert(
+               collect($request->input('files'))->map(static function($item) use ($productoCarrito) {
                     return [
-                        'nombre' => $item->nombre, 
-                        'path' => $item->path, 
-                        'minutos' => $item->minutos, 
-                        'precio' => $item->precio,
-                        'cantidad' => $item->cantidad, 
+
+                        'nombre' => $item['nombre'],
+                        'path' => $item['path'],
+                        'minutos' => $item['minutos'],
+                        'precio' => $item['precio'],
+                        'cantidad' => $item['cantidad'],
                         'producto_carrito_id' => $productoCarrito->id,
                     ];
-               })->toArray(),
-               ['producto_carrito_id']
+
+               })->toArray()
+
             );
+            $productoCarrito->total = $this->calcularTotalArchivos($request->input('files'));
+            $productoCarrito->save();
         }
 
         // $this->calcularCarrito($carrito->id);
@@ -125,8 +139,20 @@ class CarritoController extends Controller
         return response()->json($carrito);
     }
 
+    public function calcularTotalArchivos($archivos) {
+        $total = 0;
+
+        foreach ($archivos as $item) {
+            $total += $item['precio'] * $item['cantidad'];
+        }
+
+        return $total;
+    }
+
+
+
     // ---------------------------------------------------
-    
+
 
     public function obtenerCarrito($user_id)
     {
@@ -152,21 +178,42 @@ class CarritoController extends Controller
     public function actualizar(Request $request)
     {
         $productoCarrito = Producto_Carrito::with('producto')->find($request->input('id'));
+
         $producto = Product::find($productoCarrito->producto_id);
         $productoCarrito->cantidad = $request->input('cantidad');
         $productoCarrito->total = $productoCarrito->cantidad * $producto->price;
         $productoCarrito->save();
-        $this->calcularCarrito($productoCarrito->carrito_id);
+        $this->calcularCarrito();
 
         return response('exito');
     }
 
+    public function actualizarCarritoArchivo(ProductoCarritoArchivo $productoCarritoArchivo, Request $request) {
+        Log::info($request->input('cantidad'));
+        $productoCarritoArchivo->cantidad = $request->input('cantidad');
+        $productoCarritoArchivo->total = $productoCarritoArchivo->precio * $request->input('cantidad');
+        $productoCarritoArchivo->save();
 
-    
+        $productoCarrito = Producto_Carrito::with('productoCarritoArchivos')
+                ->find($productoCarritoArchivo->producto_carrito_id);
+
+        $productoCarrito->update([
+            'total' => $this->calcularTotalArchivos($productoCarrito->productoCarritoArchivos),
+        ]);
+
+
+        $this->calcularCarrito();
+
+        return response()->json([
+            'data' => $productoCarritoArchivo
+        ]);
+    }
+
+
 
     public function añadirStlCarrito( Request $request){
         $orden = Orden::with('files')->find($request->input('id'));
-        $carrito = Carrito::where('usuario_id', $request->user()->id)->where('status', 'activo')->first();  
+        $carrito = Carrito::where('usuario_id', $request->user()->id)->where('status', 'activo')->first();
         $orden->status = 'inactivo';
         $orden->carrito_id = $carrito->id;
         $orden->save();
@@ -192,12 +239,12 @@ class CarritoController extends Controller
                 $query->where('id', $file->orden_id);
             })->first();
 
-            
+
 
             if ($carrito) {
-                
+
                 $this->calcularCarrito($carrito->id);
-              
+
             }
 
             return response('exito');
@@ -205,7 +252,7 @@ class CarritoController extends Controller
             return response('Error: No se encontró el archivo', 404);
         }
 
-       
+
     }
 
 
@@ -277,5 +324,64 @@ class CarritoController extends Controller
 
     }
 
+
+
+    /**
+     *  Modelo autos
+     */
+
+    /**
+     * get      -> /autos         -> listar
+     * post     -> /autos         -> guardar 1 auto / request (Campos auto)
+     * get      -> /autos/{auto} -> buscar un auto especifico
+     * post     -> /autos/{auto} -> Modificar un auto especifico
+     * put      -> /autos/{auto} -> Modificar un auto especifico
+     * patch    -> /autos/{auto} -> Modificar un auto especifico
+     * delete   -> /autos/{auto} -> eliminar un auto
+     */
+
+    //  Route::resourceAPI()
+
+
+    // post     -> /autos/{auto} -> Modificar un auto especifico
+
+    /**
+     * public function update(Request $request)
+     * {
+     *    $auto = Auto::find($request->id);
+     *    $auto->modelo = 2024;
+     *    $auto->save();
+     * 
+     *    return [...];
+     * }
+     */
+
+    /**
+     * public function update(Auto $auto, Request $request)
+     * {
+     *    return ['data' => $auto->update($request->all())];
+     * }
+     */
+
     
+
+
+    // get      -> /autos/{auto} -> buscar un auto especifico
+
+    /**
+     * public function show(Request $request)
+     * {
+     *      $auto = Auto:find($request->id);
+     * 
+     *      return [$atuo];
+     * 
+     * }
+     */
+
+    /**
+     * public function show(Auto $auto)
+     * {
+     *      return [$auto];
+     * }
+     */
 }

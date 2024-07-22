@@ -1,13 +1,6 @@
 <template>
     <v-container>
-        <div v-if="carritovacio">
-            <v-card>
-                <v-card-title>Carrito vacío</v-card-title>
-                <v-card-text>
-                    Su carrito está vacío. Por favor, añada productos.
-                </v-card-text>
-            </v-card>
-        </div>
+        
         <div>
             <v-stepper
                 color="grey-lighten-4"
@@ -23,9 +16,55 @@
                             <v-data-table
                                 :items="cartStore.items"
                                 :headers="headers"
+                                show-expand
+                                no-data-text="Su carrito está vacío. Por favor, añada productos. "
                             >
+                                <template  v-slot:item.precio="{item}">
+                                    {{formatCurrency(item.precio)}}
+                                </template>
+
+                                <template v-slot:item.total="{item}">
+                                    <td>{{ formatCurrency(item.total) }}</td>
+                                </template>
+
+                                <template v-slot:expanded-row="{ item }">
+                                    <tr v-for="file in item.files" :key="file.name">
+                                        <td class="pl-10">{{ file.nombre }}</td>
+                                        <td>{{ formatCurrency(file.precio) }}</td>
+
+                                        <td>
+                                            <v-row>
+                                                <v-col cols="12">
+                                                    <v-row>
+                                                            <v-btn @click="restarArchivo(file)"
+                                                                variant="text"
+                                                                density="comfortable"
+                                                                color="primary"
+                                                                icon="mdi-minus">
+                                                            </v-btn> 
+                                                        
+                                                           <p  class="mx-3">{{ file.cantidad }}</p> 
+                                                     
+                                                            <v-btn @click="sumarArchivo(file)"
+                                                                variant="text"
+                                                                density="comfortable"
+                                                                color="primary"
+                                                                circle
+                                                                icon="mdi-plus">
+                                                        </v-btn>
+                                                    
+                                                    </v-row>      
+                                                </v-col>
+                                            </v-row>
+                                        </td>
+
+                                        <td>{{ formatCurrency(file.precio * file.cantidad) }}</td>
+                                    </tr>
+                                </template>
+
+
                                 <template v-slot:item.cantidad="{ item }">
-                                    <v-row>
+                                    <v-row v-if="item.files.length === 0">
                                         <v-btn
                                             variant="text"
                                             density="comfortable"
@@ -42,6 +81,9 @@
                                             icon="mdi-plus"
                                         ></v-btn>
                                     </v-row>
+                                    <v-row v-if="item.files.length > 0">
+                                        <p class="mx-3 text-center">{{ item.cantidad }}</p>
+                                    </v-row>
                                 </template>
                                 <template v-slot:item.eliminar="{ item }">
                                     <v-icon
@@ -51,17 +93,12 @@
                                     ></v-icon>
                                 </template>
                                 <template v-slot:body.append>
-                                    <tr>
-                                        <td colspan="3">Total:</td>
+                                    <tr class="bg-grey-lighten-3">
+                                        <td  colspan="3">Total:</td>
                                         <td>
-                                            ${{
-                                                Intl.NumberFormat("es-MX", {
-                                                    type: "currency",
-                                                    currency: "MXN",
-                                                    minimumFractionDigits: 2,
-                                                }).format(cartStore.total)
-                                            }}
+                                            {{ formatCurrency(cartStore.total) }}
                                         </td>
+                                        <td colspan="2"></td>
                                     </tr>
                                 </template>
                             </v-data-table>
@@ -80,7 +117,7 @@
                 </template>
 
                 <template v-slot:item.2>
-                    <ElegirDireccion @pasos="pasos"></ElegirDireccion>
+                    <ElegirDireccion @escogida="direccionSeleccionada" @pasos="pasos"></ElegirDireccion>
                 </template>
                 <template v-slot:item.3>
                     <v-card>
@@ -97,13 +134,7 @@
                                         </v-col>
                                         <v-col cols="6" class="text-right">
                                             <strong>
-                                                {{
-                                                    Intl.NumberFormat("es-MX", {
-                                                        style: "currency",
-                                                        currency: "MXN",
-                                                        minimumFractionDigits: 2,
-                                                    }).format(total)
-                                                }}
+                                                {{ formatCurrency(total) }}
                                             </strong>
                                         </v-col>
                                     </v-row>
@@ -111,13 +142,7 @@
                                         <v-col cols="6">Costo de Envío</v-col>
                                         <v-col cols="6" class="text-right">
                                             <strong>
-                                                {{
-                                                    Intl.NumberFormat("es-MX", {
-                                                        style: "currency",
-                                                        currency: "MXN",
-                                                        minimumFractionDigits: 2,
-                                                    }).format(250)
-                                                }}
+                                                {{ formatCurrency(250)}}
                                             </strong>
                                         </v-col>
                                     </v-row>
@@ -177,36 +202,38 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useCartStore } from "../stores/carrito";
-// import axios from "axios";
-import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import ElegirDireccion from "../Components/ElegirDireccion.vue";
-const cartStore = useCartStore();
 import axios from "@/axios.js";
+import formatCurrency from '../composables/formatNumberToCurrency'
+
 
 onMounted(() => {
     cartStore.fetchCart();
 
-    // updateCart();
-    // fetchProductosCarrito()
-    // carritoVacio()
     // stripe = Stripe(
     //     "pk_test_51PXiT1Ctt7GPf4Lb8cBVnDt1p6fvT5Bqkvq7LRE8J1y21b48ekwmvyMRcD7XbzcRFA31G6J7YxRgr8XxKEvomNx500mUHyxI1A"
     // );
 });
-
+const direccionElegida = ref();
+const cartStore = useCartStore();
+const step = ref(1);
+let stripe = null;
+const total = ref(0);
+const domicilio = ref(false);
 const headers = ref([
     { title: "Producto", key: "nombre" },
     { title: "Precio", key: "precio" },
     { title: "Piezas", key: "cantidad" },
     { title: "Total", key: "total" },
     { title: "Eliminar", key: "eliminar" },
+    { title: "", key: "data-table-expand" },
 ]);
 
 const borrar = async (item) => {
-    const url = item.is_file ? "/borrarArchivo" : "/borrarProducto"; 
+    const url =  "/carrito/borrar";
     open(item.id, "product", async (id, type) => {
         axios
             .post(url, { id })
@@ -219,29 +246,54 @@ const borrar = async (item) => {
     });
 };
 
-
-
-
 const restarCantidad = async (item) => {
     if (item.cantidad > 1) {
         item.cantidad--;
-        await axios.post(
-            "/actualizarProductoCarrito",
-            { id: item.id, cantidad: item.cantidad },
-        );
-        updateCart();
+        axios
+            .post("/actualizarProductoCarrito", {
+            id: item.id,
+            cantidad: item.cantidad,
+        });
+        cartStore.fetchCart()
     }
 };
 
 const sumarCantidad = async (item) => {
     item.cantidad++;
-    await axios.post(
+    axios
+        .post(
         "/actualizarProductoCarrito",
-        { id: item.id, cantidad: item.cantidad },
-        { headers: { "X-CSRF-TOKEN": token } }
+        { id: item.id, cantidad: item.cantidad }
     );
+};
 
-    fetchProductosCarrito();
+
+const restarArchivo = async (item) => {
+    if (item.cantidad > 1) {
+        item.cantidad--;
+        await axios
+            .post(`/carrito/update-file/${item.id}`,{cantidad: item.cantidad})
+            .then(()=>{
+                cartStore.fetchCart()    
+            })
+    }
+};
+
+const direccionSeleccionada = () => {
+
+}
+const sumarArchivo = async (item) => {
+    item.cantidad++;
+    console.log('item: ', item);
+    axios
+        .post(`/carrito/update-file/${item.id}`,{cantidad: item.cantidad})
+        .then((response) => {
+            console.log(response)
+            cartStore.fetchCart();
+        })
+        .catch((response) => {
+            console.log(response)
+        });
 };
 
 const pasos = (value) => {
@@ -252,56 +304,6 @@ const pasos = (value) => {
             domicilio.value = cartStore.domicilio;
             cartStore.fetchCart();
         }
-    }
-};
-
-
-
-// -----------------------------------------------
-
-
-const carritovacio = ref(true);
-const step = ref(1);
-let stripe = null;
-const router = useRouter();
-
-const productos_carrito = ref([]);
-const files = ref([]);
-const total = ref(0);
-const domicilio = ref(false);
-
-
-
-
-const updateCart = async () => {
-    await cartStore.fetchCart();
-    fetchProductosCarrito();
-    carritoVacio();
-};
-
-
-
-
-
-const sumarCantidadFile = async (file) => {
-    file.cantidad++;
-    await axios.post(
-        "/actualizarFileCarrito",
-        { id: file.id, cantidad: file.cantidad },
-        { headers: { "X-CSRF-TOKEN": token } }
-    );
-    updateCart();
-};
-
-const restarCantidadFile = async (file) => {
-    if (file.cantidad > 1) {
-        file.cantidad--;
-        await axios.post(
-            "/actualizarFileCarrito",
-            { id: file.id, cantidad: file.cantidad },
-            { headers: { "X-CSRF-TOKEN": token } }
-        );
-        updateCart();
     }
 };
 
@@ -326,27 +328,16 @@ const open = (id, type, callback) => {
         });
 };
 
-const carritoVacio = () => {
-    if (cartStore.items.length === 0 && cartStore.files.length === 0) {
-        carritovacio.value = true;
-    } else {
-        carritovacio.value = false;
-    }
-};
-
 const payment = async () => {
     try {
         const envio = domicilio.value ? 250 : 0;
         const { data } = await axios.post(
             "/checkout",
-            { total: total.value + envio },
-            { headers: { "X-CSRF-TOKEN": token } }
+            { total: total.value + envio }
         );
         await stripe.redirectToCheckout({ sessionId: data.id });
     } catch (error) {
         console.error("Error during payment:", error);
     }
 };
-
-watch([productos_carrito, files], { immediate: true });
 </script>

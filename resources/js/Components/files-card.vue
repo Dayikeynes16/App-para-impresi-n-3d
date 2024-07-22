@@ -9,13 +9,7 @@
                         </v-card-title>
                         <v-card-text>
                             El costo es de
-                            {{
-                                Intl.NumberFormat("es-MX", {
-                                    type: "currency",
-                                    currency: "MXN",
-                                    minimumFractionDigits: 2,
-                                }).format(file.precio)
-                            }}
+                            {{formatCurrency(file.total)}}
                         </v-card-text>
 
                         <v-card-actions>
@@ -24,13 +18,13 @@
                                         <v-icon
                                             v-model="form.id"
                                             icon="mdi-delete-outline"
-                                            @click="open(file.id)">
+                                            @click="open(file)">
                                         </v-icon>
                                     </v-col>
                                     <v-col cols="6">
                                         <v-row>
                                             <v-col class="text-right" cols="3">
-                                                <v-icon @click="sumarCantidadFile(file)"
+                                                <v-icon @click="sumarCantidad(file)"
                                                     circle
                                                     icon="mdi-plus">
                                                 </v-icon
@@ -39,7 +33,7 @@
                                             {{ file.cantidad }}
                                         </v-col>
                                         <v-col class="text-left" cols="3"
-                                                ><v-icon @click="restarCantidadFile(file)"
+                                                ><v-icon @click="restarCantidad(file)"
                                                     circle
                                                     icon="mdi-minus"
                                                 ></v-icon> 
@@ -80,9 +74,12 @@
 </template>
 
 <script setup>
-import axios from "axios";
+import axios from "@/axios.js";
 import { ref, onMounted } from "vue";
 import { useCartStore } from "../stores/carrito";
+import formatCurrency from '../composables/formatNumberToCurrency'
+
+
 const cartStore = useCartStore();
 const orden = ref({
     id: null,
@@ -91,9 +88,6 @@ const orden = ref({
 const props = defineProps({ item: Object });
 const emit = defineEmits(["añadido"]);
 
-const token = document
-    .querySelector("meta[name='csrf-token']")
-    .getAttribute("value");
 import { ElMessage, ElMessageBox } from "element-plus";
 const visible = ref(false);
 const correcto = ref(false);
@@ -105,11 +99,11 @@ const form = ref({
 
 const traerarchivos = async () => {
     try {
-        const { data } = await axios.get("/archivo-cotizados");
+        const { data } = await axios.get("/cotizacion/archivo-cotizados");
 
         orden.value.files = data.data;
         correcto.value = true;
-        // calcularTotal();
+      
     } catch (error) {
         console.error(error);
     }
@@ -124,27 +118,20 @@ const calcularTotal = () => {
 };
 
 const eliminarArchivo = async (id) => {
-    try {
-        await axios.post(
-            "/eliminarArchivo",
-            { id },
-            {
-                headers: {
-                    "X-CSRF-TOKEN": token,
-                },
-            }
-        );
-        orden.value.files = orden.value.files.filter((file) => file.id !== id);
-        calcularTotal();
-    } catch (error) {
-        console.error(error);
-    }
+
+        axios.post(`/cotizacion/delete/${id}`)
+            .then(() => {
+                traerarchivos()
+            })
+
+    
 };
+
 onMounted(async () => {
     await traerarchivos();
 });
 
-const open = (id) => {
+const open = (file) => {
     ElMessageBox.confirm("¿Esta seguro de eliminar?", "Confirmar", {
         confirmButtonText: "OK",
         cancelButtonText: "Cancelar",
@@ -155,7 +142,7 @@ const open = (id) => {
                 type: "success",
                 message: "Elemento eliminado",
             });
-            eliminarArchivo(id);
+            eliminarArchivo(file.id);
         })
         .catch(() => {
             ElMessage({
@@ -165,28 +152,7 @@ const open = (id) => {
         });
 };
 
-const sumarCantidadFile = async (file) => {
-    file.cantidad++;
-    await axios.post(
-        "/actualizarFileCarrito",
-        { id: file.id, cantidad: file.cantidad },
-        { headers: { "X-CSRF-TOKEN": token } }
-    );
-    updateCart();
-};
 
-const restarCantidadFile = async (file) => {
-    if (file.cantidad > 1) {
-        file.cantidad--;
-        await axios.post(
-            "/actualizarFileCarrito",
-            { id: file.id, cantidad: file.cantidad },
-            { headers: { "X-CSRF-TOKEN": token } }
-        );
-        updateCart()
-        
-    }
-};
 
 const añadirCarrito = async () => {
     const { data } = await axios.post("/carrito/agregar", {
@@ -196,5 +162,28 @@ const añadirCarrito = async () => {
     });
     emit("añadido");
     cartStore.fetchCart();
+};
+
+const restarCantidad = async (item) => {
+    if (item.cantidad > 1) {
+        item.cantidad--;
+        axios
+            .post("/cotizacion/update", {
+            id: item.id,
+            cantidad: item.cantidad,
+        });
+        updateCart();
+    }
+};
+
+const sumarCantidad = async (item) => {
+    item.cantidad++;
+    axios
+        .post(
+        "/cotizacion/update",
+        { id: item.id, cantidad: item.cantidad }
+    );
+
+    fetchProductosCarrito();
 };
 </script>

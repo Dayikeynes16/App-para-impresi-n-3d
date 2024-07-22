@@ -91,8 +91,13 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/productos/{producto}', [ProductosController::class, 'show']);
     Route::post('/productos/{producto}', [ProductosController::class, 'update']);
 
-    Route::post('/cotizar', [UsuarioCotizacionController::class, 'cotizar']);
-    Route::get('/archivo-cotizados', [UsuarioCotizacionController::class, 'index']);
+    Route::group(['prefix' => 'cotizacion'], static function (){
+        Route::post('/cotizar', [UsuarioCotizacionController::class, 'cotizar']);
+        Route::post('/update', [UsuarioCotizacionController::class, 'update']);
+        Route::get('/archivo-cotizados', [UsuarioCotizacionController::class, 'index']);
+        Route::post('/delete/{id}', [UsuarioCotizacionController::class, 'delete']);
+    });
+    
     
     //ArchivosController
     Route::post('/deletefile', [ArchivosController::class, 'deletefile']);
@@ -111,6 +116,7 @@ Route::group(['middleware' => ['auth']], function(){
         Route::get('/', [CarritoController::class, 'index']);
         Route::post('/borrar', [CarritoController::class, 'borrar']);
         Route::post('/agregar', [CarritoController::class, 'agregar']);
+        Route::post('/update-file/{productoCarritoArchivo}', [CarritoController::class, 'actualizarCarritoArchivo']);
 
         // Route::get('/add', [CarritoController::class, 'get']);
         // Route::get('/remove', [CarritoController::class, 'get']);

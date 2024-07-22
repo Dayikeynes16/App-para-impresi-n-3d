@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('cantidad')->default(1)->nullable();
             $table->unsignedInteger('minutos')->nullable();
             $table->decimal('precio')->nullable();
+            $table->decimal('total')->nullable();
             $table->foreignId('usuario_id')->constrained('users');
             $table->softDeletes();
             $table->timestamps();

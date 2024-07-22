@@ -46,10 +46,12 @@
         <a href="javascript:void(0)" @click="openDialog()">haz click para añadir una</a>
       </p>
       <v-dialog v-model="dialog" class="text-center">
-        <Direcciones  @añadido="getDirecciones" ></Direcciones>
+        <Direcciones @cancelado="cerrarDialogs" @añadido="getDirecciones" ></Direcciones>
       </v-dialog>
       <v-dialog v-model="editar" class="text-center">
-        <EditarDireccion :direccion="selectedDireccion" @actualizado="getDirecciones()"></EditarDireccion>
+ 
+          <EditarDireccion :direccion="selectedDireccion" @actualizado="getDirecciones()" @cancelado="cerrarDialogs()"></EditarDireccion>
+
       </v-dialog>
     </v-container>
   </template>
@@ -57,7 +59,7 @@
   <script setup>
   import Direcciones from "../Components/Direcciones.vue";
   import { ref } from "vue";
-  import axios from "axios";
+  import axios from "@/axios.js";
   import { useRouter } from 'vue-router';
   import { ElMessage, ElMessageBox } from "element-plus";
   import EditarDireccion from "./EditarDireccion.vue";
@@ -66,9 +68,7 @@
   const dialog = ref(false);
   const router = useRouter();
   const editar = ref(false)
-  const selectedDireccion = ref(null);
-  const token = document.querySelector("meta[name='csrf-token']").getAttribute("value");
-  
+  const selectedDireccion = ref(null);  
   const addButtonIsVisible = ref(false);
   const isEditMode = ref(false);
   
@@ -87,17 +87,13 @@
   getDirecciones();
   
   const eliminarDireccion = async (id) => {
-    try {
-      await axios.post("/eliminarDireccion", { id }, {
-        headers: {
-          "X-CSRF-TOKEN": token,
-        },
-      });
-      direcciones.value = direcciones.value.filter((direccion) => direccion.id !== id);
-      addButtonIsVisible.value = direcciones.value.length > 0;
-    } catch (error) {
-      console.error(error);
-    }
+ 
+      await axios.post("/eliminarDireccion", { id });
+      then(() => {
+        direcciones.value = direcciones.value.filter((direccion) => direccion.id !== id);
+        addButtonIsVisible.value = direcciones.value.length > 0;
+      })
+
   };
   
   const open = (id) => {
@@ -124,6 +120,15 @@
         });
       });
   };
+
+const cerrarDialogs = () => {
+  if(dialog.value === true){
+    dialog.value = false
+  }
+  if(editar.value === true){
+    editar.value = false
+  }
+}
   
   const openDialog = () => {
     selectedDireccion.value = null;

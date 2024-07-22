@@ -29,7 +29,7 @@
     </v-card>
 </template>
 <script setup>
-import axios from "axios";
+import axios from "@/axios.js";
 import { useRouter } from 'vue-router';
 const router = useRouter();
 

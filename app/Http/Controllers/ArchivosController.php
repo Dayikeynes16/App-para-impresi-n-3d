@@ -20,13 +20,13 @@ class ArchivosController extends Controller
         try {
             $response = $this->apiRequest($request->file('file'));
 
-            $orden = Orden::firstOrCreate([
-                'status' => 'activo',
-                'usuario_id' => $request->user()->id,
-            ], [
-                'total' => 0,
-                'status' => 'activo',
-            ]);
+            // $orden = Orden::firstOrCreate([
+            //     'status' => 'activo',
+            //     'usuario_id' => $request->user()->id,
+            // ], [
+            //     'total' => 0,
+            //     'status' => 'activo',
+            // ]);
     
             $filePath = $request->file('file')->store('files');
             $file = new Files([

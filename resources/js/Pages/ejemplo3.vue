@@ -31,7 +31,7 @@
                 </v-overlay>
             </v-col>
             <v-col cols="8">
-                <filesCard @añadido="limpiarArchivos" v-if="resultado"></filesCard>
+                <filesCard @añadido="limpiarArchivos"></filesCard>
             </v-col>
         </v-row>
 
@@ -52,11 +52,9 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 import { onMounted, ref } from "vue";
-import axios from "axios";
+import axios from "@/axios.js";
 import { UploadFilled } from "@element-plus/icons-vue";
-const token = document
-    .querySelector("meta[name='csrf-token']")
-    .getAttribute("value");
+
 const loadform = ref();
 const resultado = ref(false);
 const costo = ref("");
@@ -65,7 +63,7 @@ const loading = ref(false);
 const errorMessage = ref("");
 const dialog = ref(false);
 
-import filesCard from "../Components/files-card.vue";
+import filesCard from "@/Components/files-card.vue";
 
 const cotizar = async (file) => {
     loading.value = true;
@@ -76,14 +74,7 @@ const cotizar = async (file) => {
     const formData = new FormData();
     formData.append('file', file.file);
     try {
-        const {data} = await axios.post("/cotizar",formData,
-            {
-                headers: {
-                    "X-CSRF-TOKEN": token,
-                    "Content-Type": "multipart/form-data",
-                },
-            }
-        );
+        const {data} = await axios.post("/cotizacion/cotizar",formData);
         loading.value = false;
         resultado.value = true;
     } catch (error) {

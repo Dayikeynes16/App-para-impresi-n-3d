@@ -35,7 +35,7 @@
 
 <script setup>
 import { ref } from "vue";
-import axios from "axios";
+import axios from "@/axios.js";
 import Direcciones from "../Components/Direcciones.vue";
 import listaDirecciones from "../Components/listaDirecciones.vue";
 import router from "../router";

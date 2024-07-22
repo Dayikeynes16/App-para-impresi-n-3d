@@ -23,7 +23,7 @@
 import { useRoute } from 'vue-router';
 import { onMounted, ref } from 'vue'
 const product = ref({})
-import axios from 'axios';
+import axios from "@/axios.js";
 import { UploadFilled } from '@element-plus/icons-vue'
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value')
 

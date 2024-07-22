@@ -28,9 +28,8 @@
 
 <script setup>
 import { ref } from "vue";
-import axios from "axios";
+import axios from "@/axios.js";
 
-const token = document.querySelector("meta[name='csrf-token']").getAttribute("value");
 const email = ref("");
 const successMessage = ref("");
 const errorMessage = ref("");
@@ -43,11 +42,6 @@ const recuperacion = async () => {
         const { data } = await axios.post(
             "/enviar-recuperar-contrasenia",
             { email: email.value },
-            {
-                headers: {
-                    "X-CSRF-TOKEN": token,
-                },
-            }
         );
         successMessage.value = data.message;
     } catch (error) {
