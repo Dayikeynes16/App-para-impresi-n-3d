@@ -1,26 +1,33 @@
 <template>
-    <v-app-bar elevation="0" color="blue-grey-darken-1">
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-app-bar elevation="0" color="primary">
+        <v-app-bar-nav-icon color="white" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <v-app-bar-title>Applicaciones Creativas</v-app-bar-title>
 
         <template v-slot:append>
+            <v-menu>
+                <template v-slot:activator="{ props }">
+                    <v-btn
+                    color="white"
+                    v-bind="props">
+                    {{user.data?.name}}
+                    </v-btn>
+                </template>
+                <v-list>
+                    <v-list-item prepend-icon="mdi-account" base-color="primary">
+                        <v-list-item-title class="cursor-pointer" @click="router.push({ name: 'Cuenta' })">Cuenta</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-logout" base-color="danger">
+                        <v-list-item-title class="cursor-pointer"  @click="cerrarSesion()">Cerrar sesión</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
+
             <div v-if="cliente" style="margin-right: 10px; margin-top: 10px">
                 <v-badge color="danger" :content="cartStore.items.length">
-                    <v-btn @click="handleCartClick" icon="mdi-cart">
-                        
-                    </v-btn>
+                    <v-btn color="white" @click="handleCartClick" icon="mdi-cart"></v-btn>
                 </v-badge>
-                
             </div>
 
-            <v-dialog v-model="dialog" width="auto">
-                <v-card width="100%" prepend-icon="mdi-cart" title="Carrito">
-                    <v-card-text v-if="cartStore.visible">
-                        <carrito></carrito>
-                    </v-card-text>
-                    <v-card-text v-else> No has añadido nada aún </v-card-text>
-                </v-card>
-            </v-dialog>
         </template>
     </v-app-bar>
 
@@ -31,16 +38,13 @@
             :title="user.data?.name"
         ></v-list-item>
         <v-divider class="my-0"></v-divider>
-
-        <template v-for="item in menu" :key="item.nombre">
-            <div v-if="loginStore.getPermissions.includes(item.permiso)">
-                <v-list-item :to="item.ruta" :title="item.nombre"></v-list-item>
-                <v-divider class="my-0"></v-divider>
-            </div>
-        </template>
-
-        <v-list-item @click="cerrarSesion" title="Cerrar sesión"></v-list-item>
-        <v-divider class="my-0"></v-divider>
+        <v-list >
+            <template v-for="item in menu" :key="item.nombre">
+                <div v-if="loginStore.getPermissions.includes(item.permiso)">
+                    <v-list-item class="ma-2" rounded="shaped" color="primary" :to="item.ruta" :title="item.nombre"></v-list-item>
+                </div>
+            </template>
+        </v-list>
     </v-navigation-drawer>
 </template>
 
@@ -103,11 +107,11 @@ const menu = ref([
 ]);
 
 const cerrarSesion = async () => {
-        await axios.post("/cerrarSesion");
-        then(() => {
+    await axios.post("/cerrarSesion")
+        .then(() => {
             router.push({ name: "logear" });ß
         })
- 
+
 };
 
 const handleCartClick = () => {

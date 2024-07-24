@@ -13,7 +13,7 @@ import DetallesModelo from "./Pages/DetallesModelo.vue";
 import GuardarProducto from "./Pages/GuardarProducto.vue";
 import ProcesarCarrito from "./Pages/ProcesarCarrito.vue";
 import CarritoFinal from "./Pages/CarritoFinal.vue";
-import recuperarContraseña from "./Pages/recuperarContraseña.vue";
+import recuperarContrasena from "./Pages/recuperarContraseña.vue";
 import Dashboard from "./Pages/adminPages/Dashboard.vue";
 import pedidoDetalles from "./Pages/adminPages/pedidoDetalles.vue";
 import EditarDireccion from "./Components/EditarDireccion.vue";
@@ -30,7 +30,11 @@ const routes = [
         path: "/logear",
         component: Login,
     },
-    
+    {
+        name: "recuperarContrasena",
+        path: "/recuperarContrasena",
+        component: recuperarContrasena,
+    },
     {
         name: "register",
         path: "/registrar",
@@ -95,11 +99,6 @@ const routes = [
                 name: "CarritoFinal",
                 path: "/CarritoFinal",
                 component: CarritoFinal,
-            },
-            {
-                name: "recuperarContraseña",
-                path: "/recuperarContraseña",
-                component: recuperarContraseña,
             },
             {
                 name: "Dashboard",

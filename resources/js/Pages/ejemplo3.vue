@@ -1,8 +1,28 @@
 <template>
-    <v-container>
+    <v-container class="mt-0 pt-0">
+        <v-row class="mt-0 pt-0"><v-col><h2>Cotizaciones</h2></v-col></v-row>
+        <v-row >
+            <v-col class="mt-0 pt-0">
+                <v-card elevation="1" class="rounded-lg mt-0 pt-0">
+                <v-card-text >
+                    <v-row class="text-center" align="center">
+                        <v-col cols="5"><h5>Seleccionados: {{ totales.cantidad }}</h5></v-col>
+                        <v-col cols="5"><h5>Total {{ formatCurrency(totales.total) }}</h5></v-col>
+                        <v-col cols="2">
+                            <v-btn
+                            variant="tonal"
+                            @click="agregarCarrito"
+                            icon="mdi-cart">
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+            </v-card>
+            </v-col>
+        </v-row>
         <v-row>
-            <v-col cols="4">
-                <v-card color="grey-lighten-4">
+            <v-col >
+                <v-card >
                     <v-card-title> Sube tu archivo aquí </v-card-title>
                     <v-card-text>
                         <el-upload class="upload-demo" drag :http-request="cotizar" ref="loadform"
@@ -30,8 +50,9 @@
                     <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
                 </v-overlay>
             </v-col>
-            <v-col cols="8">
-                <filesCard @añadido="limpiarArchivos"></filesCard>
+            <v-col v-if="resultado" cols="8">
+                <v-card-subtitle>Aqui podra ver todas las cotizaciones que ha realizado, puedes seleccionar y agregarlas al carrito.</v-card-subtitle>
+                <filesCard @añadido="limpiarArchivos"  @datosCarrito="totales = $event"></filesCard>
             </v-col>
         </v-row>
 
@@ -49,26 +70,41 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-const router = useRouter();
 
+import formatCurrency from "../composables/formatNumberToCurrency";
+import { useCartStore } from '../stores/carrito';
 import { onMounted, ref } from "vue";
 import axios from "@/axios.js";
 import { UploadFilled } from "@element-plus/icons-vue";
-
+import filesCard from "@/Components/files-card.vue";
+const cartStore = useCartStore();
+const router = useRouter();
 const loadform = ref();
-const resultado = ref(false);
-const costo = ref("");
-const tiempo_impresion = ref(0);
+const resultado = ref(true);
 const loading = ref(false);
 const errorMessage = ref("");
 const dialog = ref(false);
+const totales = ref({
+    cantidad: 0,
+    total: 0,
+    files: []
+});
+const cotizacionTamaño = ref(4)
 
-import filesCard from "@/Components/files-card.vue";
+const agregarCarrito = async () => {
+    axios.post("/carrito/agregar", {
+        producto_id: 1,
+        cantidad: 1,
+        files: totales.value.files,
+    })
+    .then(() => {
+        cartStore.fetchCart();
+    })
+    
+};
 
 const cotizar = async (file) => {
     loading.value = true;
-    resultado.value = false;
-
     errorMessage.value = "";
 
     const formData = new FormData();
@@ -76,7 +112,6 @@ const cotizar = async (file) => {
     try {
         const {data} = await axios.post("/cotizacion/cotizar",formData);
         loading.value = false;
-        resultado.value = true;
     } catch (error) {
         loading.value = false;
         if (
@@ -86,26 +121,9 @@ const cotizar = async (file) => {
         ) {
             errorMessage.value = error.response.data.message;
         }
-        resultado.value = true;
         dialog.value = true;
     }
 };
 
-const limpiarArchivos = () => {
-    resultado.value = false;
-};
 
-const traerarchivos = async () => {
-    const { data } = await axios.get('/traerarchivos');
-    if (data.data.files.length) {
-        resultado.value = true;
-
-    } else {
-        resultado.value = false;
-    }
-};
-
-onMounted(() => {
-    traerarchivos();
-});
 </script>

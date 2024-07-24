@@ -293,7 +293,7 @@ class CarritoController extends Controller
 
     public function ConfirmarVenta(Request $request){
         $carrito = $this->obtenerCarrito($request->user()->id);
-        if($carrito->total == 0){
+        if($carrito->total === 0){
             return response()->json(['data'=>'la venta ya ha sido cerrada', 'code'=>404]);
         } else{
             $carrito->status = 'pagada';

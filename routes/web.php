@@ -21,6 +21,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsuarioCotizacionController;
 use App\Http\Controllers\UsuariosRolesController;
 use App\Http\Controllers\WebhookController;
+use Illuminate\Support\Facades\Auth;
 
 Route::post('/deleteprueba',[AuthController::class, 'deleteprueba']);
 
@@ -31,10 +32,11 @@ Route::post('/deleteUser/{user}',[UsuariosRolesController::class, 'delete']);
 Route::put('/actualizarRolesUsuario/{user}',[UsuariosRolesController::class, 'update']);
 Route::post('/addRole/{user}', [AuthController::class,'addRole']);
 
+Route::get('/prueba', [AuthController::class, 'prueba']);
 
 
 Route::post('/addPermissionsToRole', [AuthController::class,'addPermissionsToRole']);
-Route::get('/checkout', [CheckoutController::class, 'checkout']);
+// Route::get('/checkout', [CheckoutController::class, 'checkout']);
 Route::post('/checkout', [CheckoutController::class, 'createSession']);
 
 Route::get('/cancel', function () {
@@ -117,12 +119,8 @@ Route::group(['middleware' => ['auth']], function(){
         Route::post('/borrar', [CarritoController::class, 'borrar']);
         Route::post('/agregar', [CarritoController::class, 'agregar']);
         Route::post('/update-file/{productoCarritoArchivo}', [CarritoController::class, 'actualizarCarritoArchivo']);
-
-        // Route::get('/add', [CarritoController::class, 'get']);
-        // Route::get('/remove', [CarritoController::class, 'get']);
     });
 
-    // Route::get('/traerCarrito', [CarritoController::class, 'traerCarrito']);
     
     Route::post('/borrarProducto', [CarritoController::class, 'borrarProducto']);
     Route::post('/actualizarProductoCarrito', [CarritoController::class, 'actualizar']);
@@ -134,6 +132,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/listoParaEnvio/{id}',[CarritoController::class, 'listoParaEnvio']);
     Route::post('ConfirmarVenta',[CarritoController::class, 'ConfirmarVenta']);
     Route::get('/traerPedidosViejos', [CarritoController::class, 'traerPedidosViejos']);
+    Route::get('/traerCarrito', [CarritoController::class, 'traerCarrito']);
 
 
 

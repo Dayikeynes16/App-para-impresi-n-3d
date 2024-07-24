@@ -117,84 +117,117 @@
                 </template>
 
                 <template v-slot:item.2>
-                    <ElegirDireccion @escogida="direccionSeleccionada" @pasos="pasos"></ElegirDireccion>
+                    <ElegirDireccion @direccion="direccion = $event" @escogida="direccionSeleccionada" @pasos="pasos"></ElegirDireccion>
                 </template>
                 <template v-slot:item.3>
-                    <v-card>
-                        <v-card-title class="headline"
-                            >Detalles del Pedido</v-card-title
-                        >
-                        <v-card-text>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-subheader>Total del Pedido</v-subheader>
-                                    <v-row>
+                    <v-row>
+                        <v-col cols="7">
+                            <v-row class="ps-15">
+                            <v-col cols="12">
+                                <h5>Detalles del envio</h5>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-row class="text-left">
+                                    
+                                    <v-row v-if="!direccion.es_recoleccion">
                                         <v-col cols="6">
-                                            <span>Total:</span>
+                                        Tipo de envio: 
+                                    </v-col>
+                                    <v-col cols="6">
+                                       <strong>Envio a domiclio</strong>
+                                       
+                                    </v-col>
+                                        <v-col cols="6">
+                                            Recibe: 
                                         </v-col>
-                                        <v-col cols="6" class="text-right">
-                                            <strong>
-                                                {{ formatCurrency(total) }}
-                                            </strong>
+                                        <v-col cols="6">
+                                            <strong>{{ direccion.direccion.destinatario }}</strong>
+                                        </v-col>
+                                        <v-col cols="6">
+                                            Direccion de envio:
+                                        </v-col>
+                                        <v-col cols="6">
+                                            <strong>{{ direccion.direccion.direccion }}</strong>
+                                        </v-col>
+                                        <v-col cols="6">
+                                            Referencias
+                                        </v-col>
+                                        <v-col cols="6" >
+                                            <strong>{{ direccion.direccion.referencias}}</strong>
                                         </v-col>
                                     </v-row>
-                                    <v-row v-if="domicilio === true">
-                                        <v-col cols="6">Costo de Envío</v-col>
-                                        <v-col cols="6" class="text-right">
-                                            <strong>
-                                                {{ formatCurrency(250)}}
-                                            </strong>
+
+                                    
+                                    <v-row v-else>
+                                        <v-col cols="6">
+                                            Tipo de envio: 
                                         </v-col>
+                                        <v-col cols="6">
+                                            <strong>Recoleccion en sucursal</strong>
+                                        </v-col>
+                                        <v-col class="ma-3">
+                                            <strong>Se te enviara un correo con la información para su recolección</strong>
+                                        </v-col>
+                                        
                                     </v-row>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-subheader
-                                        >Información de Contacto</v-subheader
-                                    >
-                                    <p>
-                                        <strong>Nombre:</strong>
-                                        {{ customer.name }}<br />
-                                        <strong>Correo:</strong>
-                                        {{ customer.email }}<br />
-                                        <strong>Teléfono:</strong>
-                                        {{ customer.phone }}
-                                    </p>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-subheader>Método de Entrega</v-subheader>
-                                    <p v-if="cartStore.domicilio">
-                                        <strong>Envío a Domicilio</strong><br />
-                                        <strong>Calle:</strong>
-                                        {{ cartStore.direccion.nombre }}<br />
-                                        <strong>Ciudad:</strong>
-                                        {{ cartStore.direccion.estado }}<br />
-                                        <strong>Estado:</strong>
-                                        {{ cartStore.direccion.referencias
-                                        }}<br />
-                                    </p>
-                                    <p v-else>
-                                        <strong>Recolección en Sucursal</strong
-                                        ><br />
-                                        Se te enviará un correo con las
-                                        indicaciones al finalizar tu compra.
-                                    </p>
-                                </v-col>
+                                    
+                                </v-row>
+                            </v-col>
                             </v-row>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-btn icon @click="pasos(2)">
-                                <v-icon>mdi-arrow-left</v-icon>
-                            </v-btn>
-                            <v-spacer></v-spacer>
-                            <v-btn
-                                color="primary"
-                                @click="payment()"
-                                prepend-icon="mdi-credit-card-fast-outline"
-                            >
-                                Pagar
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
+                        </v-col>
+                        <v-col cols="5">
+                           <v-row>
+                            <v-col cols="12">
+                                <h5 class="ps-15">Detalles del pago</h5>
+                            </v-col>
+                                    <v-col cols="12">
+                                        <v-row class="text-center">
+                                            <v-col cols="6">
+                                                Total del pedido: 
+                                            </v-col>
+                                            <v-col cols="6">
+                                                {{ formatCurrency(cartStore.total) }}
+                                            </v-col>
+                                            <v-col cols="6">
+                                                <p>Costo de envio:</p>
+                                            </v-col>
+                                            <v-col cols="6" v-if="direccion.es_recoleccion">
+                                                {{ formatCurrency(0) }}
+                                            </v-col>
+                                            <v-col cols="6" v-else>
+                                                {{ formatCurrency(250) }}
+                                            </v-col>
+                                        </v-row>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-card variant="tonal" color="primary">
+                                            <v-card-text class="text-center">
+                                                <p>Total a pagar</p>
+                                                <h2 v-if="direccion.es_recoleccion">{{ formatCurrency(cartStore.total) }}</h2>
+                                                <h2 v-else>{{ formatCurrency(cartStore.total+250) }}</h2>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-col>
+                                <v-col cols="12" class="text-right" >
+                                    <v-btn
+                                    block
+                                        variant="outlined"
+                                        color="primary"
+                                        @click="payment()"
+                                        prepend-icon="mdi-credit-card-fast-outline"
+                                    >
+                                        Pagar
+                                    </v-btn>
+                                </v-col>
+                           </v-row>
+                        </v-col>
+                    </v-row>
+                    <v-card-actions>
+                                    <v-btn icon @click="pasos(2)">
+                                        <v-icon>mdi-arrow-left</v-icon>
+                                    </v-btn>
+                                    <v-spacer></v-spacer>
+                                </v-card-actions>
                 </template>
             </v-stepper>
         </div>
@@ -208,15 +241,23 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import ElegirDireccion from "../Components/ElegirDireccion.vue";
 import axios from "@/axios.js";
 import formatCurrency from '../composables/formatNumberToCurrency'
-
-
+import { useLoginStore } from "@/stores/login";
+const user = ref({});
+const loginStore = useLoginStore();
+const direccion = ref({});
 onMounted(() => {
     cartStore.fetchCart();
 
-    // stripe = Stripe(
-    //     "pk_test_51PXiT1Ctt7GPf4Lb8cBVnDt1p6fvT5Bqkvq7LRE8J1y21b48ekwmvyMRcD7XbzcRFA31G6J7YxRgr8XxKEvomNx500mUHyxI1A"
-    // );
+    stripe = Stripe(
+        "pk_test_51PXiT1Ctt7GPf4Lb8cBVnDt1p6fvT5Bqkvq7LRE8J1y21b48ekwmvyMRcD7XbzcRFA31G6J7YxRgr8XxKEvomNx500mUHyxI1A"
+    );
+
+    setTimeout(() => {
+        user.value = loginStore.getUserData;
+    }, 500);
 });
+
+
 const direccionElegida = ref();
 const cartStore = useCartStore();
 const step = ref(1);
@@ -280,7 +321,7 @@ const restarArchivo = async (item) => {
 };
 
 const direccionSeleccionada = () => {
-
+ 
 }
 const sumarArchivo = async (item) => {
     item.cantidad++;
@@ -299,11 +340,9 @@ const sumarArchivo = async (item) => {
 const pasos = (value) => {
     if (value >= 1 && value <= 3) {
         step.value = value;
-
-        if (step.value === 3 || step.value === 2) {
-            domicilio.value = cartStore.domicilio;
-            cartStore.fetchCart();
-        }
+    }
+    if(step.value === 3){
+        
     }
 };
 
@@ -328,12 +367,15 @@ const open = (id, type, callback) => {
         });
 };
 
+const obtenerDatosCarrito = () => {
+
+}
+
 const payment = async () => {
     try {
-        const envio = domicilio.value ? 250 : 0;
         const { data } = await axios.post(
             "/checkout",
-            { total: total.value + envio }
+            { total: (cartStore.total + (direccion.value.es_recoleccion ? 0 : 250)).toFixed(2) }
         );
         await stripe.redirectToCheckout({ sessionId: data.id });
     } catch (error) {

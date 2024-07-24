@@ -22,20 +22,30 @@
                     </v-col>
                 </v-radio-group>
             </v-row>
-            <div v-if="conDirecciones">
-                <v-select
-                    :disabled="envioOption !== 'domicilio'"
-                    v-model="selectedDireccion"
-                    :items="mappedDirecciones"
-                    item-title="nombre"
-                    item-value="id"
-                    label="Selecciona una dirección"
-                >
-                </v-select>
-            </div>
-            <div v-else>
+            <v-row v-if="envioOption === 'domicilio'">
+                <v-col cols="9"  >
+               
+                    <v-select
+                        :error-messages="errors.direccion_id"
+                        :disabled="envioOption !== 'domicilio'"
+                        v-model="selectedDireccion"
+                        :items="mappedDirecciones"
+                        item-title="nombre"
+                        item-value="id"
+                        label="Selecciona una dirección"
+                    >
+                    </v-select>
+         
+                </v-col>
+                <v-col cols="3">
+                    <v-btn block variant="tonal" @click="dialog = true">Agregar nueva dirección</v-btn>
+                </v-col>
+            </v-row>
+          
+            <div v-if="!conDirecciones">
                 <v-card-subtitle>
                     Parece que no has añadido ninguna dirección aun
+
                 </v-card-subtitle> 
             </div>
         </v-card-text>
@@ -54,25 +64,38 @@
             </v-row>
         </v-card-actions>
     </v-card>
+    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <v-card
+        prepend-icon="mdi-google-maps"
+        title="Agregar una dirección"
+      >
+        <v-card-text>
+            <Direcciones @cancelado="dialog = false" @añadido="getDirecciones()"></Direcciones>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
 </template>
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import axios from "@/axios.js";
-import { useCartStore } from "../stores/carrito";
-
-const sucursal = ref(false);
-const emit = defineEmits(["pasos"]);
+import Direcciones from "./Direcciones.vue";
+import { errorMessages } from "vue/compiler-sfc";
+const emit = defineEmits(["pasos","direccion"]);
 const selectedDireccion = ref(null);
 const direcciones = ref([]);
-const cartStore = useCartStore();
 const conDirecciones = ref(false);
 const envioOption = ref("");
-
+const dialog = ref(false)
+const errors = ref([])
 const getDirecciones = async () => {
     try {
         const { data } = await axios.get("/getDirecciones");
         direcciones.value = data;
         conDirecciones.value = direcciones.value.length > 0;
+        dialog.value = false
     } catch (error) {
         console.error("Error fetching directions:", error);
     }
@@ -89,33 +112,37 @@ const mappedDirecciones = computed(() => {
     }));
 });
 
-const recogerSucursal = async () => {
-            await axios.post("/direccionEntregaSucursal");
-            cartStore.domicilio = false
-};
-
 const emitPasos = (value) => {
     emit("pasos", value);
 };
 
 const direccionSeleccionada = async () => {
-    try {
-        if (envioOption.value === "domicilio") {
-            await axios.post(
+    if (envioOption.value === "domicilio") {
+            axios.post(
                 "/direccionEntrega",
                 { direccion_id: selectedDireccion.value }
-            );
-            cartStore.fetchCart();
-        }
-        emit("pasos", 3);
-    } catch (error) {
-        console.error("Error setting delivery address:", error);
-    }
+            ).then(({data}) => {
+                emit("pasos", 3);
+                emit("direccion", {
+                    es_recoleccion: false,
+                    direccion: data.direccion
+                })
+
+            })
+            .catch((error) => {
+                errors.value = error.response.data.errors
+            })
+        } else {
+            axios.post("/direccionEntregaSucursal")
+            .then(({data}) => {
+                emit("pasos", 3);
+                emit("direccion", {
+                    es_recoleccion: true,
+                    direccion: {}
+                })
+            })
+        }  
+ 
 };
 
-watch(envioOption, (newValue) => {
-    if (newValue === "sucursal") {
-        recogerSucursal();
-    }
-});
 </script>

@@ -1,11 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" max-width="600px">
-      <v-card>
-        <v-card-title>
-          Actualiza los datos pertinentes
-
-        </v-card-title>
-        <v-card-text>
+   
           <v-form>
             <v-text-field
               v-model="form.nombre"
@@ -50,20 +44,18 @@
               :error-messages="errorMessages.referencias"
             ></v-text-field>
           </v-form>
-        </v-card-text>
         <v-card-actions>
         <v-row>
             <v-col class="text-left" cols="6">
-                <v-btn class="text-left" @click="closeDialog()">cancelar</v-btn>
+                <v-btn class="text-left" color="danger" @click="closeDialog()" prepend-icon="mdi-close" variant="tonal">cancelar</v-btn>
 
             </v-col>
             <v-col class="text-right" cols="6">
-          <v-btn @click="update">Guardar</v-btn>
+          <v-btn variant="tonal" @click="update" prepend-icon="mdi-Check-Outline">Guardar</v-btn>
             </v-col>
         </v-row>
         </v-card-actions>
-      </v-card>
-    </v-dialog>
+    
   </template>
   
   <script setup>

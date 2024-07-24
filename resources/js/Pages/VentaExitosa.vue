@@ -1,65 +1,71 @@
 <template>
     <v-container >
         <v-card >
-            <v-card-text class="success-card" >
-                <v-row>
-                    <v-col cols="4"></v-col>
-                    <v-col cols="4" class="text-center">
-                        <v-icon color="green" size="large" icon="mdi-check-bold"></v-icon>
+            <v-card-title class="mt-10">
+                <v-row class="text-center">
+                    <v-col cols="12">
+                        <v-icon color="success" size="85" icon="mdi-check-decagram"></v-icon>
                     </v-col>
-                    <v-col cols="4"></v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="4"></v-col>
-                    <v-col cols="4" class="text-center">
-                        <v-text class="success-text">Su Compra ha sido exitosa</v-text>
+                    <v-col cols="12">
+                        <h2>¡Pago exitoso!</h2>
                     </v-col>
-                    <v-col cols="4"></v-col>
                 </v-row>
-            </v-card-text>
+            </v-card-title>
+            <v-divider :thickness="2"></v-divider>
+            <v-card-text>
+                <v-row class="text-center mb-10">
+                    <v-col cols="6"><h3>ID de compra:</h3></v-col>
+                    <v-col cols="6"><strong><h3>#{{ orden.id }}</h3></strong></v-col>
+                    <v-col cols="6"><h3>Total:</h3></v-col>
+                    <v-col cols="6"><h3>{{ formatCurrency(orden.total) }}</h3></v-col>
+                    <v-col cols="6"><h3>Estatus:</h3></v-col>
+                    <v-col cols="6"><strong><h3>Pagado</h3></strong></v-col>
+                    <v-col cols="12">
+                        <v-card-subtitle>
+                            <h4>Se te enviará un correo con información pertinente</h4>
+                        </v-card-subtitle>
+                    </v-col>
+                    <v-col cols="12"><v-btn variant="outlined" color="success" @click="router.push({name: 'cotizar'})">Regresar al inicio</v-btn></v-col>
+                   
+                </v-row>
+            </v-card-text >
         </v-card>
     </v-container>
 </template>
 
 <script setup>
-import axios from 'axios';
-import { onMounted } from 'vue';
+import axios from '@/axios'
+import { onMounted, ref } from 'vue';
+import { useCartStore } from '../stores/carrito';
+import formatCurrency from '../composables/formatNumberToCurrency';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+const cartStore = useCartStore();
+const direccion = ref({})
+const orden = ref({})
 const finalizar = async () => {
     try {
         await axios.post('/ConfirmarVenta');
+        cartStore.fetchCart()
 
     } catch (error) {
         
     }
 };
 
+const traerCarrito = () => {
+    axios.get('/traerCarrito')
+    .then(({data}) => {
+        orden.value = data.data
+        direccion.value = data.direccion
+        finalizar()
+    })
+}
+
 onMounted(() => {
-    finalizar();
+    traerCarrito()
+    
+    
 });
 </script>
-
-<style scoped>
-.success-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f8f5;
-}
-
-.success-card {
-    max-width: 400px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-}
-
-.success-text {
-    font-size: 18px;
-    font-weight: bold;
-    color: green;
-    margin-top: 10px;
-}
-</style>

@@ -1,11 +1,6 @@
 <template>
-    <v-container class="text-center">
-        <v-col>
-            <v-card>
-                <v-card-title>
-                    <v-text>Completa los campos</v-text>
-                </v-card-title>
-                <v-card-text>
+   
+            
                     <v-form @submit.prevent="submitDireccion">
                         <v-text-field
                             label="Asigna un nombre a esta dirección"
@@ -60,19 +55,16 @@
                         </v-textarea>
                         <v-row>
                             <v-col class="text-left" cols="6">
-                                <v-btn @click="closeDialog()" prepend-icon="mdi-close">Cancelar</v-btn>
+                                <v-btn variant="tonal" @click="closeDialog()" color="danger" prepend-icon="mdi-close">Cancelar</v-btn>
                             </v-col>
                             <v-col class="text-right" cols="6">
-                                <v-btn prepend-icon="mdi-Check-Outline" type="submit">
+                                <v-btn variant="tonal" prepend-icon="mdi-Check-Outline" type="submit">
                                     Guardar</v-btn>
                             </v-col>
                         </v-row>
                     
                     </v-form>
-                </v-card-text>
-            </v-card>
-        </v-col>
-    </v-container>
+        
 </template>
 
 <script setup>

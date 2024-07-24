@@ -1,59 +1,99 @@
 <template>
     <v-container class="text-center">
-      <v-card-text v-if="addButtonIsVisible">
-        <v-expansion-panels variant="popout">
-          <v-expansion-panel v-for="direccion in direcciones" :key="direccion.id">
-            <v-expansion-panel-title>
-              {{ direccion.nombre }}
-            </v-expansion-panel-title>
-            <v-expansion-panel-text>
-              <v-card-text>
-                <h7> Direccion: {{ direccion.direccion }} </h7>
-                <v-divider></v-divider>
-                <h7>Destinatario: {{ direccion.destinatario }}</h7>
-                <v-divider></v-divider>
-                <h7>Telefono: {{ direccion.telefono }}</h7>
-                <v-divider></v-divider>
-                <h7>Referencias: {{ direccion.referencias }}</h7>
-              </v-card-text>
-              <v-card-actions>
-                <v-row>
-                  <v-col class="text-left" cols="6">
-                    <v-icon
-                      color="danger"
-                      icon="mdi-delete"
-                      @click="open(direccion.id)"
-                    ></v-icon>
-                  </v-col>
-                  <v-col class="text-right" cols="6">
-                    <v-icon @click="editDireccion(direccion)" icon="mdi-pencil"></v-icon>
-                  </v-col>
-                </v-row>
-              </v-card-actions>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
+      <v-card-text elevation="0" v-if="addButtonIsVisible">
+        <v-row>
+          <v-col cols="12">
+                <v-expansion-panels >
+              <v-expansion-panel v-for="direccion in direcciones" :key="direccion.id">
+                <v-expansion-panel-title>
+                  {{ direccion.nombre }}
+                </v-expansion-panel-title>
+                <v-expansion-panel-text align="left">
+                    <v-list lines="one">
+                      <v-list-item
+                        :title="direccion.direccion"
+                        subtitle="Dirección"
+                      ></v-list-item>
+                      <v-list-item
+                        :title="direccion.destinatario"
+                        subtitle="Destinatario"
+                      ></v-list-item>
+                      <v-list-item
+                        :title="direccion.telefono"
+                        subtitle="Telefono"
+                      ></v-list-item>
+                      <v-list-item
+                        :title="direccion.referencias"
+                        subtitle="Referencias"
+                      ></v-list-item>
+                    </v-list>
+                    <v-row>
+                      <v-col class="text-left" cols="6">
+                        <v-icon
+                          color="danger"
+                          icon="mdi-delete"
+                          @click="open(direccion.id)"
+                        ></v-icon>
+                      </v-col>
+                      <v-col class="text-right" cols="6">
+                        <v-icon @click="editDireccion(direccion)" icon="mdi-pencil"></v-icon>
+                      </v-col>
+                    </v-row>
+                  
+                </v-expansion-panel-text>
+                
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-col>
+          <v-col>
+            <v-btn
+              block
+              variant="tonal"
+              @click="openDialog()"
+              >añadir<v-icon icon="mdi-plus-box"></v-icon></v-btn>
+            </v-col>
+        </v-row>
+        
+       
       </v-card-text>
-      <v-card-actions v-if="addButtonIsVisible">
-        <v-btn
-          class="ma-2"
-          color="#4D869C"
-          @click="openDialog()"
-        >añadir<v-icon icon="mdi-plus-box"></v-icon></v-btn>
-      </v-card-actions>
+
       <p v-else>
         Parece ser que no has registrado ninguna dirección aun,
         <a href="javascript:void(0)" @click="openDialog()">haz click para añadir una</a>
       </p>
-      <v-dialog v-model="dialog" class="text-center">
-        <Direcciones @cancelado="cerrarDialogs" @añadido="getDirecciones" ></Direcciones>
-      </v-dialog>
-      <v-dialog v-model="editar" class="text-center">
- 
-          <EditarDireccion :direccion="selectedDireccion" @actualizado="getDirecciones()" @cancelado="cerrarDialogs()"></EditarDireccion>
-
-      </v-dialog>
+      
+    
     </v-container>
+
+    <v-dialog
+     v-model="editar" 
+     class="text-center"
+     width="500"
+    >
+      <v-card
+        prepend-icon="mdi-google-maps"
+        title="Actualiza los campos necesarios"
+      >
+        <v-card-text>
+            <EditarDireccion :direccion="selectedDireccion" @actualizado="getDirecciones()" @cancelado="cerrarDialogs()"></EditarDireccion>
+        </v-card-text>
+      
+      </v-card>
+    </v-dialog>
+      
+    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <v-card
+        prepend-icon="mdi-google-maps"
+        title="Agregar una dirección"
+      >
+        <v-card-text>
+          <Direcciones @cancelado="cerrarDialogs" @añadido="getDirecciones()" ></Direcciones>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </template>
   
   <script setup>

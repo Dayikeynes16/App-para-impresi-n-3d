@@ -140,10 +140,9 @@ class DireccionesController extends Controller
         $carrito = $this->obtenerCarrito($user_id);
         $carrito->recoleccion = true;
         $carrito->direccion_id = null;
-        // $carrito->status = 'pagada';
         $carrito->save();
 
     
-        return response()->json(['message' => 'Dirección asignada correctamente.',  'carrito' => $carrito], 200);
+        return response()->json(['message' => 'se ha programado para recoger en sucursal',  'carrito' => $carrito], 200);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Carrito;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,6 +30,12 @@ class AuthController extends Controller
         return response()->json([
             'data' => $usuario, 'message' => 'Usuario guardado con éxito'
         ], 200);
+    }
+
+    public function prueba(Request $request) {
+        // $user = $request->user();
+        // $carrito = Carrito
+        return view('email.ventaConfirmada');
     }
 
     

@@ -11,8 +11,20 @@
                             Informacion de la cuenta
                         </v-card-title>
                         <v-card-text>
-                            Bienvenido {{ user.name }} <br />
-                            Correo: {{ user.correo }}
+                            <v-list lines="two">
+                                <v-list-item
+                                    :title="user.name"
+                                    subtitle="Nombre del usuario"
+                                ></v-list-item>
+                                <v-list-item
+                                    :title="user.email"
+                                    subtitle="Correo Electronico"
+                                ></v-list-item>
+                                <v-list-item
+                                    :title="dayjs(user.created_at).format('DD/MM/YYYY')"
+                                    subtitle="Fecha de registro"
+                                ></v-list-item>
+                            </v-list>
                         </v-card-text>
                     </v-card-item>
                 </v-card>
@@ -27,30 +39,30 @@
                 </v-card>
             </v-col>
         </v-row>
-
     </v-container>
-
- 
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "@/axios.js";
 import Direcciones from "../Components/Direcciones.vue";
 import listaDirecciones from "../Components/listaDirecciones.vue";
-import router from "../router";
+import dayjs from "dayjs";
 
 const user = ref({
     name: null,
-    correo: null,
+    email: null,
+    created_at: null
 });
 
-const get_user = async () => {
-    const { data } = await axios.get("/get_user");
-    user.value.name = data.name;
-    user.value.correo = data.email;
-
+const getUser = async () => {
+    axios.get("/get_user")
+    .then(({data}) => {
+        user.value = data.data
+    });
 };
 
-get_user();
+onMounted(() => {
+    getUser()
+})
 </script>
