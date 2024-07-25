@@ -266,7 +266,7 @@ class CarritoController extends Controller
 
         $carritos = Carrito::find($id);
         $ordenes = Orden::with('files')->where('carrito_id', $id)->get();
-        $productos = Producto_Carrito::with('producto.files')->where('carrito_id', $id)->get();
+        $productos = Producto_Carrito::with('producto.files', 'productoCarritoArchivos')->where('carrito_id', $id)->get();
         $files = [];
         foreach ($ordenes as $orden) {
             foreach ($orden->files as $file) {
@@ -322,6 +322,12 @@ class CarritoController extends Controller
         $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'Listo Para Enviar')->get();
         return response()->json(['data'=>$pedidosViejos]);
 
+    }
+
+    public function userHistorial(Request $request){
+        $pedidos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'pagada')->
+            where('usuario_id', $request->user()->id)->get();
+        return response()->json(['data' => $pedidos]);
     }
 
 

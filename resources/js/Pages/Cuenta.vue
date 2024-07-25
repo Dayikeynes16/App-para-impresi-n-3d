@@ -30,7 +30,7 @@
                 </v-card>
             </v-col>
             <v-col cols="6">
-                <v-card elevation="8">
+                <v-card elevation="8" >
                     <v-card-title v-text="'Tus direcciones:'"> </v-card-title>
                     <v-card-text>
                         <listaDirecciones></listaDirecciones>
@@ -48,7 +48,9 @@ import axios from "@/axios.js";
 import Direcciones from "../Components/Direcciones.vue";
 import listaDirecciones from "../Components/listaDirecciones.vue";
 import dayjs from "dayjs";
+import { useLoginStore } from "@/stores/login";
 
+const loginStore = useLoginStore();
 const user = ref({
     name: null,
     email: null,
@@ -64,5 +66,6 @@ const getUser = async () => {
 
 onMounted(() => {
     getUser()
+    
 })
 </script>

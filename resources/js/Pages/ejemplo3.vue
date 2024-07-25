@@ -52,7 +52,7 @@
             </v-col>
             <v-col v-if="resultado" cols="8">
                 <v-card-subtitle>Aqui podra ver todas las cotizaciones que ha realizado, puedes seleccionar y agregarlas al carrito.</v-card-subtitle>
-                <filesCard @añadido="limpiarArchivos"  @datosCarrito="totales = $event"></filesCard>
+                <filesCard @añadido="limpiarArchivos"  @datosCarrito="totales = $event" :update="actualizarLista" @actualizado="actualizarLista = $event"></filesCard>
             </v-col>
         </v-row>
 
@@ -83,7 +83,9 @@ const loadform = ref();
 const resultado = ref(true);
 const loading = ref(false);
 const errorMessage = ref("");
+const traerarchivos = ref();
 const dialog = ref(false);
+const actualizarLista = ref(false);
 const totales = ref({
     cantidad: 0,
     total: 0,
@@ -110,8 +112,12 @@ const cotizar = async (file) => {
     const formData = new FormData();
     formData.append('file', file.file);
     try {
-        const {data} = await axios.post("/cotizacion/cotizar",formData);
-        loading.value = false;
+        axios.post("/cotizacion/cotizar",formData)
+        .then(() => {
+            loading.value = false;
+            actualizarLista.value = true
+        })
+
     } catch (error) {
         loading.value = false;
         if (

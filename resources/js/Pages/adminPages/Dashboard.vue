@@ -1,14 +1,15 @@
 <template>
-    <div class="ma-4">
+    <v-container>
         <v-row>
-            <v-col  cols="12">
-               <PedidosPendientesList></PedidosPendientesList>
+            <v-col cols="12">
+                <v-card rounded="lg" title="Pedidos Pendientes">
+                    <v-card-text>
+                        <PedidosPendientesList></PedidosPendientesList>
+                    </v-card-text>
+                </v-card>
             </v-col>
-         
         </v-row>
-    </div>        
-    
-
+    </v-container>
 </template>
 
 <script setup>

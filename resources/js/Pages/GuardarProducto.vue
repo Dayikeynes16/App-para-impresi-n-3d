@@ -9,18 +9,19 @@
                     Ingresa los datos del modelo
                   </v-card-title>
                   <v-form @submit.prevent="savemodel">
-                    <v-text-field v-model="form.name" label="Nombre del modelo" required
+                    <v-text-field  variant="outlined" v-model="form.name" label="Nombre del modelo" required
                       :error-messages="errorMessages.name">
                     </v-text-field>
     
-                    <v-textarea required v-model="form.description" label="Añade una descripción"
+                    <v-textarea variant="outlined" required v-model="form.description" label="Añade una descripción"
                       :error-messages="errorMessages.description">
                     </v-textarea>
     
-                    <v-text-field v-model="form.price" label="Ingresa el precio" :error-messages="errorMessages.price">
+                    <v-text-field variant="outlined" v-model="form.price" label="Ingresa el precio" :error-messages="errorMessages.price">
                     </v-text-field>
                     <v-card-actions >
-                      <v-btn type="submit" class="" color="blue" prepend-icon="mdi-arrow-right" variant="tonal" >
+                      <v-spacer></v-spacer>
+                      <v-btn type="submit" class="" color="primary" append-icon="mdi-arrow-right" variant="tonal" >
                         Siguiente 
                       </v-btn>
                     </v-card-actions>
@@ -51,44 +52,48 @@
                 </v-card-text>
               </v-col>
               <v-col cols="6">
-                <v-card>
+                <v-card elevation="0">
                   <v-card-title>Archivos</v-card-title>
-                  <v-list v-for="archivo in archivos">
-                          <v-list-item class="text-right">
-                              <v-row>
+                  <v-card-text class="overflow-y-auto" style="max-height: 300px;">
+                    <v-row v-for="archivo in archivos">
+                          
+                       
+                          <v-col cols="12">
+                            <v-card>
+                              <v-row class="ma-3">
+                                <v-col cols="9" class="text-left">
+                                    <strong>{{ archivo.nombre }}</strong>
+                                </v-col>
+      
+                                <v-col cols="3" class="text-right">
+                                    <v-icon
+                                        cursor-pointer
+                                        color="danger"
+                                        icon="mdi-Delete"
+                                        @click="
+                                            eliminarArchivo(archivo.id)
+                                        "
+                                    >
+                                    </v-icon>
+                                </v-col>
+                              </v-row>
+                            </v-card>
+                          </v-col>
+  
+                      
+  
+                    </v-row>
+                  </v-card-text>
 
-                              <v-col cols="6">
-                                  {{ archivo.nombre }}
-                              </v-col>
-
-                              <v-col cls="6">
-                                  <v-icon
-                                      icon="mdi-Delete"
-                                      @click="
-                                          eliminarArchivo(archivo.id)
-                                      "
-                                  >
-                                  </v-icon>
-                              </v-col>
-                          </v-row>
-
-                          </v-list-item>
-                  </v-list>
               </v-card>
-
-
               </v-col>
-
-
-           
-
             </v-row>
             <v-row>
               <v-col cols="12">
                 <v-card-actions >
                   <v-col cols="10"></v-col>
-                  <v-col cols="2">
-                    <v-btn @click="siguientePaso()">Siguiente</v-btn>
+                  <v-col cols="3">
+                    <v-btn color="primary" append-icon="mdi-arrow-right" variant="tonal" @click="siguientePaso()">Siguiente</v-btn>
                   </v-col>
                 </v-card-actions>
               </v-col>
@@ -127,14 +132,17 @@
               </v-col>
               <v-col cols="6">
                 <div v-if="visible">
-                  <v-row>
-                    <v-col cols="3" v-for="imagen in Producto.imagenes" >
+                  <v-row class="overflow-container">
+                    <v-col cols="6" v-for="imagen in Producto.imagenes" >
                       <v-card>
-                   <v-card-text>
+                 
                     <v-img :src="imagen.url"></v-img>
-                   </v-card-text>
-                   <v-card-actions>
-                    <v-btn @click="eliminarImagen(imagen.id)"><v-icon  icon="mdi-Delete"></v-icon></v-btn>
+                
+                   <v-card-actions >
+                    <v-col class="text-right">
+
+                      <v-icon color="danger" @click="eliminarImagen(imagen.id)" icon="mdi-delete"></v-icon>
+                    </v-col>
                     
                    </v-card-actions>
                 </v-card>
@@ -149,7 +157,9 @@
               </v-col>
             </v-row>
             <v-card-actions>
-              <v-btn @click="router.push({name: 'editarcatalogo'})">Finalizar</v-btn>
+              <v-col class="text-right">
+                <v-btn variant="tonal" @click="router.push({name: 'editarcatalogo'})">Finalizar</v-btn>
+              </v-col>
             </v-card-actions>
 
             
@@ -268,7 +278,7 @@ const traerArchivos = async (id) => {
 const eliminarArchivo = async (id) => {
     try {
         await axios.post(
-            "/eliminarArchivo",
+            "/borrarArchivo",
             { id }
         );
         archivos.value = archivos.value.filter((file) => file.id !== id);

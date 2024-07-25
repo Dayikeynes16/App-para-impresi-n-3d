@@ -23,9 +23,9 @@ use App\Http\Controllers\UsuariosRolesController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Auth;
 
-Route::post('/deleteprueba',[AuthController::class, 'deleteprueba']);
+Route::post('/deleteprueba', [AuthController::class, 'deleteprueba']);
 
-Route::apiResource('/roles',RoleController::class);
+Route::apiResource('/roles', RoleController::class);
 Route::apiResource('/permissions',PermissionController::class);
 
 Route::post('/deleteUser/{user}',[UsuariosRolesController::class, 'delete']);
@@ -43,10 +43,14 @@ Route::get('/cancel', function () {
     return view('cancel');
 });
 
+
+
 Route::post('/webhook/stripe', [WebhookController::class, 'handleStripeWebhook']);
 
  //AuthController
- Route::get('/getUsersRoles',[AuthController::class, 'getUsersRoles']);
+ Route::post('/update-user/{user}', [AuthController::class, 'updateUser']);
+ Route::get('/get-user/{user}', [AuthController::class, 'getUser']);
+ Route::get('/getUsersRoles',[AuthController::class, 'getUsersRoles']); ///
  Route::get('/get_user', [AuthController::class, 'get_user']);
  Route::get('/auth', [AuthController::class, 'auth']);
  Route::post('/login', [AuthController::class, 'login']);
@@ -105,6 +109,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/deletefile', [ArchivosController::class, 'deletefile']);
     Route::post('/calculate', [ArchivosController::class, 'calculate']);
     Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);});
+    Route::get('/downloadArchivo/{productoCarritoArchivo}', [ArchivosController::class, 'downloadSArchivo']);
     Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);  
     Route::get('/traerArchivos',[ArchivosController::class, 'traerArchivos']) ;
     Route::post('/borrarArchivo',[ArchivosController::class, 'eliminarArchivo']);
@@ -119,6 +124,7 @@ Route::group(['middleware' => ['auth']], function(){
         Route::post('/borrar', [CarritoController::class, 'borrar']);
         Route::post('/agregar', [CarritoController::class, 'agregar']);
         Route::post('/update-file/{productoCarritoArchivo}', [CarritoController::class, 'actualizarCarritoArchivo']);
+        Route::get('/userHistorial', [CarritoController::class, 'userHistorial']);
     });
 
     

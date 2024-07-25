@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Files;
 use App\Models\Orden;
 use App\Models\Product;
+use App\Models\ProductoCarritoArchivo;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
@@ -20,13 +21,13 @@ class ArchivosController extends Controller
         try {
             $response = $this->apiRequest($request->file('file'));
 
-            // $orden = Orden::firstOrCreate([
-            //     'status' => 'activo',
-            //     'usuario_id' => $request->user()->id,
-            // ], [
-            //     'total' => 0,
-            //     'status' => 'activo',
-            // ]);
+            $orden = Orden::firstOrCreate([
+                'status' => 'activo',
+                'usuario_id' => $request->user()->id,
+            ], [
+                'total' => 0,
+                'status' => 'activo',
+            ]);
     
             $filePath = $request->file('file')->store('files');
             $file = new Files([
@@ -80,13 +81,16 @@ class ArchivosController extends Controller
 
         $file = Files::find($id);
 
-
-        if (!$file || !Storage::exists($file->path)) {
-            return response()->json(['error' => 'File not found.'], 404);
-        }
-
- 
+        if(!$file === null) {
+            $archivo = ProductoCarritoArchivo::find($id);
+            return $archivo;
+            // return Storage::download($file->path, $file->nombre);
+            }
         return Storage::download($file->path, $file->nombre);
+    }
+
+    public function downloadArchivo(ProductoCarritoArchivo $productoCarritoArchivo){
+    return $productoCarritoArchivo;
     }
 
     public function guardarSTLproducto(Request $request){

@@ -2,12 +2,12 @@
     <v-container>
             <v-col cols="12">
 
-            <v-stepper :items="['Fotos', 'Archivos', 'Informació']">
+            <v-stepper next-text="siguiente" prev-text="atras" :items="['Fotos', 'Archivos', 'Informació']">
                 <template v-slot:item.1>
                     <v-card subtitle="Añade o elimina fotos" flat>
                         <v-row>
                             <v-col cols="6">
-                                <v-card color="grey-lighten-2">
+                                <v-card elevation="0">
                                     <v-card-title>Agregar imágenes</v-card-title>
                                     <v-card-text>
                                         <el-upload
@@ -41,12 +41,13 @@
                                         <v-card>
                                             <v-img :src="imagen.url"></v-img>
                                             <v-card-actions>
-                                                <el-button
-                                                    type="danger"
-                                                    icon="mdi-Delete"
-                                                    circle
-                                                    @click="eliminarImagen(imagen.id)"
-                                                ></el-button>
+                                                <v-col class="text-right mb-0 pb-0">
+                                                    <v-icon
+                                                        color="danger"
+                                                        icon="mdi-delete"
+                                                        @click="eliminarImagen(imagen.id)"
+                                                    ></v-icon>
+                                                </v-col>
                                             </v-card-actions>
                                         </v-card>
                                     </v-col>
@@ -56,10 +57,10 @@
                     </v-card>
                 </template>
                   <template v-slot:item.2>
-                    <v-card subtitle="Modifica los archivos" flat>
+                    <v-card subtitle="Modifica los archivos" >
                         <v-row>
                             <v-col cols="6">
-                                <v-card color="grey-lighten-2">
+                                <v-card elevation="0">
                                     <v-card-title>Agregar más archivos</v-card-title>
                                     <v-card-text>
                                         <el-upload
@@ -88,58 +89,55 @@
                                 </v-card>
                             </v-col>
                             <v-col cols="6">
-                                <v-card>
+                                <v-card elevation="0" >
                                     <v-card-title>Archivos</v-card-title>
-                                    <v-list v-for="archivo in archivos">
-                                            <v-list-item class="text-right">
-                                                <v-row>
-        
-                                                <v-col cols="6">
-                                                    {{ archivo.nombre }}
-                                                </v-col>
-        
-                                                <v-col cls="6">
-                                                    <v-icon
-                                                        icon="mdi-Delete"
-                                                        @click="
-                                                            eliminarArchivo(archivo.id)
-                                                        "
-                                                    >
-                                                    </v-icon>
-                                                </v-col>
-                                            </v-row>
-
-        
-                                            </v-list-item>
-                                            <v-divider></v-divider>
-
-
-                                    </v-list>
+                                    <v-card-text class="overflow-y-auto" style="max-height: 300px;">
+                                          
+                                                    <v-row align="center" v-for="archivo in archivos">
+                                                        <v-col cols="12">
+                                                          <v-card>
+                                                            <v-row class="ma-4">
+                                                                <v-col cols="9" class="">
+                                                                    {{ archivo.nombre }}
+                                                                </v-col>
+                        
+                                                                <v-col cols="3" align="center" class="text-right">
+                                                                    <v-icon
+                                                                        color="danger"
+                                                                        icon="mdi-Delete"
+                                                                        @click="
+                                                                        eliminarArchivo(archivo.id)"
+                                                                    ></v-icon>
+                                                                </v-col>
+                                                            </v-row>
+                                                          </v-card>
+                                                        </v-col>
+                                                    </v-row>
+                                         
+                                            </v-card-text>
+                                        <v-divider></v-divider>
                                 </v-card>
                             </v-col>
-
-
-
                         </v-row>
-
-
                     </v-card>
                   </template>
                   <template v-slot:item.3>
                     <v-card subtitle="Informacion del producto" flat>
-                        <v-card color="grey-lighten-2">
+                        <v-card>
                             <v-card-title>Actualizar Producto</v-card-title>
                             <v-card-subtitle
                                 >Modifica los campos necesarios</v-card-subtitle
                             >
                             <v-card-text>
                                 <v-text-field
+                                    variant="outlined"
                                     v-model="product.name"
                                     label="Nombre"
                                     required
                                     :error-messages="errorMessages.name"
                                 ></v-text-field>
                                 <v-text-field
+                                    variant="outlined"
                                     v-model="product.description"
                                     label="Descripción"
                                     required
@@ -147,12 +145,13 @@
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="product.price"
+                                    variant="outlined"
                                     label="Precio"
                                     required
                                     type="number"
                                     :error-messages="errorMessages.price"
                                 ></v-text-field>
-                                <v-btn @click="update" color="primary"
+                                <v-btn variant="tonal" @click="update" color="primary"
                                     >Guardar</v-btn
                                 >
                             </v-card-text>
@@ -174,7 +173,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "@/axios.js";
 import { Delete, UploadFilled } from "@element-plus/icons-vue";
-
+import formatCurrency from "../composables/formatNumberToCurrency";
 import ListaDeArchivos from "../Components/ListaDeArchivos.vue";
 import { VList } from "vuetify/components";
 
@@ -252,7 +251,7 @@ const guardarSTL = async (file) => {
 const eliminarArchivo = async (id) => {
     try {
         await axios.post(
-            "/eliminarArchivo",
+            "/borrarArchivo",
             { id },
         );
         archivos.value = archivos.value.filter((file) => file.id !== id);

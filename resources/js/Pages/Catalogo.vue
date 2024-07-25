@@ -36,32 +36,13 @@
                                 </v-row>
                             </v-card-title>
                             <v-card-subtitle
-                                :v-text="imagen.description"
-                            ></v-card-subtitle>
+                                
+                            >{{ imagen.description }}</v-card-subtitle>
 
                             <v-card-actions>
                                 <v-row>
                                     <v-col cols="6">
                                         <v-row>
-                                         
-
-                                          
-                                            <v-col class="text-center" cols="3"
-                                                ><v-icon
-                                                    @click="
-                                                        sumarProductoCantidad(
-                                                            imagen
-                                                        )
-                                                    "
-                                                    circle
-                                                    icon="mdi-plus"
-                                                ></v-icon
-                                            ></v-col>
-                                            <v-col
-                                                class="text-center"
-                                                cols="3"
-                                                >{{ imagen.cantidad }}</v-col
-                                            >
                                             <v-col class="text-center" cols="3"
                                                 ><v-icon
                                                     @click="
@@ -71,6 +52,23 @@
                                                     "
                                                     circle
                                                     icon="mdi-minus"
+                                                ></v-icon
+                                            ></v-col>
+                                            <v-col
+                                                class="text-center"
+                                                cols="3"
+                                                >{{ imagen.cantidad }}</v-col
+                                            >
+                                           
+                                            <v-col class="text-center" cols="3"
+                                                ><v-icon
+                                                    @click="
+                                                        sumarProductoCantidad(
+                                                            imagen
+                                                        )
+                                                    "
+                                                    circle
+                                                    icon="mdi-plus"
                                                 ></v-icon
                                             ></v-col>
                                         

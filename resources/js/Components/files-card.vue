@@ -51,8 +51,8 @@ import formatCurrency from "../composables/formatNumberToCurrency";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 const files = ref([]);
-const props = defineProps({ item: Object });
-const emit = defineEmits(["anadido", "noFiles", "datosCarrito"]);
+const props = defineProps({ item: Object, update: Boolean });
+const emit = defineEmits(["anadido", "noFiles", "datosCarrito", "actualizado"]);
 const enviarCarrito = ref([]);
 const form = ref({
     id: null,
@@ -82,6 +82,7 @@ const traerarchivos = async () => {
         .then(({data}) => {
             files.value = data.data;
             calcularTotal()
+            emit("actualizado", false)
         })
         .catch((error) => {
             console.error(error);
@@ -93,6 +94,9 @@ const seleccionar = (item) => {
 
 watch(() => enviarCarrito.value, (newValue, oldValue) => {
     calcularTotal()
+})
+watch(() => props.update, (newValue, oldValue) => {
+    traerarchivos()
 })
 
 const eliminarArchivo = async (id) => {

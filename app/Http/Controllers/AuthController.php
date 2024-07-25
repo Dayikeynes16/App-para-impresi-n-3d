@@ -13,10 +13,26 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB ;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
+
+    public function updateUser(User $user, Request $request){
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'nullable|string',
+            'role' => 'required|array'
+        ]);
+        $user->update($request->all());
+
+        return response()->json(['data' => $user]);
+    }
+    public function getUser(User $user){
+
+        return response()->json(['data' => $user, 'rol' => $user->getRoleNames() ]); 
+    }
 
     public function crear(Request $request){
         $request->validate([
@@ -81,6 +97,7 @@ class AuthController extends Controller
         return response()->json(['data' => $role]);
     }
 
+    //dar una revisada
     public function get_user(Request $request)
     {
         $id = $request->user()->id;

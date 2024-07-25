@@ -5,8 +5,14 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 import colors from 'vuetify/util/colors';
+import { es } from 'vuetify/locale'
 
 export const vuetify = createVuetify({
+  locale: {
+    locale: 'es',
+    fallback: 'en',
+    messages: { es },
+  },
   components,
   directives,
   theme: {
@@ -27,5 +33,6 @@ export const vuetify = createVuetify({
     VBtn: {
       color: 'primary'
     }
-  }
+  },
+  
 })

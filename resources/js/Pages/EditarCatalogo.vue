@@ -1,5 +1,5 @@
 <template>
-    <v-layout class="overflow-visible" style="height: 56px">
+    <!-- <v-layout class="overflow-visible" style="height: 56px">
         <v-bottom-navigation v-model="value" active>
             <v-btn
             icon="mdi-add"
@@ -8,7 +8,7 @@
             @click="router.push({ name: 'GuardarProducto' })"
             ></v-btn>
         </v-bottom-navigation>
-    </v-layout>
+    </v-layout> -->
     <v-container>
         <v-row>
             <v-col cols="12">
@@ -30,6 +30,15 @@
                 </v-row>
             </v-col>
         </v-row>
+        <v-fab
+            icon="mdi-plus"
+            variant="outlined"
+            absolute
+            location="bottom end"
+            app
+            size="70"
+            @click="router.push({ name: 'GuardarProducto' })"
+        ></v-fab>
     </v-container>
 </template>
 

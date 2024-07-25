@@ -1,76 +1,8 @@
 <template>
-    <v-layout class="overflow-visible">
-        <v-bottom-navigation active>
-            <v-btn
-                @click="openAddRoleDialog"
-                icon="mdi-add"
-                v-text="'Nuevo Rol'"
-                size="auto"
-            ></v-btn>
-            <v-btn
-                style="margin-left: 30px"
-                icon="mdi-add"
-                v-text="'Crear Usuario'"
-                size="auto"
-                @click="openCreateUserDialog = true"
-            ></v-btn>
-        </v-bottom-navigation>
-    </v-layout>
-    <v-container fluid>
+    <v-container >
         <v-row>
-            <v-col cols="4">
-                <v-card>
-                    <v-card-title>
-                        Usuarios y sus roles asignados
-                    </v-card-title>
-                    <v-card-text>
-                        <v-expansion-panels variant="inset">
-                            <v-expansion-panel
-                                v-for="user in users"
-                                :key="user.id"
-                            >
-                                <v-expansion-panel-title>
-                                    {{ user.name }}
-                                </v-expansion-panel-title>
-                                <v-expansion-panel-text>
-                                    <v-list dense>
-                                        <v-list-item
-                                            v-for="role in user.roles"
-                                            :key="role.id"
-                                        >
-                                            <v-list-item-content>
-                                                <v-card-text>
-                                                    <v-list-item-title> Email:  {{ user.email }}</v-list-item-title>
-
-                                                    <v-list-item-title>Rol: {{ role.name }}</v-list-item-title>
-                                                </v-card-text>
-                                               
-                                            </v-list-item-content>
-                                        </v-list-item>
-                                        <v-card-actions>
-                                            <v-row>
-                                                <v-col cols="4" class="text-left">
-                                                    <v-icon icon="mdi-pencil"  color="primary"></v-icon>
-                                                </v-col>
-                                                <v-col cols="4"></v-col>
-                                                <v-col cols="4" class="text-right">
-                                                    <v-icon @click="deleteUserWithRoles(user.id)" icon="mdi-delete" color="danger"></v-icon>
-
-                                                </v-col>
-
-                                            </v-row>
-                                                    
-                                                </v-card-actions>
-                                    </v-list>
-                                </v-expansion-panel-text>
-                            </v-expansion-panel>
-                        </v-expansion-panels>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-
-            <v-col cols="4">
-                <v-card color="grey-lighten-3">
+            <v-col cols="6">
+                <v-card color="">
                     <v-card-title class="headline">Roles</v-card-title>
                     <v-card-subtitle>
                         Podrás ver los roles existentes junto a los permisos otorgados
@@ -82,7 +14,7 @@
 
                     <v-expansion-panels variant="inset">
                         <v-expansion-panel v-for="role in roles" :key="role.id">
-                            <v-expansion-panel-title color="grey-lighten-3">
+                            <v-expansion-panel-title color="">
                                 <v-row no-gutters>
                                     <v-col cols="6">{{ role.name }}</v-col>
                                 </v-row>
@@ -128,8 +60,8 @@
                 </v-card>
             </v-col>
 
-            <v-col cols="4">
-                <v-card color="grey-lighten-3">
+            <v-col cols="6">
+                <v-card >
                     <v-card-title class="headline">Todos los Permisos</v-card-title>
                     <v-expansion-panels variant="inset">
                         <v-expansion-panel>
@@ -153,8 +85,8 @@
         </v-row>
     </v-container>
 
-    <v-dialog v-model="addRoleDialog">
-        <AddRole @añadido="fetchRoles"></AddRole>
+    <v-dialog v-model="addRoleDialog" max-width="400">
+        <AddRole  @añadido="fetchRoles" @cancelado="addRoleDialog = false"></AddRole>
     </v-dialog>
     <v-dialog v-model="openCreateUserDialog">
         <Usuarios @añadido="fetchUsersRoles" :roles="roles"></Usuarios>
@@ -162,6 +94,15 @@
     <v-dialog v-model="openEditUserDialogVisible">
         <EditRole @añadido="fetchUsersRoles" :user="userToEdit" :roles="roles"></EditRole>
     </v-dialog>
+    <v-fab
+        icon="mdi-plus"
+        variant="tonal"
+        absolute
+        location="bottom end"
+        app
+        @click="openAddRoleDialog"
+        size="70"
+    ></v-fab>
 </template>
 
 <script setup>

@@ -80,8 +80,8 @@ const menu = ref([
         ruta: { name: "Dashboard" },
     },
     {
-        nombre: "Historial",
-        permiso: "historial",
+        nombre: "Historial Pedidos ",
+        permiso: "admin.historial",
         ruta: { name: "PedidosPagados" },
     },
     {
@@ -101,9 +101,14 @@ const menu = ref([
     },
     {
         nombre: "Historial",
-        permiso: "admin.historial",
-        ruta: { name: "PedidosPagados" },
+        permiso: "user.historial",
+        ruta: { name: "ClienteHistorial"}
     },
+    {
+        nombre: "Crear Usuarios",
+        permiso: "usuarios",
+        ruta: { name: "crearUsuario" }
+    }
 ]);
 
 const cerrarSesion = async () => {
@@ -133,6 +138,6 @@ onMounted(() => {
         }
     }, 500);
 
-    cartStore.fetchCart();
+    // cartStore.fetchCart();
 });
 </script>

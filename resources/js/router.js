@@ -23,6 +23,8 @@ import Test from "./Pages/test.vue";
 import Usuarios from "./Pages/adminPages/Usuarios.vue"
 import RolesPermisssions from "./Pages/adminPages/RolesPermisssions.vue";
 import Main from "./Pages/layout/Main.vue";
+import HistorialCliente from "./Pages/clientePages/HistorialCliente.vue";
+import Users from "./Pages/adminPages/Users.vue";
 
 const routes = [
     {
@@ -132,6 +134,14 @@ const routes = [
                 name: "RolesPermissions",
                 path: "/RolesPermissions",
                 component: RolesPermisssions
+            },{
+                name: "ClienteHistorial",
+                path: "/cliente-historial",
+                component: HistorialCliente
+            },{
+                name: "crearUsuario",
+                path: "crearUsuario",
+                component: Users
             }
         ],
     },
