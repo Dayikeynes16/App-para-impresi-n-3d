@@ -28,9 +28,9 @@
                 <v-card-actions>
                     <a
                         class="text-blue text-decoration-none"
-                        @click="router.push({ name: 'register' })"
+                        @click="router.push({ name: 'logear' })"
                         rel="noopener noreferrer"
-                        target="_blank">
+                        target="_blank">Login
                             <v-icon icon="mdi-chevron-right"></v-icon>
                     </a>
                 </v-card-actions>
@@ -42,7 +42,9 @@
 <script setup>
 import { ref } from "vue";
 import axios from "@/axios.js";
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const email = ref("");
 const successMessage = ref("");
 const errorMessage = ref("");

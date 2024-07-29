@@ -3,7 +3,7 @@
         <v-row>
             <v-col cols="12">
                 <v-card elevation="3">
-                    <v-card-title>Usuarios y sus roles asignados</v-card-title>
+                    <v-card-title>Usuarios</v-card-title>
                     <v-data-table :headers="headers" :items="users">
                         <template v-slot:item.roles="{item}">
                             <v-icon
@@ -14,10 +14,10 @@
                         <template v-slot:item.eliminar="{item}">
                             <v-row>
                                 <v-col cols="6">
-                                    <v-btn append-icon="mdi-pencil" @click="showEditUserDialog(item)" color="success" block variant="outlined">Editar</v-btn>
+                                    <v-icon icon="mdi-pencil" @click="showEditUserDialog(item)" color="success" ></v-icon>
                                 </v-col>
                                 <v-col cols="6">
-                                    <v-btn @click="open(item.id)" block variant="outlined" append-icon="mdi-delete" color="danger">Eliminar</v-btn>
+                                    <v-icon @click="open(item.id)" icon="mdi-delete" color="danger"></v-icon>
                                 </v-col>
                             </v-row>
                         </template>

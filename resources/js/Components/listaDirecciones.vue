@@ -20,7 +20,7 @@
                       ></v-list-item>
                       <v-list-item
                         :title="direccion.telefono"
-                        subtitle="Telefono"
+                        subtitle="Teléfono"
                       ></v-list-item>
                       <v-list-item
                         :title="direccion.referencias"

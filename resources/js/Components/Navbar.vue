@@ -1,15 +1,17 @@
 <template>
     <v-app-bar elevation="0" color="primary">
         <v-app-bar-nav-icon color="white" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-app-bar-title>Applicaciones Creativas</v-app-bar-title>
+       
 
         <template v-slot:append>
             <v-menu>
                 <template v-slot:activator="{ props }">
                     <v-btn
                     color="white"
+            prepend-icon="mdi-account-circle"
+
                     v-bind="props">
-                    {{user.data?.name}}
+                    {{user.data?.name.split(' ')[0]}}
                     </v-btn>
                 </template>
                 <v-list>
@@ -33,7 +35,8 @@
 
     <v-navigation-drawer color="grey-lighten-2" v-model="drawer" temporary>
         <v-list-item
-            prepend-icon="mdi-account-circle"
+            prepend-icon="mdi-account-box"
+
             @click="router.push({ name: 'Cuenta' })"
             :title="user.data?.name"
         ></v-list-item>
@@ -80,12 +83,12 @@ const menu = ref([
         ruta: { name: "Dashboard" },
     },
     {
-        nombre: "Historial Pedidos ",
+        nombre: "Historial pedidos ",
         permiso: "admin.historial",
         ruta: { name: "PedidosPagados" },
     },
     {
-        nombre: "Catalogo",
+        nombre: "Catálogo",
         permiso: "catalogo",
         ruta: { name: "catalogo" },
     },
@@ -95,7 +98,7 @@ const menu = ref([
         ruta: { name: "editarcatalogo" },
     },
     {
-        nombre: "Roles Permissos",
+        nombre: "Roles-Permisos",
         permiso: "roles.permisos",
         ruta: { name: "RolesPermissions" },
     },
@@ -105,9 +108,14 @@ const menu = ref([
         ruta: { name: "ClienteHistorial"}
     },
     {
-        nombre: "Crear Usuarios",
+        nombre: "Usuarios",
         permiso: "usuarios",
         ruta: { name: "crearUsuario" }
+    },
+    {
+        nombre: "Costos de impresión",
+        permiso: "costo.produccion",
+        ruta: { name: "costoProduccion" }
     }
 ]);
 

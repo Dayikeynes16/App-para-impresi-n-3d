@@ -24,7 +24,7 @@ const headers = ref([
     {title: "Fecha", key: "created_at"},
     {title: "Correo", key: "usuario.email"},
     {title: "Estatus", key: "status"},
-    {title: "Más Información", key: "detalles"}
+    {title: "Acciones", key: "detalles"}
 ])
 
 const pedidos = ref([]);

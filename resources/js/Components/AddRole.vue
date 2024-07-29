@@ -52,6 +52,7 @@
 import axios from "@/axios.js";
 import { ref, onMounted } from "vue";
 import { VRow } from "vuetify/lib/components/index.mjs";
+import { ElMessage } from 'element-plus'
 
 const emit = defineEmits(["añadido", "cancelado"]);
 const errorMessages = ref({});
@@ -68,14 +69,20 @@ const getPermissions = async () => {
 
 const guardarRol = async () => {
   try {
-    const response = await axios.post(
-      "/roles",
-      {
-        name: name.value.name,
-        permission: permisosSeleccionados.value
-      }
-    );
-    emit("añadido");
+    if (permisosSeleccionados.value.length > 0) {
+      const response = await axios.post(
+        "/roles",
+        {
+          name: name.value.name,
+          permission: permisosSeleccionados.value
+        });
+        emit("añadido");
+    }else{
+      ElMessage.error(
+        'Selecciona al menos 1 permiso'
+      )
+    }
+    
   } catch (error) {
     errorMessages.value = error.response.data.errors;
     console.error("Error guardando el rol", error);

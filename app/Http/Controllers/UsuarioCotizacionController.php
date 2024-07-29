@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PrecioMinuto;
 use App\Models\UsuarioCotizacion;
 use Exception;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ class UsuarioCotizacionController extends Controller
 {
     public function cotizar(Request $request)
     {
+        $precioMinuto = PrecioMinuto::first();
         $request->validate([
             'file' => 'file|required',
         ]);
@@ -22,10 +24,10 @@ class UsuarioCotizacionController extends Controller
             $cotizacion = UsuarioCotizacion::create([
                 'path' => $filePath,
                 'nombre' => $request->file('file')->getClientOriginalName(),
-                'minutos' => ($response['estimated_printing_time_seconds'] / 60) / 3.5,
-                'precio' => (($response['estimated_printing_time_seconds'] / 60) / 3.5) * 1.5,
+                'minutos' => ($response['estimated_printing_time_seconds'] / 60) / 4,
+                'precio' => (($response['estimated_printing_time_seconds'] / 60) / 4) * $precioMinuto->precio,
                 'usuario_id' => Auth::user()->id,
-                'total' => (($response['estimated_printing_time_seconds'] / 60) / 3.5) *1.5,
+                'total' => (($response['estimated_printing_time_seconds'] / 60) / 4) * $precioMinuto->precio,
 
             ]);
 
@@ -97,10 +99,7 @@ class UsuarioCotizacionController extends Controller
     }
 
     public function delete(UsuarioCotizacion $id) {
-        // $request->validate([
-        //     'id' => 'required|integer'
-        // ]);
-        // $usuarioCotizacion = UsuarioCotizacion::find($id);
+       
         $id->delete();
         return response()->json(['data' => 'ctixacion eliminada con exito']);
     }

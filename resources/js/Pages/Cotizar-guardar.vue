@@ -5,7 +5,7 @@
             <v-col cols="4">
                 <v-card>
                     <v-card-title>
-                        Sube tu archivo aqui
+                        Sube tu archivo aquí
                     </v-card-title>
                     <v-card-text>
                         <el-upload class="upload-demo" drag :http-request="cotizar" ref='loadform'

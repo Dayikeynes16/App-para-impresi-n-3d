@@ -16,11 +16,7 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item>
-                    <!-- <v-list-item-content>
-                      <v-list-item-title  v-if="item.recoleccion === true"> El pedido Fue programado para ser recolectado en sucursal</v-list-item-title>
-                      <v-list-item-title  v-if="!item.recoleccion === true"> </v-list-item-title>
-
-                    </v-list-item-content> -->
+             
                   </v-list-item>
                   <v-list-item-group>
                     <template v-for="(producto, index) in item.productos" :key="index">

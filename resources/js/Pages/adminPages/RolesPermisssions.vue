@@ -4,12 +4,8 @@
             <v-col cols="6">
                 <v-card color="">
                     <v-card-title class="headline">Roles</v-card-title>
-                    <v-card-subtitle>
-                        Podrás ver los roles existentes junto a los permisos otorgados
-                    </v-card-subtitle>
-
                     <v-card-text v-if="noRoles">
-                        Parece que no has creado ningún Rol aún
+                        Parece que no has creado ningún rol.
                     </v-card-text>
 
                     <v-expansion-panels variant="inset">
@@ -47,6 +43,7 @@
                                                 <v-icon
                                                     size="x-large"
                                                     color="primary"
+                                                    @click="openEditRoleDialog(role)"
                                                 >
                                                     mdi-pencil
                                                 </v-icon>
@@ -86,13 +83,11 @@
     </v-container>
 
     <v-dialog v-model="addRoleDialog" max-width="400">
-        <AddRole  @añadido="fetchRoles" @cancelado="addRoleDialog = false"></AddRole>
+        <AddRole  @añadido="fetchRoles()" @cancelado="addRoleDialog = false"></AddRole>
     </v-dialog>
-    <v-dialog v-model="openCreateUserDialog">
-        <Usuarios @añadido="fetchUsersRoles" :roles="roles"></Usuarios>
-    </v-dialog>
-    <v-dialog v-model="openEditUserDialogVisible">
-        <EditRole @añadido="fetchUsersRoles" :user="userToEdit" :roles="roles"></EditRole>
+  
+    <v-dialog v-model="openEditRoleDialogVisible" max-width="400">
+        <EditRole @añadido="fetchRoles()"  :role="rolToEdit" :permisos="permissions" @cancelado="openEditRoleDialog()"></EditRole>
     </v-dialog>
     <v-fab
         icon="mdi-plus"
@@ -123,23 +118,20 @@ const addRoleDialog = ref(false);
 const noRoles = ref(false);
 const users = ref([]);
 const userToEdit = ref({});
-const openEditUserDialogVisible = ref(false);
+const openEditRoleDialogVisible = ref(false);
+const rolToEdit = ref({})
 
 const fetchRoles = async () => {
-    addRoleDialog.value = false;
-    const { data } = await axios.get("/roles");
-    roles.value = data.data;
-    noRoles.value = roles.value.length === 0;
+    axios.get("/roles")
+    .then(({data}) => {
+        roles.value = data.data;
+        noRoles.value = roles.value.length === 0;
+        openEditRoleDialogVisible.value = false
+
+    })
 };
 
-const fetchUsersRoles = async () => {
-    const { data } = await axios.get("/getUsersRoles");
-    users.value = data.data;
-    openEditUserDialogVisible.value = false
-    openCreateUserDialog.value = false
 
-
-};
 
 const fetchPermissions = async () => {
     const { data } = await axios.get("/permissions");
@@ -159,27 +151,20 @@ const openAddRoleDialog = () => {
     addRoleDialog.value = true;
 };
 
-const openEditUserDialog = (user) => {
-    userToEdit.value = user;
-    openEditUserDialogVisible.value = true;
+const openEditRoleDialog = (role) => {
+    if(openEditRoleDialogVisible.value === false){
+        openEditRoleDialogVisible.value = true
+        rolToEdit.value = role
+    }else {
+        openEditRoleDialogVisible.value = false
+    }
 };
 
-const deleteUserWithRoles = async (user) => {
-    try {
-        const {data} = await axios.post(`/deleteUser/${user}`,
-      {
-        headers: { "X-CSRF-TOKEN": token }
-      } )
-      await fetchUsersRoles()
-    } catch (error) {
-        
-    }
-}
+
 
 onMounted(() => {
     fetchRoles();
     fetchPermissions();
-    fetchUsersRoles();
 });
 
 </script>

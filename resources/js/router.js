@@ -19,12 +19,14 @@ import pedidoDetalles from "./Pages/adminPages/pedidoDetalles.vue";
 import EditarDireccion from "./Components/EditarDireccion.vue";
 import VentaExitosa from "./Pages/VentaExitosa.vue";
 import PedidosPagados from "./Pages/adminPages/PedidosPagados.vue";
-import Test from "./Pages/test.vue";
 import Usuarios from "./Pages/adminPages/Usuarios.vue"
 import RolesPermisssions from "./Pages/adminPages/RolesPermisssions.vue";
 import Main from "./Pages/layout/Main.vue";
 import HistorialCliente from "./Pages/clientePages/HistorialCliente.vue";
 import Users from "./Pages/adminPages/Users.vue";
+import CostoProduccion from "./Pages/adminPages/CostoProduccion.vue";
+import cotizacionRapida from "./Pages/clientePages/cotizacionRapida.vue";
+
 
 const routes = [
     {
@@ -43,6 +45,11 @@ const routes = [
         component: Register,
     },
     {
+        name: "cotizacion-rapida",
+        path: "/cotizacion-rapida",
+        component: cotizacionRapida
+    },
+    {
         name: "Home",
         path: "/",
         component: Main,
@@ -51,11 +58,6 @@ const routes = [
                 name: "catalogo",
                 path: "/catalogo",
                 component: Catalogo,
-            },
-            {
-                name: "test",
-                path: "/test",
-                component: Test,
             },
             {
                 name: "cotizar",
@@ -142,6 +144,10 @@ const routes = [
                 name: "crearUsuario",
                 path: "crearUsuario",
                 component: Users
+            },{
+                name: "costoProduccion",
+                path: "costo-produccion",
+                component: CostoProduccion
             }
         ],
     },

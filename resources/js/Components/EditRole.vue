@@ -1,31 +1,41 @@
 <template>
     <v-row>
-      <v-col cols="4"></v-col>
-      <v-col cols="4">
+    
         <v-card title="Actualiza los datos de necesarios">
         <v-card-text>
+        
+          <v-text-field
+          v-model="role.name"
+          ></v-text-field>
+          <v-row style="height: 250px;" class="overflow-y-auto">
+            <v-col>
+              <v-checkbox
+                hide-details
+                v-for="permiso in permissions"
+                :key="permiso.id"
+                :label="permiso.name"
+                :value="permiso.id"
+                v-model="permisosSeleccionados"
+              ></v-checkbox>
+            </v-col>
+          </v-row>
 
-             <v-text-field v-model="user.name" label="Nombre"> </v-text-field>
-
-            <v-text-field v-model="user.email" label="Correo"> </v-text-field> 
-             <v-select
-             label="Asigna un rol"
-           
-            :items="roles"
-            item-title="name" 
-            item-value="name"
-            v-model="rolSeleccionado"
-            > </v-select> 
-
+    
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn prepend-icon="mdi-check" @click="updateUser()">Guardar</v-btn>
+          <v-row>
+            <v-col cols="6">
+              <v-btn prepend-icon="mdi-close" color="danger" block @click="emit('cancelado')">Cerrar</v-btn>
+
+            </v-col>
+            <v-col cols="6">
+              <v-btn prepend-icon="mdi-check" block @click="updateRole()">Guardar</v-btn>
+            </v-col>
+          </v-row>
         </v-card-actions>
 
       </v-card>
-      </v-col>
-      <v-col cols="4"></v-col>
+ 
 
       
        
@@ -34,27 +44,36 @@
 <script setup>
 import axios from "@/axios.js";
 import { defineProps, onMounted, ref } from "vue";
-
-const emit = defineEmits(["añadido"]);
-
+import { ElMessage } from 'element-plus'
+const emit = defineEmits(["añadido", "cancelado"]);
+const permisosSeleccionados = ref([]);
 const rolSeleccionado = ref('');
 const user = ref({});
-const roles = ref([]);
+const role = ref({});
+const permissions = ref([])
 const props = defineProps({
-    roles: {
-        type: Array,
-        required: true,
-    },
-    user: {
+    role: {
         type: Object,
         required: true,
     },
+    permisos: {
+      type: Array,
+      required: true
+    }
 });
 
-const updateUser = async () => {
+const updateRole = async () => {
   try {
-    axios.put(`/actualizarRolesUsuario/${user.value.id}`,{user, rol: rolSeleccionado.value})
-    emit('añadido')
+    if(permisosSeleccionados.value.length > 1){
+      axios.put(`/roles/${role.value.id}`,{ permission: permisosSeleccionados.value})
+      .then(() => {
+        emit('añadido')
+      })
+    } else {
+      ElMessage.error(
+        'Selecciona al menos 1 permiso'
+      )
+    }
   } catch (error) {
     console.log(error)
   }
@@ -63,7 +82,8 @@ const updateUser = async () => {
 
 
 onMounted(() => {
-    roles.value = props.roles;
-    user.value = props.user;
+    role.value = props.role
+    permissions.value = props.permisos
+ 
 });
 </script>

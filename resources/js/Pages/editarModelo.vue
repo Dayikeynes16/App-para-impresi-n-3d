@@ -2,7 +2,7 @@
     <v-container>
             <v-col cols="12">
 
-            <v-stepper next-text="siguiente" prev-text="atras" :items="['Fotos', 'Archivos', 'Informació']">
+            <v-stepper next-text="siguiente" prev-text="atras" :items="['Fotos', 'Archivos', 'Información']">
                 <template v-slot:item.1>
                     <v-card subtitle="Añade o elimina fotos" flat>
                         <v-row>
@@ -122,12 +122,9 @@
                     </v-card>
                   </template>
                   <template v-slot:item.3>
-                    <v-card subtitle="Informacion del producto" flat>
+                    <v-card flat>
                         <v-card>
-                            <v-card-title>Actualizar Producto</v-card-title>
-                            <v-card-subtitle
-                                >Modifica los campos necesarios</v-card-subtitle
-                            >
+                            <v-card-title>Información del producto</v-card-title>
                             <v-card-text>
                                 <v-text-field
                                     variant="outlined"

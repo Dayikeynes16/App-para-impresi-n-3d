@@ -184,7 +184,7 @@ class AuthController extends Controller
             ->update(['password' => Hash::make($request->password)]);
         DB::table('password_reset_tokens')->where(['email' => $request->email])->delete();
 
-        return redirect('/login')->with('message', 'Tu contraseña se ha cambiado correctamente');
+        return redirect('/logear')->with('message', 'Tu contraseña se ha cambiado correctamente');
     }
 
 

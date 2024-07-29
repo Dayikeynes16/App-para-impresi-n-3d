@@ -8,7 +8,7 @@
                             <v-avatar
                                 ><v-icon icon="mdi-account-circle"></v-icon
                             ></v-avatar>
-                            Informacion de la cuenta
+                            Información de la cuenta
                         </v-card-title>
                         <v-card-text>
                             <v-list lines="two">
@@ -18,7 +18,7 @@
                                 ></v-list-item>
                                 <v-list-item
                                     :title="user.email"
-                                    subtitle="Correo Electronico"
+                                    subtitle="Correo Electrónico"
                                 ></v-list-item>
                                 <v-list-item
                                     :title="dayjs(user.created_at).format('DD/MM/YYYY')"

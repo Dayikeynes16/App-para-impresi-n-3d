@@ -17,10 +17,6 @@ use Stripe\Checkout\Session;
 
 class CheckoutController extends Controller
 {
-    public function checkout()
-    {
-        return view('checkout');
-    }
 
     public function createSession(Request $request)
     {
@@ -39,7 +35,11 @@ class CheckoutController extends Controller
             'mode' => 'payment',
             'success_url' => url('/success'),  
             'cancel_url' => url('/CarritoFinal'),
+            'metadata' => [
+                'id_carrito' => $request->input('id')
+            ]
         ]);
+        // Log::alert($session);
 
         $carrito = Carrito::where('usuario_id', $request->user()->id)->where('status', 'activo')->first();
         $carrito->total = (float) $request->input('total');

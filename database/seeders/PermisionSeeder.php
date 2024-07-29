@@ -25,6 +25,7 @@ class PermisionSeeder extends Seeder
         Permission::query()->updateOrCreate(['name' => 'dashboard']);
         Permission::query()->updateOrCreate(['name' => 'roles.permisos']);
         Permission::query()->updateOrCreate(['name' => 'usuarios']);
+        Permission::query()->updateOrCreate(['name' => 'costo.produccion']);
 
 
         

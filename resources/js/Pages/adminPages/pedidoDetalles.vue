@@ -22,8 +22,8 @@
                                     </v-row>
                                 </v-expansion-panel-title>
 
-                                <v-expansion-panel-text>
-                                    <v-list>
+                                <v-expansion-panel-text class="ma-0 pa-0">
+                                    <v-list class="ma-0 pa-0">
                                         <v-list-item v-for="file in item.producto.files" :key="file.id">
                                             <v-list-item-content>
                                                 <v-row>
@@ -47,15 +47,20 @@
                                             </v-list-item-content>
                                         </v-list-item>
                                     </v-list>
-                                    <v-list>
-                                        <v-list-item v-for="archivo in item.producto_carrito_archivos">
-                                            <v-row>
-                                                <v-col>
+                                    <v-list class="ma-0 pa-0">
+                                        <v-list-item v-for="archivo in item.producto_carrito_archivos" class="ma-0 pa-0">
+                                            <v-card-subtitle>
+                                                <v-row class="ma-0 pa-0">
+                                                
+                                                <v-col cosl="7" class="ma-0 pa-0">
                                                     <div class="text-left">
-                                                        {{ archivo.nombre }}
+                                                    {{ archivo.nombre }}
                                                     </div>
-                                                </v-col>
-                                                <v-col cols="6">
+                                                </v-col >
+                                                <v-col cols="3" class="ps-5">
+                                                        {{ archivo.cantidad }}
+                                                    </v-col>
+                                                <v-col cols="2" class="ma-0 pa-0">
                                                     <div class="text-right">
                                                         <v-icon icon="mdi-download" @click="
                                                             downloadArchivo(
@@ -65,6 +70,8 @@
                                                     </div>
                                                 </v-col>
                                             </v-row>
+                                            </v-card-subtitle>
+                                            
                                         </v-list-item>
                                     </v-list>
                                 </v-expansion-panel-text>
@@ -75,33 +82,34 @@
 
             </v-col>
             <v-col cols="4">
-                <v-card>
+                <v-card class="pa-3">
                     <v-card-title>
                         Detalles
                     </v-card-title>
 
-                    <v-card-subtitle>
-                        Verifica la dirección
-                    </v-card-subtitle>
-                    <v-card-text v-if="sucursal">
-                        Pedido Programado para su Recolección en sucursal
+                    
+                    <v-card-text v-if="sucursal" class="mt-1">
+                        Pedido programado para su recolección en sucursal.
                     </v-card-text>
                     <v-card-text v-else>
-                        <v-subheader>Método de Entrega</v-subheader>
-                        <p>
-                            <strong>Envío a Domicilio</strong><br>
-                            <strong>dirección:</strong> {{ direccion.direccion }}<br>
-                            <strong>Destinatario:</strong> {{ direccion.destinatario }}<br>
-                            <strong>Estado:</strong> {{ direccion.estado }}<br>
-                            <strong>Telefono:</strong> {{ direccion.telefono }}<br>
-                            <strong>Codigo Postal:</strong> {{ direccion.codigo_postal }}<br>
-
-
-                        </p>
+                        <v-row align="center">
+                            <v-col cols="6">
+                                <strong>Método de entrega</strong>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-chip color="primary">Envío a domicilio</v-chip> 
+                            </v-col>
+                            <v-list lines="two">
+                                <v-list-item :subtitle="`${direccion.direccion}, ${direccion.estado}, ${direccion.codigo_postal}` " title="Dirección"></v-list-item>
+                                <v-list-item :subtitle="direccion.destinatario" title="Recibe"></v-list-item>
+                                <v-list-item :subtitle="direccion.telefono" title="Teléfono"></v-list-item>
+                            </v-list>
+                        </v-row>
+                        
 
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn @click="terminarTarea(carrito.id)" prepend-icon="mdi-check-outline">Finalizado</v-btn>
+                        <v-btn block variant="outlined" @click="terminarTarea(carrito.id)" prepend-icon="mdi-check-outline">Finalizado</v-btn>
 
                     </v-card-actions>
                 </v-card>

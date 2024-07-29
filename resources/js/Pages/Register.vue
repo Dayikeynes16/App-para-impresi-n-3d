@@ -28,7 +28,7 @@
                             :error-messages="errorMessages.email"
                             v-model="form.email"
                             density="compact"
-                            placeholder="Correo electronico"
+                            placeholder="Correo electrónico"
                             prepend-inner-icon="mdi-email-outline"
                             variant="outlined"
                         ></v-text-field>
@@ -62,7 +62,7 @@
                             :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
                             :type="visible ? 'text' : 'password'"
                             density="compact"
-                            placeholder="Re-ingresa tu contraseña"
+                            placeholder="Ingresa tu contraseña"
                             prepend-inner-icon="mdi-lock-outline"
                             variant="outlined"
                             @click:append-inner="toggleVisibility"

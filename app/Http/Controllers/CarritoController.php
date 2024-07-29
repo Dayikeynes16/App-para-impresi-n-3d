@@ -257,8 +257,18 @@ class CarritoController extends Controller
 
 
     public function getCarritosPendientes(){
-        $carritos = Carrito::with('usuario','orden.files','productos')->where('status', 'pagada')->get();
+        $carritos = Carrito::with('usuario','orden.files','productos')->where('status', 'pago confirmado')->get();
         return response($carritos);
+    }
+
+    public function ventaConfirmada(Request $request)
+    {
+        $carrito = Carrito::where('usuario_id', $request->user()->id)
+            ->where('status', 'pago confirmado')
+            ->latest()
+            ->first();
+    
+        return response()->json(['data' => $carrito]);
     }
 
     public function show($id)
@@ -292,11 +302,11 @@ class CarritoController extends Controller
     }
 
     public function ConfirmarVenta(Request $request){
-        $carrito = $this->obtenerCarrito($request->user()->id);
+        $carrito = Carrito::where('status', 'pago confirmado')->latest();
         if($carrito->total === 0){
             return response()->json(['data'=>'la venta ya ha sido cerrada', 'code'=>404]);
         } else{
-            $carrito->status = 'pagada';
+            // $carrito->status = 'pagada';
             $carrito->save();
             $this->enviarCorreoConfirmacion($request->user(), $carrito);
             return response('la venta fue exitosa');
@@ -319,13 +329,13 @@ class CarritoController extends Controller
 
 
     public function traerPedidosViejos(Request $request){
-        $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'Listo Para Enviar')->get();
+        $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'pago confirmado')->get();
         return response()->json(['data'=>$pedidosViejos]);
 
     }
 
     public function userHistorial(Request $request){
-        $pedidos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'pagada')->
+        $pedidos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'pago confirmado')->
             where('usuario_id', $request->user()->id)->get();
         return response()->json(['data' => $pedidos]);
     }

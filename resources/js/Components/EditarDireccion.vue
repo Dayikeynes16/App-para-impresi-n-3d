@@ -9,13 +9,13 @@
   
             <v-text-field
               v-model="form.direccion"
-              label="Direccion"
+              label="Dirección"
               :error-messages="errorMessages.direccion"
             ></v-text-field>
   
             <v-text-field
               v-model="form.telefono"
-              label="Telefono"
+              label="Teléfono"
               :error-messages="errorMessages.telefono"
             ></v-text-field>
   

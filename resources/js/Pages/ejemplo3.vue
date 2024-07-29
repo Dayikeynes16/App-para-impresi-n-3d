@@ -24,6 +24,7 @@
             <v-col >
                 <v-card >
                     <v-card-title> Sube tu archivo aquí </v-card-title>
+                    <v-card-subtitle>Verifica que tu archivo tenga la escala correcta.</v-card-subtitle>
                     <v-card-text>
                         <el-upload class="upload-demo" drag :http-request="cotizar" ref="loadform"
                             accept=".stl" :headers="{
@@ -51,7 +52,7 @@
                 </v-overlay>
             </v-col>
             <v-col v-if="resultado" cols="8">
-                <v-card-subtitle>Aqui podra ver todas las cotizaciones que ha realizado, puedes seleccionar y agregarlas al carrito.</v-card-subtitle>
+                <v-card-subtitle>Aquí podrá ver todas las cotizaciones que ha realizado, puedes seleccionar y agregarlas al carrito.</v-card-subtitle>
                 <filesCard @añadido="limpiarArchivos"  @datosCarrito="totales = $event" :update="actualizarLista" @actualizado="actualizarLista = $event"></filesCard>
             </v-col>
         </v-row>

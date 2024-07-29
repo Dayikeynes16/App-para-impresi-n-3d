@@ -8,7 +8,7 @@
                                 :src="imagen.urls[0]"
                                 style="height: 300px; width: 100%; "
                                 :preview-src-list="imagen.urls"
-                                :z-index="1000"
+                                :z-index="2000"
                                 fit="cover"
                                 class= "rounded-t"
                             ></el-image>
@@ -35,13 +35,11 @@
                                     </v-col>
                                 </v-row>
                             </v-card-title>
-                            <v-card-subtitle
-                                
-                            >{{ imagen.description }}</v-card-subtitle>
+                            <p class="mx-6" style="color: gray;">{{ imagen.description }}</p>
 
                             <v-card-actions>
                                 <v-row>
-                                    <v-col cols="6">
+                                    <v-col cols="8">
                                         <v-row>
                                             <v-col class="text-center" cols="3"
                                                 ><v-icon

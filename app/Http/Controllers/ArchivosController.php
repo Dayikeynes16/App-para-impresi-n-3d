@@ -6,15 +6,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Files;
 use App\Models\Orden;
+use App\Models\PrecioMinuto;
 use App\Models\Product;
 use App\Models\ProductoCarritoArchivo;
 use Exception;
-use Illuminate\Support\Facades\Http;
 
 class ArchivosController extends Controller
 {
     public function calculate(Request $request)
     {
+
+        $PrecioMinuto = PrecioMinuto::first();
+
         $request->validate([
             'file' => 'file|required',
         ]);
@@ -29,14 +32,15 @@ class ArchivosController extends Controller
                 'status' => 'activo',
             ]);
     
-            $filePath = $request->file('file')->store('files');
-            $file = new Files([
-                'path' => $filePath,
+            // $filePath = $request->file('file')->store('files');
+            $file = ([
+                // 'path' => $filePath,
                 'nombre' => $request->file('file')->getClientOriginalName(),
+                'piezas' => 1,
                 'minutos' => ($response['estimated_printing_time_seconds'] / 60) / 3.5,
-                'precio' => (($response['estimated_printing_time_seconds'] / 60) / 3.5) * 1.5,
+                'precio' => (($response['estimated_printing_time_seconds'] / 60) / 3.5) * $PrecioMinuto->precio,
             ]);
-            $orden->files()->save($file);
+            // $orden->files()->save($file);
     
             return response()->json(['data' => $file]);
         } catch (Exception $e) {
@@ -84,13 +88,8 @@ class ArchivosController extends Controller
         if(!$file === null) {
             $archivo = ProductoCarritoArchivo::find($id);
             return $archivo;
-            // return Storage::download($file->path, $file->nombre);
             }
         return Storage::download($file->path, $file->nombre);
-    }
-
-    public function downloadArchivo(ProductoCarritoArchivo $productoCarritoArchivo){
-    return $productoCarritoArchivo;
     }
 
     public function guardarSTLproducto(Request $request){
@@ -108,7 +107,6 @@ class ArchivosController extends Controller
         return response()->json(['data'=>200]);
     }
 
-    
     public function traerArchivos(Request $request)
     {
         $request->validate(['id' => 'required']);

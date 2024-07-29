@@ -6,7 +6,7 @@
                 color="grey-lighten-4"
                 v-model="step"
                 hide-actions
-                :items="['Productos', 'Direccion', 'Pago']"
+                :items="['Productos', 'Dirección', 'Pago']"
             >
                 <template v-slot:item.1>
                     <v-card>
@@ -124,17 +124,17 @@
                         <v-col cols="7">
                             <v-row class="ps-15">
                             <v-col cols="12">
-                                <h5>Detalles del envio</h5>
+                                <h5>Detalles del envío</h5>
                             </v-col>
                             <v-col cols="12">
                                 <v-row class="text-left">
                                     
                                     <v-row v-if="!direccion.es_recoleccion">
                                         <v-col cols="6">
-                                        Tipo de envio: 
+                                        Tipo de envío: 
                                     </v-col>
                                     <v-col cols="6">
-                                       <strong>Envio a domiclio</strong>
+                                       <strong>Envío a domiclio</strong>
                                        
                                     </v-col>
                                         <v-col cols="6">
@@ -144,7 +144,7 @@
                                             <strong>{{ direccion.direccion.destinatario }}</strong>
                                         </v-col>
                                         <v-col cols="6">
-                                            Direccion de envio:
+                                            Dirección de envío:
                                         </v-col>
                                         <v-col cols="6">
                                             <strong>{{ direccion.direccion.direccion }}</strong>
@@ -160,13 +160,13 @@
                                     
                                     <v-row v-else>
                                         <v-col cols="6">
-                                            Tipo de envio: 
+                                            Tipo de envío: 
                                         </v-col>
                                         <v-col cols="6">
-                                            <strong>Recoleccion en sucursal</strong>
+                                            <strong>Recolección en sucursal</strong>
                                         </v-col>
                                         <v-col class="ma-3">
-                                            <strong>Se te enviara un correo con la información para su recolección</strong>
+                                            <strong>Se te enviará un correo con la información para su recolección</strong>
                                         </v-col>
                                         
                                     </v-row>
@@ -189,13 +189,13 @@
                                                 {{ formatCurrency(cartStore.total) }}
                                             </v-col>
                                             <v-col cols="6">
-                                                <p>Costo de envio:</p>
+                                                <p>Costo de envío:</p>
                                             </v-col>
                                             <v-col cols="6" v-if="direccion.es_recoleccion">
                                                 {{ formatCurrency(0) }}
                                             </v-col>
                                             <v-col cols="6" v-else>
-                                                {{ formatCurrency(250) }}
+                                                {{ formatCurrency(costoEnvio) }}
                                             </v-col>
                                         </v-row>
                                     </v-col>
@@ -204,7 +204,7 @@
                                             <v-card-text class="text-center">
                                                 <p>Total a pagar</p>
                                                 <h2 v-if="direccion.es_recoleccion">{{ formatCurrency(cartStore.total) }}</h2>
-                                                <h2 v-else>{{ formatCurrency(cartStore.total+250) }}</h2>
+                                                <h2 v-else>{{ formatCurrency(cartStore.total+costoEnvio) }}</h2>
                                             </v-card-text>
                                         </v-card>
                                     </v-col>
@@ -245,22 +245,13 @@ import { useLoginStore } from "@/stores/login";
 const user = ref({});
 const loginStore = useLoginStore();
 const direccion = ref({});
-onMounted(() => {
-    cartStore.fetchCart();
 
-    stripe = Stripe(
-        "pk_test_51PXiT1Ctt7GPf4Lb8cBVnDt1p6fvT5Bqkvq7LRE8J1y21b48ekwmvyMRcD7XbzcRFA31G6J7YxRgr8XxKEvomNx500mUHyxI1A"
-    );
-
-    setTimeout(() => {
-        user.value = loginStore.getUserData;
-    }, 500);
-});
 
 
 const direccionElegida = ref();
 const cartStore = useCartStore();
 const step = ref(1);
+const costoEnvio = ref(0);
 let stripe = null;
 const total = ref(0);
 const domicilio = ref(false);
@@ -320,9 +311,13 @@ const restarArchivo = async (item) => {
     }
 };
 
-const direccionSeleccionada = () => {
- 
+const obtenerCostoEnvio = () => {
+    axios.get('/precio-envio')
+    .then(({data}) => {
+        costoEnvio.value = data.data.precio
+    })
 }
+
 const sumarArchivo = async (item) => {
     item.cantidad++;
     console.log('item: ', item);
@@ -367,19 +362,31 @@ const open = (id, type, callback) => {
         });
 };
 
-const obtenerDatosCarrito = () => {
 
-}
 
 const payment = async () => {
     try {
         const { data } = await axios.post(
             "/checkout",
-            { total: (cartStore.total + (direccion.value.es_recoleccion ? 0 : 250)).toFixed(2) }
+            { total: (cartStore.total + (direccion.value.es_recoleccion ? 0 : costoEnvio.value)).toFixed(2) , id: cartStore.id}
         );
         await stripe.redirectToCheckout({ sessionId: data.id });
     } catch (error) {
         console.error("Error during payment:", error);
     }
 };
+
+onMounted(() => {
+    cartStore.fetchCart();
+
+    stripe = Stripe(
+        "pk_test_51PXiT1Ctt7GPf4Lb8cBVnDt1p6fvT5Bqkvq7LRE8J1y21b48ekwmvyMRcD7XbzcRFA31G6J7YxRgr8XxKEvomNx500mUHyxI1A"
+    );
+
+    setTimeout(() => {
+        user.value = loginStore.getUserData;
+    }, 500);
+
+    obtenerCostoEnvio()
+});
 </script>

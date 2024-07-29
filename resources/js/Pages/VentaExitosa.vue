@@ -55,12 +55,13 @@ const finalizar = async () => {
 };
 
 const traerCarrito = () => {
-    axios.get('/traerCarrito')
+    axios.get('/carrito/ventaConfirmada')
     .then(({data}) => {
         orden.value = data.data
         direccion.value = data.direccion
-        finalizar()
     })
+
+  
 }
 
 onMounted(() => {

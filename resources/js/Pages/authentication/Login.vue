@@ -16,7 +16,7 @@
               :error-messages="errorMessages.email"
               v-model="form.email"
               density="compact"
-              placeholder="Email address"
+              placeholder="Correo electrónico"
               prepend-inner-icon="mdi-email-outline"
               variant="outlined"
             ></v-text-field>
@@ -31,7 +31,7 @@
               :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
               :type="visible ? 'text' : 'password'"
               density="compact"
-              placeholder="Enter your password"
+              placeholder="Ingresa tu contraseña"
               prepend-inner-icon="mdi-lock-outline"
               variant="outlined"
               @click:append-inner="visible = !visible"
@@ -71,6 +71,7 @@
 import { ref, onMounted } from 'vue';
 import axios from "@/axios.js";
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus'
 
 const router = useRouter();
 const errorMessages = ref({});
@@ -87,14 +88,9 @@ const login = async () => {
   try {
     const { data } = await axios.post('/login', form.value);
     if (data.code === 200) {
-
-      if (data.data.email === 'javierMay@appscreativas.com'){
-        router.push({ name: 'Dashboard' });
-      } else{
         router.push({ name: 'cotizar' });
-      }
     } else {
-      alert(data.data);
+      ElMessage.error('correo o contraseña incorrecto')
     }
   } catch (error) {
     if (error.response && error.response.status === 422) {
