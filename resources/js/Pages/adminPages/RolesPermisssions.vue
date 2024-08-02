@@ -18,8 +18,9 @@
                             <v-expansion-panel-text>
                                 <v-card elevation="0">
                                     <v-card-text>
-                                        <v-list>
+                                        <v-list lines="one">
                                             <v-list-item
+                                                prepend-icon="mdi-lock-open-check-outline"
                                                 v-for="permission in role.permissions"
                                                 :key="permission.id"
                                             >
@@ -87,7 +88,7 @@
     </v-dialog>
   
     <v-dialog v-model="openEditRoleDialogVisible" max-width="400">
-        <EditRole @añadido="fetchRoles()"  :role="rolToEdit" :permisos="permissions" @cancelado="openEditRoleDialog()"></EditRole>
+        <EditRole @añadido="fetchRoles()" :userPermission="userPermission" :role="rolToEdit" :permisos="permissions" @cancelado="openEditRoleDialog()"></EditRole>
     </v-dialog>
     <v-fab
         icon="mdi-plus"
@@ -120,6 +121,8 @@ const users = ref([]);
 const userToEdit = ref({});
 const openEditRoleDialogVisible = ref(false);
 const rolToEdit = ref({})
+
+const userPermission = ref([])
 
 const fetchRoles = async () => {
     axios.get("/roles")
@@ -155,6 +158,7 @@ const openEditRoleDialog = (role) => {
     if(openEditRoleDialogVisible.value === false){
         openEditRoleDialogVisible.value = true
         rolToEdit.value = role
+        userPermission.value = role.permissions.map(permission => permission.id)
     }else {
         openEditRoleDialogVisible.value = false
     }

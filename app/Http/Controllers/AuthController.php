@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB ;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
@@ -76,10 +75,16 @@ class AuthController extends Controller
 
             $request->session()->regenerate();
 
-            return response()->json([
-                'data' => Auth::user(), 'code' => 200
+            $user = Auth::user();
 
-            ]);
+            $rol = $user->getRoleNames()->first();
+
+            if ($rol === 'admin') {
+                return response()->json(['redirect' => '/Dashboard'], 200);
+            } else {
+                return response()->json(['redirect' => '/cotizar'], 200);
+
+            }
         }
 
 

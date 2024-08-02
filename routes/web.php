@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CostoEnvioController;
+use App\Http\Controllers\NotificacionesController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PrecioImpresionController;
 use App\Http\Controllers\RoleController;
@@ -43,6 +44,9 @@ Route::post('/crearUsuariosRoles',[AuthController::class, 'crearUsuariosRoles'])
 Route::post('/usuarios', [AuthController::class, 'crear']);
 
 Route::group(['middleware' => ['auth']], function(){
+
+    //notificaciones
+    Route::get('/notificaciones', [NotificacionesController::class, 'index']);
 
     //costos de envio e impresión
     Route::apiResource('/precio-impresion', PrecioImpresionController::class);

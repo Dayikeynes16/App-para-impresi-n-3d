@@ -85,18 +85,19 @@ const form = ref({
 
 const login = async () => {
   errorMessages.value = {};
-  try {
-    const { data } = await axios.post('/login', form.value);
-    if (data.code === 200) {
-        router.push({ name: 'cotizar' });
-    } else {
-      ElMessage.error('correo o contraseña incorrecto')
-    }
-  } catch (error) {
-    if (error.response && error.response.status === 422) {
+
+    axios.post('/login', form.value)
+    .then(({data}) => {
+      if(data.redirect){
+        router.push(data.redirect)
+      } else {
+        ElMessage.error('El usuario o la contraseña no son correctos.')
+      }
+    })
+    .catch((error) => {
       errorMessages.value = error.response.data.errors;
-    }
-  }
+
+    })
 };
 
 

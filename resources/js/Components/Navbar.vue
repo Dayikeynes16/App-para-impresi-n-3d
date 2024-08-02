@@ -8,8 +8,7 @@
                 <template v-slot:activator="{ props }">
                     <v-btn
                     color="white"
-            prepend-icon="mdi-account-circle"
-
+                    prepend-icon="mdi-account-circle"
                     v-bind="props">
                     {{user.data?.name.split(' ')[0]}}
                     </v-btn>
@@ -24,12 +23,29 @@
                 </v-list>
             </v-menu>
 
-            <div v-if="cliente" style="margin-right: 10px; margin-top: 10px">
-                <v-badge color="danger" :content="cartStore.items.length">
-                    <v-btn color="white" @click="handleCartClick" icon="mdi-cart"></v-btn>
-                </v-badge>
-            </div>
+            <v-menu v-if="!cliente">
+                <template v-slot:activator="{ props }">
+                    <div style="margin-right: 10px; margin-top: 10px">
+                        <v-badge color="warning" :content="notificaciones.count">
+                            <v-btn v-bind="props" color="white" icon="mdi-bell"></v-btn>
+                        </v-badge>
+                    </div >
+                </template>
+                <v-list>
+              
+                    <v-list-item prepend-icon="mdi-bell-alert" @click="router.push({name: 'PedidoDetalle', params: {id : notificacion.id}})" class="cursor-pointer" v-for="notificacion in notificaciones.notifications">
+                            
+                            <v-list-item-text  > Tienes un nuevo pedido</v-list-item-text>
+                            <v-list-item-subtitle>{{ formatRelativeTime(notificacion.fecha) }}</v-list-item-subtitle>
+                    </v-list-item>
+                </v-list>
 
+            </v-menu>
+                <div v-else="cliente" style="margin-right: 10px; margin-top: 10px">
+                    <v-badge color="danger" :content="cartStore.items.length">
+                        <v-btn color="white" @click="handleCartClick" icon="mdi-cart"></v-btn>
+                    </v-badge>
+                </div>
         </template>
     </v-app-bar>
 
@@ -57,6 +73,12 @@ import axios from "@/axios.js";
 import { useRouter } from "vue-router";
 import { useLoginStore } from "@/stores/login";
 import { useCartStore } from "../stores/carrito";
+import { UseNotificationStore } from "../stores/notificaciones";
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/es';
+dayjs.extend(relativeTime);
+dayjs.locale('es');
 
 const dialog = ref(false);
 const drawer = ref(null);
@@ -65,7 +87,7 @@ const user = ref({});
 
 const router = useRouter();
 const cartStore = useCartStore();
-
+const notificaciones = UseNotificationStore();
 const loginStore = useLoginStore();
 
 const lastRoute = ref(null);
@@ -120,10 +142,10 @@ const menu = ref([
 ]);
 
 const cerrarSesion = async () => {
-    await axios.post("/cerrarSesion")
-        .then(() => {
-            router.push({ name: "logear" });ß
-        })
+    axios.post("/cerrarSesion")
+    .then(() => {
+        router.push({ name: "logear" });ß
+    })
 
 };
 
@@ -136,6 +158,11 @@ const handleCartClick = () => {
     }
 };
 
+const formatRelativeTime = (date) => {
+    return dayjs(date).fromNow();
+}
+
+
 onMounted(() => {
     setTimeout(() => {
         user.value = loginStore.getUserData;
@@ -145,7 +172,8 @@ onMounted(() => {
             admin.value = true;
         }
     }, 500);
-
-    // cartStore.fetchCart();
+    notificaciones.getNotifications()
 });
+
+
 </script>

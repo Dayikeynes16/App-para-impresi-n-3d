@@ -59,12 +59,16 @@ const props = defineProps({
     permisos: {
       type: Array,
       required: true
+    },
+    userPermission: {
+      type: Array,
+      required: true
     }
 });
 
 const updateRole = async () => {
   try {
-    if(permisosSeleccionados.value.length > 1){
+    if(permisosSeleccionados.value.length > 0){
       axios.put(`/roles/${role.value.id}`,{ permission: permisosSeleccionados.value})
       .then(() => {
         emit('añadido')
@@ -84,6 +88,7 @@ const updateRole = async () => {
 onMounted(() => {
     role.value = props.role
     permissions.value = props.permisos
+    permisosSeleccionados.value = props.userPermission
  
 });
 </script>

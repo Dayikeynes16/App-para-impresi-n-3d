@@ -30,7 +30,8 @@
                 </v-card>
             </v-col>
             <v-col cols="6">
-                <v-card elevation="8" >
+                <v-card elevation="8" v-if="!isAdmin">
+                    
                     <v-card-title v-text="'Tus direcciones:'"> </v-card-title>
                     <v-card-text>
                         <listaDirecciones></listaDirecciones>
@@ -43,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onBeforeMount } from "vue";
 import axios from "@/axios.js";
 import Direcciones from "../Components/Direcciones.vue";
 import listaDirecciones from "../Components/listaDirecciones.vue";
@@ -51,21 +52,22 @@ import dayjs from "dayjs";
 import { useLoginStore } from "@/stores/login";
 
 const loginStore = useLoginStore();
+const isAdmin = ref(false);
 const user = ref({
-    name: null,
-    email: null,
-    created_at: null
+
 });
 
 const getUser = async () => {
     axios.get("/get_user")
     .then(({data}) => {
         user.value = data.data
+        if(user.value.roles[0].name === 'admin'){
+            isAdmin.value = true
+        }
     });
 };
 
-onMounted(() => {
+onBeforeMount(() => {
     getUser()
-    
 })
 </script>

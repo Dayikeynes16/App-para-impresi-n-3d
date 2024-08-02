@@ -23,12 +23,16 @@ class ProductosController extends Controller
         );
         return response()->json(['data' => $product, 'code'=>200]);
     }
+
     function traerProductos(Request $request)
     {
-        $productos =  Product::with('Imagenes')->where('is_custom',false)->paginate(3);
+        $request->validate([
+            'perPage' => 'nullable|integer'
+        ]);
 
-        return $productos;
-
+        return Product::with('Imagenes')
+            ->where('is_custom',false)
+            ->paginate($request->get('perPage',6));
     }
     
 
