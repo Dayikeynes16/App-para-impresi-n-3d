@@ -38,35 +38,27 @@ import axios from '@/axios'
 import { onMounted, ref } from 'vue';
 import { useCartStore } from '../stores/carrito';
 import formatCurrency from '../composables/formatNumberToCurrency';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const cartStore = useCartStore();
 const direccion = ref({})
 const orden = ref({})
-const finalizar = async () => {
-    try {
-        await axios.post('/ConfirmarVenta');
-        cartStore.fetchCart()
-
-    } catch (error) {
-        
-    }
-};
 
 const traerCarrito = () => {
-    axios.get('/carrito/ventaConfirmada')
+    const cartId = route.params.cart_id;
+    axios.get(`/carrito/ventaConfirmada/${cartId}`)
     .then(({data}) => {
-        orden.value = data.data
-        direccion.value = data.direccion
+        orden.value = data.data;
+        direccion.value = data.direccion;
     })
-
-  
+    .catch(error => {
+        console.error("Error al obtener los detalles del carrito:", error);
+    });
 }
 
 onMounted(() => {
-    traerCarrito()
-    
-    
+    traerCarrito();
 });
 </script>

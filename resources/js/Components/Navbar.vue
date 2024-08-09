@@ -1,7 +1,6 @@
 <template>
     <v-app-bar elevation="0" color="primary">
         <v-app-bar-nav-icon color="white" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-       
 
         <template v-slot:append>
             <v-menu>
@@ -10,7 +9,7 @@
                     color="white"
                     prepend-icon="mdi-account-circle"
                     v-bind="props">
-                    {{user.data?.name.split(' ')[0]}}
+                    {{authUser.name?.split(' ')[0] }}
                     </v-btn>
                 </template>
                 <v-list>
@@ -32,11 +31,9 @@
                     </div >
                 </template>
                 <v-list>
-              
                     <v-list-item prepend-icon="mdi-bell-alert" @click="router.push({name: 'PedidoDetalle', params: {id : notificacion.id}})" class="cursor-pointer" v-for="notificacion in notificaciones.notifications">
-                            
-                            <v-list-item-text  > Tienes un nuevo pedido</v-list-item-text>
-                            <v-list-item-subtitle>{{ formatRelativeTime(notificacion.fecha) }}</v-list-item-subtitle>
+                        <v-list-item-text  > Tienes un nuevo pedido</v-list-item-text>
+                        <v-list-item-subtitle>{{ formatRelativeTime(notificacion.fecha) }}</v-list-item-subtitle>
                     </v-list-item>
                 </v-list>
 
@@ -54,7 +51,7 @@
             prepend-icon="mdi-account-box"
 
             @click="router.push({ name: 'Cuenta' })"
-            :title="user.data?.name"
+            :title="authUser.name ?? 'user'"
         ></v-list-item>
         <v-divider class="my-0"></v-divider>
         <v-list >
@@ -71,7 +68,7 @@
 import { ref, onMounted } from "vue";
 import axios from "@/axios.js";
 import { useRouter } from "vue-router";
-import { useLoginStore } from "@/stores/login";
+import { useLoginStore } from "../stores/login";
 import { useCartStore } from "../stores/carrito";
 import { UseNotificationStore } from "../stores/notificaciones";
 import dayjs from 'dayjs';
@@ -80,15 +77,16 @@ import 'dayjs/locale/es';
 dayjs.extend(relativeTime);
 dayjs.locale('es');
 
-const dialog = ref(false);
-const drawer = ref(null);
-
-const user = ref({});
-
+const loginStore = useLoginStore();
 const router = useRouter();
 const cartStore = useCartStore();
 const notificaciones = UseNotificationStore();
-const loginStore = useLoginStore();
+
+const dialog = ref(false);
+const drawer = ref(null);
+
+const authUser = ref({});
+
 
 const lastRoute = ref(null);
 const admin = ref(false);
@@ -144,7 +142,8 @@ const menu = ref([
 const cerrarSesion = async () => {
     axios.post("/cerrarSesion")
     .then(() => {
-        router.push({ name: "logear" });ß
+        localStorage.removeItem('user');
+        router.push({ name: "logear" });
     })
 
 };
@@ -163,12 +162,16 @@ const formatRelativeTime = (date) => {
 }
 
 
-onMounted(() => {
+onMounted(async () => {
+    await loginStore.setUser();
+    authUser.value = loginStore.getUserData;
+
     setTimeout(() => {
-        user.value = loginStore.getUserData;
-        if (user.value.data.roles[0].name === 'usuario') {
+        if (loginStore.getPermissions.includes('usuario')) {
             cliente.value = true;
+            admin.value = false;
         } else {
+            cliente.value = false;
             admin.value = true;
         }
     }, 500);

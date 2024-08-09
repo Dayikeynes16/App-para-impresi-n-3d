@@ -30,6 +30,17 @@
                                     prepend-inner-icon="mdi-email-outline"
                                     variant="outlined"
                                 ></v-text-field>
+
+                                <div class="text-subtitle-1 text-medium-emphasis">Telefono</div>
+        
+                                <v-text-field
+                                    :error-messages="errorMessages.email"
+                                    v-model="form.email"
+                                    density="compact"
+                                    placeholder="Telefono"
+                                    prepend-inner-icon="mdi-phone-outline"
+                                    variant="outlined"
+                                ></v-text-field>
         
                                 <div
                                     class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between"
@@ -137,6 +148,7 @@ const router = useRouter();
 const form = ref({
     name: null,
     email: null,
+    telefono: null,
     password: null,
     password_confirmation: null,
     role: null,

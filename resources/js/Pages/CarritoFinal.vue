@@ -320,11 +320,9 @@ const obtenerCostoEnvio = () => {
 
 const sumarArchivo = async (item) => {
     item.cantidad++;
-    console.log('item: ', item);
     axios
         .post(`/carrito/update-file/${item.id}`,{cantidad: item.cantidad})
         .then((response) => {
-            console.log(response)
             cartStore.fetchCart();
         })
         .catch((response) => {

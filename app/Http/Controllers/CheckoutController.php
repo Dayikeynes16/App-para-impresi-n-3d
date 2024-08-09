@@ -20,6 +20,7 @@ class CheckoutController extends Controller
 
     public function createSession(Request $request)
     {
+        $cartId = $request->input('cart_id');
         Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
         $session = Session::create([
             'line_items' => [[
@@ -33,10 +34,10 @@ class CheckoutController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => url('/success'),  
+            'success_url' => url('/success/' . $cartId),
             'cancel_url' => url('/CarritoFinal'),
             'metadata' => [
-                'id_carrito' => $request->input('id')
+                'id_carrito' => $cartId
             ]
         ]);
         // Log::alert($session);

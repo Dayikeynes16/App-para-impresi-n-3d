@@ -34,7 +34,7 @@ class CarritoController extends Controller
             ->where('usuario_id', $userId)
             ->where('status', 'activo')
             ->first();
-
+        
         $orden = [];
         $orden['id'] = $carrito->id;
         $orden['total'] = $carrito->total;
@@ -256,19 +256,26 @@ class CarritoController extends Controller
     }
 
 
-    public function getCarritosPendientes(){
-        $carritos = Carrito::with('usuario','orden.files','productos')->where('status', 'pago confirmado')->get();
-        return response($carritos);
+    public function getCarritosPendientes(Request $request){
+        $request->validate([
+            'perPage' => 'nullable|integer'
+        ]);
+        $carritos = Carrito::where('status', 'pago confirmado')->paginate($request->get('itemsPerPage',15));
+        return response()->json($carritos);
     }
 
-    public function ventaConfirmada(Request $request)
+    public function ventaConfirmada($cart_id)
     {
-        $carrito = Carrito::where('usuario_id', $request->user()->id)
-            ->where('status', 'pago confirmado')
-            ->latest()
-            ->first();
+        $carrito = Carrito::find($cart_id);
+
+        return response()->json(['data' => 'holaaa']);
+        
     
-        return response()->json(['data' => $carrito]);
+        // if (!$carrito) {
+        //     return response()->json(['error' => 'Carrito no encontrado'], 404);
+        // }
+    
+        // return response()->json(['data' => $carrito, 'direccion' => $carrito->direccion]);
     }
 
     public function show($id)
@@ -329,7 +336,10 @@ class CarritoController extends Controller
 
 
     public function traerPedidosViejos(Request $request){
-        $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'pago confirmado')->get();
+        $request->validate([
+            'perPage' => 'nullable|integer'
+        ]);
+        $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'pago confirmado')->paginate($request->input('perPage',10));
         return response()->json(['data'=>$pedidosViejos]);
 
     }

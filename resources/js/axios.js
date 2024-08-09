@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "@/router";
 
 const axiosInstance =
     axios.create(/*{
@@ -15,10 +16,7 @@ axiosInstance.interceptors.request.use(
             ...config.headers,
             Accept: "application/json",
             headers: { "X-CSRF-TOKEN": token },
-            //   'Authorization': localStorage.getItem('userToken') ? `Bearer ${localStorage.getItem('userToken')}` : null
         };
-
-        console.log("axios new");
 
         return config;
     },
@@ -29,22 +27,22 @@ axiosInstance.interceptors.request.use(
     }
 );
 
-// axiosInstance.interceptors.response.use(
-//     (response) => {
-//         return response;
-//     },
-//     (error) => {
-//         console.log(error.response);
+axiosInstance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        console.log(error.response);
 
-//         if (
-//             error.response.status === 401 &&
-//             error.response.data.message == "Unauthenticated."
-//         ) {
-//             localStorage.removeItem("userToken");
-//         }
+        if (
+            error.response.status === 401 &&
+            error.response.data.message == "Unauthenticated."
+        ) {
+            localStorage.removeItem("user");
+        }
 
-//         return Promise.reject(error);
-//     }
-// );
+        return Promise.reject(error);
+    }
+);
 
 export default axiosInstance;

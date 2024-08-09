@@ -1,38 +1,49 @@
-import { defineStore } from 'pinia'
-import {ref, computed} from 'vue'
-import axios from 'axios';
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import axios from "axios";
 
-export const useLoginStore = defineStore('login', () => {
+export const useLoginStore = defineStore("login", () => {
+    const authUser = ref({});
+    const permissions = ref([]);
+    const is_auth = ref(false);
 
-  const user = ref(null)
-  const permissions = ref([])
+    const setUser = async () => {
+        await axios
+            .get("/get_user")
+            .then((data) => {
+                authUser.value = data.data.data;
 
-  const setUser = () => {
-    axios.get('/get_user')
-      .then((data) => {
-        user.value = data.data
+                permissions.value = [];
+                data.data.data.roles.forEach((element) => {
+                    element.permissions.forEach((element) => {
+                        permissions.value.push(element.name);
+                    });
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
 
-
-      permissions.value = []
-        data.data.data.roles.forEach(element => {
-          element.permissions.forEach(element => {
-            permissions.value.push(element.name)
-          });
+    const isAutenticated = () => {
+        axios.get("/auth").then(({ data }) => {
+            if (data === true) {
+                is_auth.value = true;
+            } else {
+                is_auth.value = false;
+            }
         });
+    };
 
-      })
-      .catch((error) => {
-        console.log(error);
-    });
-  }
+    const getUserData = computed(() => authUser.value);
+    const getPermissions = computed(() => permissions.value);
 
-  const getUserData = computed(() => user.value) 
-  const getPermissions = computed(() => permissions.value) 
-
-
-  return {
-    setUser,
-    getUserData,
-    getPermissions
-  }
-})
+    return {
+        setUser,
+        getUserData,
+        getPermissions,
+        isAutenticated,
+        is_auth,
+        permissions,
+    };
+});

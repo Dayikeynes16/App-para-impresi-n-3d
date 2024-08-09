@@ -75,7 +75,6 @@ const paginate = ref({
     current_page: null
 });
 const modelos = async (filters = {}) => {
-    console.log('obteniendo los modelos', filters);
     axios.get('/modelos',{params: filters})
     .then(({data}) => {
         imagenes.value = data.data.map((imagen) => {

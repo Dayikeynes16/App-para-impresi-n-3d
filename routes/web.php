@@ -104,7 +104,7 @@ Route::group(['middleware' => ['auth']], function(){
         Route::post('/agregar', [CarritoController::class, 'agregar']);
         Route::post('/update-file/{productoCarritoArchivo}', [CarritoController::class, 'actualizarCarritoArchivo']);
         Route::get('/userHistorial', [CarritoController::class, 'userHistorial']);
-        Route::get('/ventaConfirmada', [CarritoController::class, 'ventaConfirmada']);
+        Route::get('/ventaConfirmada/{cart_id}', [CarritoController::class, 'ventaConfirmada']);
     });
     Route::post('/borrarProducto', [CarritoController::class, 'borrarProducto']);
     Route::post('/actualizarProductoCarrito', [CarritoController::class, 'actualizar']);

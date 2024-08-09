@@ -16,10 +16,11 @@ class WebhookController extends Controller
 {
     public function paymentSuccess(Request $request)
     {
+        Log::alert('perrrrrra hey');
         Log::alert($request);
-        $stripe = new StripeClient(env('STRIPE_SECRET'));
+        $stripe = new StripeClient(env('STRIPE_SECRET_KEY'));
         $endpoint_secret = env('STRIPE_WEBHOOK_SECRET');
-
+        
         $payload = $request->getContent();
         $sig_header = $request->header('Stripe-Signature');
         $event = null;

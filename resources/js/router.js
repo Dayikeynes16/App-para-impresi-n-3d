@@ -19,14 +19,14 @@ import pedidoDetalles from "./Pages/adminPages/pedidoDetalles.vue";
 import EditarDireccion from "./Components/EditarDireccion.vue";
 import VentaExitosa from "./Pages/VentaExitosa.vue";
 import PedidosPagados from "./Pages/adminPages/PedidosPagados.vue";
-import Usuarios from "./Pages/adminPages/Usuarios.vue"
+import Usuarios from "./Pages/adminPages/Usuarios.vue";
 import RolesPermisssions from "./Pages/adminPages/RolesPermisssions.vue";
 import Main from "./Pages/layout/Main.vue";
 import HistorialCliente from "./Pages/clientePages/HistorialCliente.vue";
 import Users from "./Pages/adminPages/Users.vue";
 import CostoProduccion from "./Pages/adminPages/CostoProduccion.vue";
 import cotizacionRapida from "./Pages/clientePages/cotizacionRapida.vue";
-
+import { useLoginStore } from "./stores/login";
 
 const routes = [
     {
@@ -47,7 +47,7 @@ const routes = [
     {
         name: "cotizacion-rapida",
         path: "/cotizacion-rapida",
-        component: cotizacionRapida
+        component: cotizacionRapida,
     },
     {
         name: "Home",
@@ -58,104 +58,207 @@ const routes = [
                 name: "catalogo",
                 path: "/catalogo",
                 component: Catalogo,
+                meta: {
+                    permission: "catalogo",
+                },
             },
             {
                 name: "cotizar",
                 path: "/cotizar",
                 component: Ejemplo,
+                meta: {
+                    permission: "cotizar",
+                },
             },
             {
                 name: "editarcatalogo",
                 path: "/editcatalogo",
                 component: EditarCatalogo,
+                meta: {
+                    permission: "catalogo.editar",
+                },
             },
             {
                 name: "Cuenta",
                 path: "/Cuenta",
                 component: Cuenta,
+                meta: {
+                    permission: "usuario",
+                },
             },
             {
                 name: "Direcciones",
                 path: "/direcciones",
                 component: Direcciones,
+                meta: {
+                    permission: "catalogo",
+                },
             },
             {
                 name: "editarModelo",
                 path: "/modelos/:id/editar",
                 component: editarModelo,
+                meta: {
+                    permission: "catalogo.editar",
+                },
             },
             {
                 name: "DetallesModelo",
                 path: "/DetallesModelos/:id/detalles",
                 component: DetallesModelo,
+                meta: {
+                    permission: "catalogo",
+                },
             },
             {
                 name: "GuardarProducto",
                 path: "/Guardarproducto",
                 component: GuardarProducto,
+                meta: {
+                    permission: "catalogo.editar",
+                },
             },
             {
                 name: "ProcesarCarrito",
                 path: "/ProcesarCarrito",
                 component: ProcesarCarrito,
+                meta: {
+                    permission: "usuario",
+                },
             },
             {
                 name: "CarritoFinal",
                 path: "/CarritoFinal",
                 component: CarritoFinal,
+                meta: {
+                    permission: "catalogo",
+                },
             },
             {
                 name: "Dashboard",
                 path: "/Dashboard",
                 component: Dashboard,
+                meta: {
+                    permission: "dashboard",
+                },
             },
             {
                 name: "PedidoDetalle",
                 path: "/PedidoDetalle/:id/detalles",
                 component: pedidoDetalles,
+                meta: {
+                    permission: "dashboard",
+                },
             },
             {
                 name: "editarDireccion",
                 path: "/editarDireccion/:id/editar",
                 component: EditarDireccion,
+                meta: {
+                    permission: "catalogo",
+                },
             },
             {
                 name: "Exito",
                 path: "/success",
                 component: VentaExitosa,
+                meta: {
+                    permission: "catalogo",
+                },
             },
             {
                 name: "PedidosPagados",
                 path: "/pedidosPagados",
                 component: PedidosPagados,
-            },{
+                meta: {
+                    permission: "admin.historial",
+                },
+            },
+            {
                 name: "CrearUsuarios",
                 path: "/crearUsuarios",
-                component: Usuarios
-            },{
+                component: Usuarios,
+                meta: {
+                    permission: "usuarios",
+                },
+            },
+            {
                 name: "RolesPermissions",
                 path: "/RolesPermissions",
-                component: RolesPermisssions
-            },{
+                component: RolesPermisssions,
+                meta: {
+                    permission: "roles.permisos",
+                },
+            },
+            {
                 name: "ClienteHistorial",
                 path: "/cliente-historial",
-                component: HistorialCliente
-            },{
+                component: HistorialCliente,
+                meta: {
+                    permission: "user.historial",
+                },
+            },
+            {
                 name: "crearUsuario",
                 path: "crearUsuario",
-                component: Users
-            },{
+                component: Users,
+                meta: {
+                    permission: "usuarios",
+                },
+            },
+            {
                 name: "costoProduccion",
                 path: "costo-produccion",
-                component: CostoProduccion
-            }
+                component: CostoProduccion,
+                meta: {
+                    permission: "costo.produccion",
+                },
+            },
         ],
     },
-
 ];
 
 const router = VueRouter.createRouter({
     history: VueRouter.createWebHistory(),
     routes,
 });
+
+router.beforeEach(async (to, from, next) => {
+    const loginStore = useLoginStore();
+    await loginStore.setUser();
+
+    if (
+        [
+            "logear",
+            "register",
+            "recuperarContrasena",
+            "cotizacion-rapida",
+        ].includes(to.name)
+    ) {
+        next();
+    } else {
+        if (!localStorage.user) {
+            next({ name: "logear" });
+
+            return;
+        }
+
+        if ("logear" !== to.name) {
+            if (loginStore.permissions.length > 0) {
+                if (!loginStore.permissions.includes(to.meta.permission)) {
+                    next({ name: "catalogo" });
+                    return;
+                }
+
+                next();
+                return;
+            } else {
+                next({ name: "logear" });
+                return;
+            }
+        }
+        console.error("Falla en el router.");
+    }
+});
+
 export default router;

@@ -70,10 +70,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from "@/axios.js";
-import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus'
+import router from '@/router'
+import { useLoginStore } from '../../stores/login';
 
-const router = useRouter();
+const loginStore = useLoginStore();
 const errorMessages = ref({});
 const visible = ref(false);
 const resultado = ref(true);
@@ -88,15 +88,30 @@ const login = async () => {
 
     axios.post('/login', form.value)
     .then(({data}) => {
-      if(data.redirect){
-        router.push(data.redirect)
+      loginStore.setUser()
+      localStorage.setItem('user', data.data)
+
+      let roles = data.data.roles.map(elememt => elememt.name)
+
+      if(roles.includes('usuario')){
+        router.push({name:'cotizar'})
       } else {
-        ElMessage.error('El usuario o la contraseña no son correctos.')
+        router.push({name: 'Dashboard'})
       }
     })
     .catch((error) => {
-      errorMessages.value = error.response.data.errors;
+      switch (error.response.status) {
+        case 422:
+          errorMessages.value = error.response.data.errors;  
+          break
 
+        case 400:
+          console.log(true, 'error', error.response.data.data.message)
+          break
+        default:
+          console.error(error.response);
+          break
+      }
     })
 };
 

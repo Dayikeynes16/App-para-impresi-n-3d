@@ -37,7 +37,8 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|confirmed'
+            'password' => 'required|confirmed',
+            'telefono' => 'required|string'
         ]);
     
         $usuario = User::create($request->all());
@@ -79,16 +80,11 @@ class AuthController extends Controller
 
             $rol = $user->getRoleNames()->first();
 
-            if ($rol === 'admin') {
-                return response()->json(['redirect' => '/Dashboard'], 200);
-            } else {
-                return response()->json(['redirect' => '/cotizar'], 200);
-
-            }
+            return response()->json(['data' => $user]);
         }
 
 
-        return response()->json(['data' => 'El email o la contraseña no son correctas.', 'code' => 422]);
+        return response()->json(['errors' => ['email' => 'El email o la contraseña no son correctas.']], 422);
     }
 
     public function addPermissionsToRole(Request $request)
@@ -120,7 +116,7 @@ class AuthController extends Controller
     }
 
     public function auth(Request $request)
-    {
+    {   
         return Auth::check();
     }
 
@@ -204,6 +200,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'telefono' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|confirmed',
             'role' => 'required|string'

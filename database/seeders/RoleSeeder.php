@@ -18,6 +18,6 @@ class RoleSeeder extends Seeder
         $roleAdmin->syncPermissions(Permission::all()->pluck('name'));
 
         $roleUser = Role::query()->updateOrCreate(['name' => 'usuario']);
-        $roleUser->syncPermissions(['cotizar', 'catalogo', 'user.historial']);
+        $roleUser->syncPermissions(['cotizar', 'catalogo', 'user.historial', 'usuario']);
     }
 }

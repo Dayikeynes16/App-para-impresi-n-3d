@@ -24,12 +24,23 @@
                         ></v-text-field>
                         <div class="text-subtitle-1 text-medium-emphasis">Correo</div>
             
+                        
                         <v-text-field
                             :error-messages="errorMessages.email"
                             v-model="form.email"
                             density="compact"
                             placeholder="Correo electrónico"
                             prepend-inner-icon="mdi-email-outline"
+                            variant="outlined"
+                        ></v-text-field>
+                        <div class="text-subtitle-1 text-medium-emphasis">Telefono</div>
+
+                        <v-text-field
+                            :error-messages="errorMessages.email"
+                            v-model="form.telefono"
+                            density="compact"
+                            placeholder="Telefono"
+                            prepend-inner-icon="mdi-phone-outline"
                             variant="outlined"
                         ></v-text-field>
             
@@ -111,6 +122,7 @@ const visible = ref(false);
 const form = ref({
     name: null,
     email: null,
+    telephone: null,
     password: null,
     password_confirmation: null,
 });
