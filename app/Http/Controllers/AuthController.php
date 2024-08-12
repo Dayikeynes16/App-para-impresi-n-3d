@@ -49,8 +49,6 @@ class AuthController extends Controller
     }
 
     public function prueba(Request $request) {
-        // $user = $request->user();
-        // $carrito = Carrito
         return view('email.ventaConfirmada');
     }
 

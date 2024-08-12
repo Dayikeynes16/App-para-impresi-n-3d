@@ -169,10 +169,9 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "@/axios.js";
-import { Delete, UploadFilled } from "@element-plus/icons-vue";
-import formatCurrency from "../composables/formatNumberToCurrency";
-import ListaDeArchivos from "../Components/ListaDeArchivos.vue";
-import { VList } from "vuetify/components";
+import { UploadFilled} from "@element-plus/icons-vue";
+import { ElMessage } from 'element-plus'
+
 
 const product = ref({});
 const errorMessages = ref({});
@@ -210,40 +209,43 @@ const eliminarImagen = async (id) => {
 };
 
 const guardarImagen = async (file) => {
-    const formData = new FormData();
-    formData.append("image", file.file);
-    formData.append("producto_id", id.value);
-
     try {
+        const formData = new FormData();
+        formData.append("image", file.file);
+        formData.append("producto_id", id.value);
+
         const { data } = await axios.post("/guardarImagen", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         });
+
         Imagenes.value.push(data.data);
     } catch (error) {
-        console.error(error);
+        ElMessage.error('Ha ocurrido un error al guardar la imagen');
     }
 };
 
 const guardarSTL = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file.file);
-    formData.append("producto_id", id.value);
-
     try {
+        const formData = new FormData();
+        formData.append("file", file.file);
+        formData.append("producto_id", id.value);
+
         const { data } = await axios.post("/guardarSTLproducto", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         });
-        if (data.data === 200) {
-            await traerArchivos(id.value);
+
+        if (data.status === 200) {
+            traerArchivos(id.value);
         }
     } catch (error) {
-        console.error(error);
+        ElMessage.error('Ocurrió un problema al guardar el STL');
     }
 };
+
 
 const eliminarArchivo = async (id) => {
     try {

@@ -92,7 +92,6 @@ const totales = ref({
     total: 0,
     files: []
 });
-const cotizacionTamaño = ref(4)
 
 const agregarCarrito = async () => {
     axios.post("/carrito/agregar", {
@@ -112,24 +111,20 @@ const cotizar = async (file) => {
 
     const formData = new FormData();
     formData.append('file', file.file);
-    try {
-        axios.post("/cotizacion/cotizar",formData)
+   
+    axios.post("/cotizacion/cotizar",formData)
         .then(() => {
             loading.value = false;
             actualizarLista.value = true
         })
 
-    } catch (error) {
+     .catch((error) => {
         loading.value = false;
-        if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-        ) {
-            errorMessage.value = error.response.data.message;
-        }
+        
+        errorMessage.value = error.response.data.message;
+
         dialog.value = true;
-    }
+     })
 };
 
 

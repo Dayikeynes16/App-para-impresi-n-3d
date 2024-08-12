@@ -242,6 +242,9 @@ import ElegirDireccion from "../Components/ElegirDireccion.vue";
 import axios from "@/axios.js";
 import formatCurrency from '../composables/formatNumberToCurrency'
 import { useLoginStore } from "@/stores/login";
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 const user = ref({});
 const loginStore = useLoginStore();
 const direccion = ref({});
@@ -388,5 +391,9 @@ onMounted(() => {
     }, 500);
 
     obtenerCostoEnvio()
+
+    if(undefined !== route.params.step){
+        step.value = route.params.step
+    }
 });
 </script>

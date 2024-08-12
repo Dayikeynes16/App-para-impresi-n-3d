@@ -132,7 +132,7 @@ const registrar = async () => {
         const { data } = await axios.post("/usuarios", form.value);
         router.push({ name: "logear" });
     } catch (error) {
-        if (error.response.status === 422) {
+        if (error) {
             errorMessages.value = error.response.data.errors;
         }
     }

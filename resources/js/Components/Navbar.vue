@@ -167,7 +167,7 @@ onMounted(async () => {
     authUser.value = loginStore.getUserData;
 
     setTimeout(() => {
-        if (loginStore.getPermissions.includes('usuario')) {
+        if (loginStore.roles.includes('usuario')) {
             cliente.value = true;
             admin.value = false;
         } else {

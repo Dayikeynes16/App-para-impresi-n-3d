@@ -36,17 +36,14 @@ class CheckoutController extends Controller
             'customer_email' => Auth::user()->email,
             
             'mode' => 'payment',
-            'success_url' => url('/success'),
-            'cancel_url' => url('/CarritoFinal'),
+            'success_url' => url(sprintf('/success?venta=%s', $cartId)),
+            'cancel_url' => url('/CarritoFinal?step=3'),
             'metadata' => [
                 'id_carrito' => $cartId
             ]
         ]);
-        // Log::alert($session);
-
         $carrito = Carrito::where('usuario_id', $request->user()->id)->where('status', 'activo')->first();
         $carrito->total = (float) $request->input('total');
-        $carrito->status = 'pago por confirmar';
         $carrito->save();
 
         return response()->json(['id' => $session->id]);

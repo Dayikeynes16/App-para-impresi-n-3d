@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FactorConversion;
 use App\Models\PrecioMinuto;
 use App\Models\UsuarioCotizacion;
 use Exception;
@@ -13,6 +14,7 @@ class UsuarioCotizacionController extends Controller
 {
     public function cotizar(Request $request)
     {
+        $conversion = FactorConversion::first();
         $precioMinuto = PrecioMinuto::first();
         $request->validate([
             'file' => 'file|required',
@@ -24,10 +26,10 @@ class UsuarioCotizacionController extends Controller
             $cotizacion = UsuarioCotizacion::create([
                 'path' => $filePath,
                 'nombre' => $request->file('file')->getClientOriginalName(),
-                'minutos' => ($response['estimated_printing_time_seconds'] / 60) / 4,
-                'precio' => (($response['estimated_printing_time_seconds'] / 60) / 4) * $precioMinuto->precio,
+                'minutos' => ($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion,
+                'precio' => (($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion) * $precioMinuto->precio,
                 'usuario_id' => Auth::user()->id,
-                'total' => (($response['estimated_printing_time_seconds'] / 60) / 4) * $precioMinuto->precio,
+                'total' => (($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion) * $precioMinuto->precio,
 
             ]);
 
@@ -70,9 +72,7 @@ class UsuarioCotizacionController extends Controller
 
     public function index() 
     {
-        //solamente puede devolver-imprimir archivos que tengan maximo 1 mes de cotizado
-        // @todo: identificar el tiempo de validez de una cotizacion
-
+       
         return response()->json([
             'data' => UsuarioCotizacion::where('usuario_id', Auth::user()->id)->get(),
         ]); 

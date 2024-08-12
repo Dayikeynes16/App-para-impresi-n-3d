@@ -19,7 +19,7 @@
                     <v-col cols="6"><h3>Total:</h3></v-col>
                     <v-col cols="6"><h3>{{ formatCurrency(orden.total) }}</h3></v-col>
                     <v-col cols="6"><h3>Estatus:</h3></v-col>
-                    <v-col cols="6"><strong><h3>Pagado</h3></strong></v-col>
+                    <v-col cols="6"><strong><h3>Pago en proceso</h3></strong></v-col>
                     <v-col cols="12">
                         <v-card-subtitle>
                             <h4>Se te enviará un correo con información pertinente</h4>
@@ -37,17 +37,21 @@
 import axios from '@/axios'
 import { onMounted, ref } from 'vue';
 import formatCurrency from '../composables/formatNumberToCurrency';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
+const route = useRoute();
 const router = useRouter();
-const direccion = ref({})
-const orden = ref({})
+const orden = ref({
+    
+})
 
 const traerCarrito = () => {
-    axios.get('/carrito/ventaConfirmada')
+    axios.get(`/ventaExitosa/${route.query.venta}`)
     .then(({data}) => {
+        if(!data.data){
+            router.push({name: 'cotizar'})
+        }
         orden.value = data.data;
-        direccion.value = data.direccion;
     })
     .catch(error => {
         console.error("Error al obtener los detalles del carrito:", error);
@@ -56,5 +60,6 @@ const traerCarrito = () => {
 
 onMounted(() => {
     traerCarrito();
+
 });
 </script>

@@ -92,6 +92,7 @@
                         
                         Pedido programado para su recolección en sucursal.
                         <v-divider></v-divider>
+                        
                         <v-row>
                             <v-col cols="6"> Recibe:</v-col>
                             <v-col cols="6">{{ carrito.usuario.name }}</v-col>
@@ -127,8 +128,8 @@
 
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn block variant="outlined" @click="terminarTarea(carrito.id)" prepend-icon="mdi-check-outline">Finalizado</v-btn>
-
+                        <v-btn block v-if="carrito.status === 'Pago confirmado'" variant="outlined" @click="PedidoListo(carrito.id)" prepend-icon="mdi-check-outline">Pedido Listo</v-btn> <br>
+                        <v-btn block v-if="['Listo para recolectar', 'Listo Para Enviar'].includes(carrito.status)" variant="outlined" @click="terminarTarea(carrito.id)" prepend-icon="mdi-check-outline">Finalizar</v-btn>
                     </v-card-actions>
                 </v-card>
 
@@ -210,7 +211,7 @@ const download = async (id, nombre) => {
     }
 };
 
-const terminarTarea = async (id) => {
+const PedidoListo = async (id) => {
     try {
         const { data } = await axios.post(`/listoParaEnvio/${id}`, {
             headers: { "X-CSRF-TOKEN": token },
@@ -222,5 +223,14 @@ const terminarTarea = async (id) => {
         console.error("Error finalizando la tarea:", error);
     }
 };
+
+const terminarTarea = async (id) => {
+    axios.post(`/listoParaEnvio/${id}`, {status: 'Finalizado'})
+    .then(() => {
+        
+        router.push({name: 'Dashboard'});
+    })
+}
+
 
 </script>

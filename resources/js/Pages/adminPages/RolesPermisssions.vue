@@ -130,6 +130,7 @@ const fetchRoles = async () => {
         roles.value = data.data;
         noRoles.value = roles.value.length === 0;
         openEditRoleDialogVisible.value = false
+        addRoleDialog.value = false
 
     })
 };

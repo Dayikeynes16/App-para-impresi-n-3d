@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\Webhook;
@@ -16,7 +17,7 @@ class WebhookController extends Controller
 {
     public function paymentSuccess(Request $request)
     {
-        Log::alert('perrrrrra hey');
+        Log::alert('Payment webhook received');
         Log::alert($request);
         $stripe = new StripeClient(env('STRIPE_SECRET_KEY'));
         $endpoint_secret = env('STRIPE_WEBHOOK_SECRET');
@@ -30,14 +31,11 @@ class WebhookController extends Controller
                 $payload, $sig_header, $endpoint_secret
             );
         } catch (\UnexpectedValueException $e) {
-            // Payload inválido
             return response()->json(['error' => 'Invalid payload'], 400);
         } catch (SignatureVerificationException $e) {
-            // Firma inválida
             return response()->json(['error' => 'Invalid signature'], 400);
         }
 
-        // Manejar solo el evento checkout.session.completed
         if ($event->type === 'checkout.session.completed') {
             $session = $event->data->object;
             if (isset($session->metadata->id_carrito)) {
@@ -46,6 +44,8 @@ class WebhookController extends Controller
                 if ($carrito) {
                     $carrito->status = "Pago confirmado";
                     $carrito->save();
+                    
+                    
                 } 
             } 
         } else {

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\FactorConversion;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -19,7 +20,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProductSeeder::class,
             CostoProduccionSeeder::class,
-            CostoEnvioSeeder::class
+            CostoEnvioSeeder::class,
+            ConversionSeeder::class,
         ]);
     }
 }

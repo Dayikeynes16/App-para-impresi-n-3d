@@ -6,6 +6,7 @@ export const useLoginStore = defineStore("login", () => {
     const authUser = ref({});
     const permissions = ref([]);
     const is_auth = ref(false);
+    const roles = ref([])
 
     const setUser = async () => {
         await axios
@@ -14,10 +15,14 @@ export const useLoginStore = defineStore("login", () => {
                 authUser.value = data.data.data;
 
                 permissions.value = [];
+                roles.value = [];
+                data.data.data.roles.name
+
                 data.data.data.roles.forEach((element) => {
                     element.permissions.forEach((element) => {
                         permissions.value.push(element.name);
                     });
+                    roles.value.push(element.name)
                 });
             })
             .catch((error) => {
@@ -45,5 +50,6 @@ export const useLoginStore = defineStore("login", () => {
         isAutenticated,
         is_auth,
         permissions,
+        roles
     };
 });

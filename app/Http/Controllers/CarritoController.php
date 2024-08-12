@@ -57,10 +57,8 @@ class CarritoController extends Controller
 
     public function borrar(Request $request)
     {
-        $producto = Producto_Carrito::find($request->input('id'))->first();
-        if ($producto->has('productoCarritoArchivos')) {
-            $producto->productoCarritoArchivos()->delete();
-        }
+        $producto = Producto_Carrito::find($request->input('id'));
+        
         $producto->delete();
 
         $this->calcularCarrito();
@@ -263,10 +261,8 @@ class CarritoController extends Controller
             'search' => 'nullable|string'
         ]);
     
-        // Iniciar la consulta
-        $query = Carrito::with('usuario')->where('status', 'pago confirmado');
+        $query = Carrito::with('usuario')->whereIn('status', ['pago confirmado', 'Listo para enviar','Listo para recolectar']);
     
-        // Aplicar el filtro de búsqueda si está presente
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->input('search');
             $query->whereHas('usuario', function ($q) use ($search) {
@@ -278,7 +274,6 @@ class CarritoController extends Controller
             });
         }
     
-        // Paginación
         $carritos = $query->paginate($request->get('itemsPerPage', 15));
     
         return response()->json($carritos);
@@ -302,14 +297,6 @@ class CarritoController extends Controller
             
             return response()->json(['data' => $carrito, 'prueba' => 'ya se confirmo']);
         }
-
-        
-    
-        // if (!$carrito) {
-        //     return response()->json(['error' => 'Carrito no encontrado'], 404);
-        // }
-    
-        // return response()->json(['data' => $carrito, 'direccion' => $carrito->direccion]);
     }
 
     public function show($id)
@@ -334,20 +321,55 @@ class CarritoController extends Controller
         }
     }
 
-    public function listoParaEnvio($id){
-        $carrito = Carrito::find($id);
-        $carrito->status ='Listo Para Enviar';
-        $carrito->save();
+    public function ventaExitosa($id,Request $request)
+    {
 
-        return response()->json(['data'=>'exito']);
+        $carritos = Carrito::with('usuario')->find($id);
+
+        if($carritos->usuario_id === $request->user()->id){
+            $carritos->status = 'pago por confirmar';
+            $this->enviarCorreoConfirmacion($request->user(),$carritos);
+            return response()->json(['data' => $carritos]);
+
+        } else {
+
+            return response()->json(['data' => 'Esta venta no te pertenece']);
+        }
+
     }
+
+    public function listoParaEnvio($id, Request $request) {
+        $carrito = Carrito::find($id);
+    
+        if ($request->input('status')) {
+            $carrito->status = 'Finalizado';
+            $user = User::find($carrito->usuario_id); 
+            if ($carrito->recoleccion === true) {
+                Mail::to($user->email)->send(new \App\Mail\PedidoRecoleccion($user, $carrito));
+            } else {
+                Mail::to($user->email)->send(new \App\Mail\PedidoEnviado($user, $carrito));
+            }
+    
+        } else {
+            if ($carrito->direccion_id === null) {
+                $carrito->status = 'Listo para recolectar';
+            } else {
+                $carrito->status = 'Listo Para Enviar';
+            }
+        }
+    
+        $carrito->save();
+    
+        return response()->json(['data' => 'exito']);
+    }
+    
+    
 
     public function ConfirmarVenta(Request $request){
         $carrito = Carrito::where('status', 'pago confirmado')->latest();
         if($carrito->total === 0){
             return response()->json(['data'=>'la venta ya ha sido cerrada', 'code'=>404]);
         } else{
-            // $carrito->status = 'pagada';
             $carrito->save();
             $this->enviarCorreoConfirmacion($request->user(), $carrito);
             return response('la venta fue exitosa');
@@ -361,7 +383,6 @@ class CarritoController extends Controller
             'user' => $user,
             'carrito' => $carrito,
         ];
-
         Mail::send('email.ventaConfirmada', $data, function($message) use ($user) {
             $message->to($user->email, $user->name)
                     ->subject('Confirmación de Compra');
@@ -374,27 +395,30 @@ class CarritoController extends Controller
         $request->validate([
             'perPage' => 'nullable|integer'
         ]);
-
     
         $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')
-                                ->where('status', 'pago confirmado', 'usuario')
-                                ->paginate($request->input('perPage', 10));
+                                ->where('status', 'Finalizado')
+                                ->paginate($request->input('perPage', 10)); 
     
-        return response()->json(['data' => $pedidosViejos]);
+        return response()->json($pedidosViejos);
     }
 
     public function totalPedidosPendientes(Request $request)
     {
-        $pedidosViejos = Carrito::where('status', 'pago confirmado')->get();
+        $pedidosViejos = Carrito::whereIn('status', ['pago confirmado', 'Listo para enviar', 'Listo para recolectar'])->get();
         $total = $pedidosViejos->sum('total');
 
         return response()->json(['data' => $total]);
     }
 
-    public function userHistorial(Request $request){
-        $pedidos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'pago confirmado')->
-            where('usuario_id', $request->user()->id)->get();
-        return response()->json(['data' => $pedidos]);
+    public function userHistorial(Request $request) {
+        $perPage = $request->input('perPage', 10); 
+        $pedidos = Carrito::with('orden.files', 'productos.producto.files')
+            ->whereIn('status', ['Listo Para Enviar', 'pago confirmado', 'Finalizado', 'pago por confirmar'])
+            ->where('usuario_id', $request->user()->id)
+            ->paginate($perPage);
+        
+        return response()->json($pedidos); 
     }
 
 

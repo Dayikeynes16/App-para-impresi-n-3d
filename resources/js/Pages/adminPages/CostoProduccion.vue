@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-row>
-            <v-col cols="6">
+            <v-col cols="12">
                 <v-card>
                     <v-card-title>
                         Precio por minuto de impresión
@@ -25,7 +25,7 @@
                     </v-card-actions>
                 </v-card>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="12">
                 <v-card>
                     <v-card-title>
                         Costo de envío
@@ -49,6 +49,30 @@
                     </v-card-actions>
                 </v-card>
             </v-col>
+            <v-col cols="12">
+                <v-card>
+                    <v-card-title>
+                        Factor de conversión
+                    </v-card-title>
+                    <v-card-subtitle>
+                        Cuan rapida es nuestra impresora en comparacion del dato de referencia
+                    </v-card-subtitle>
+                    <v-card-text>
+                        <v-text-field
+                        type="number"
+                        v-model="conversion.conversion"
+                        variant="outlined"
+                        label="¿cuantas veces es mas rapida nuestra impresora?">
+                        </v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn @click="updateConversion()" variant="outlined">
+                            Guardar
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
         </v-row>
     </v-container>    
 </template>
@@ -65,7 +89,10 @@ const shipment = ref({
     id: null,
     price: 0
 })
-
+const conversion = ref({
+    id: 1,
+    conversion: 0
+})
 const open = (messages, success) => {
     if (success === true){
         ElMessage({
@@ -82,6 +109,13 @@ const getPrice = async () => {
     .then(({data}) => {
         printing.value.price = data.data.precio
         printing.value.id = data.data.id
+    })
+}
+
+const getConversion = async () => {
+    axios.get('/factor-conversion')
+    .then((data) => {
+        conversion.value.conversion = data.data.data.conversion
     })
 }
 
@@ -106,6 +140,16 @@ const updateShipment = () => {
     })
 }
 
+const updateConversion = () => {
+    axios.put(`/factor-conversion/${conversion.value.id}`,{ conversion: conversion.value.conversion})
+    .then(({data}) => {
+     open('Actualizado correctamente.', true)
+    })
+    .catch((error) => {
+        open('Ocurrio un problema :c', false)
+    })
+}
+
 const updatePrinting = () => {
     axios.put(`/precio-impresion/${printing.value.id}`,{ precio: printing.value.price})
     .then(({data}) => {
@@ -122,5 +166,6 @@ const updatePrinting = () => {
 onMounted(() => {
     getPrice()
     getShip()
+    getConversion()
 })
 </script>

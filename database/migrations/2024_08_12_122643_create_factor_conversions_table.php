@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('factor_conversions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->double('conversion')->default(1);
         });
     }
 

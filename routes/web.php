@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ConversionController;
 use App\Http\Controllers\CostoEnvioController;
 use App\Http\Controllers\NotificacionesController;
 use App\Http\Controllers\PermissionController;
@@ -48,9 +49,10 @@ Route::group(['middleware' => ['auth']], function(){
     //notificaciones
     Route::get('/notificaciones', [NotificacionesController::class, 'index']);
 
-    //costos de envio e impresión
+    //costos de envio, impresión y conversion
     Route::apiResource('/precio-impresion', PrecioImpresionController::class);
     Route::apiResource('/precio-envio', CostoEnvioController::class);
+    Route::apiResource('/factor-conversion', ConversionController::class);
     
     //cotizacion
     Route::group(['prefix' => 'cotizacion'], static function (){
@@ -114,6 +116,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/getCarritosPendientes', [CarritoController::class, 'getCarritosPendientes']);
     Route::get('/totalCarritosPendientes', [CarritoController::class, 'totalPedidosPendientes']);
     Route::get('/carrito/{carrito}',[CarritoController::class, 'show']);
+    Route::get('/ventaExitosa/{carrito}',[CarritoController::class, 'ventaExitosa']);
     Route::post('/listoParaEnvio/{id}',[CarritoController::class, 'listoParaEnvio']);
     Route::post('ConfirmarVenta',[CarritoController::class, 'ConfirmarVenta']);
     Route::get('/traerPedidosViejos', [CarritoController::class, 'traerPedidosViejos']);

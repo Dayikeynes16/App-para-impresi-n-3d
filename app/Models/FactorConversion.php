@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class FactorConversion extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['conversion'];
 }
