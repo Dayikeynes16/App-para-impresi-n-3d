@@ -44,7 +44,7 @@ class WebhookController extends Controller
                 $carritoId = $session->metadata->id_carrito;
                 $carrito = Carrito::find($carritoId);
                 if ($carrito) {
-                    $carrito->status = "pago confirmado";
+                    $carrito->status = "Pago confirmado";
                     $carrito->save();
                 } 
             } 

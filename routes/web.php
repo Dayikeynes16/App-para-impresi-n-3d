@@ -104,7 +104,7 @@ Route::group(['middleware' => ['auth']], function(){
         Route::post('/agregar', [CarritoController::class, 'agregar']);
         Route::post('/update-file/{productoCarritoArchivo}', [CarritoController::class, 'actualizarCarritoArchivo']);
         Route::get('/userHistorial', [CarritoController::class, 'userHistorial']);
-        Route::get('/ventaConfirmada/{cart_id}', [CarritoController::class, 'ventaConfirmada']);
+        Route::get('/ventaConfirmada', [CarritoController::class, 'ventaConfirmada']);
     });
     Route::post('/borrarProducto', [CarritoController::class, 'borrarProducto']);
     Route::post('/actualizarProductoCarrito', [CarritoController::class, 'actualizar']);
@@ -112,6 +112,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/actualizarFileCarrito', [CarritoController::class, 'actualizarFileCarrito']);
     Route::post('/finalizarCarrito',[CarritoController::class, 'finalizarCarrito']);
     Route::get('/getCarritosPendientes', [CarritoController::class, 'getCarritosPendientes']);
+    Route::get('/totalCarritosPendientes', [CarritoController::class, 'totalPedidosPendientes']);
     Route::get('/carrito/{carrito}',[CarritoController::class, 'show']);
     Route::post('/listoParaEnvio/{id}',[CarritoController::class, 'listoParaEnvio']);
     Route::post('ConfirmarVenta',[CarritoController::class, 'ConfirmarVenta']);

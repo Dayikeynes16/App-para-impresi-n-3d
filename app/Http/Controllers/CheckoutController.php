@@ -20,7 +20,7 @@ class CheckoutController extends Controller
 
     public function createSession(Request $request)
     {
-        $cartId = $request->input('cart_id');
+        $cartId = $request->input('id');
         Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
         $session = Session::create([
             'line_items' => [[
@@ -33,8 +33,10 @@ class CheckoutController extends Controller
                 ],
                 'quantity' => 1,
             ]],
+            'customer_email' => Auth::user()->email,
+            
             'mode' => 'payment',
-            'success_url' => url('/success/' . $cartId),
+            'success_url' => url('/success'),
             'cancel_url' => url('/CarritoFinal'),
             'metadata' => [
                 'id_carrito' => $cartId
@@ -44,6 +46,7 @@ class CheckoutController extends Controller
 
         $carrito = Carrito::where('usuario_id', $request->user()->id)->where('status', 'activo')->first();
         $carrito->total = (float) $request->input('total');
+        $carrito->status = 'pago por confirmar';
         $carrito->save();
 
         return response()->json(['id' => $session->id]);

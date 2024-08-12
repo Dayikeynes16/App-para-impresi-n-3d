@@ -204,7 +204,7 @@
                                             <v-card-text class="text-center">
                                                 <p>Total a pagar</p>
                                                 <h2 v-if="direccion.es_recoleccion">{{ formatCurrency(cartStore.total) }}</h2>
-                                                <h2 v-else>{{ formatCurrency(cartStore.total+costoEnvio) }}</h2>
+                                                <h2 v-else>{{ formatCurrency(parseFloat(cartStore.total)+parseFloat(costoEnvio)) }}</h2>
                                             </v-card-text>
                                         </v-card>
                                     </v-col>
@@ -312,9 +312,11 @@ const restarArchivo = async (item) => {
 };
 
 const obtenerCostoEnvio = () => {
+    let number = 0
     axios.get('/precio-envio')
     .then(({data}) => {
-        costoEnvio.value = data.data.precio
+        number = parseFloat(data.data.precio)
+        costoEnvio.value = number
     })
 }
 

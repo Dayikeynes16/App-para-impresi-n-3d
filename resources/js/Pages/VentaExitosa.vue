@@ -36,19 +36,15 @@
 <script setup>
 import axios from '@/axios'
 import { onMounted, ref } from 'vue';
-import { useCartStore } from '../stores/carrito';
 import formatCurrency from '../composables/formatNumberToCurrency';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const route = useRoute();
-const cartStore = useCartStore();
 const direccion = ref({})
 const orden = ref({})
 
 const traerCarrito = () => {
-    const cartId = route.params.cart_id;
-    axios.get(`/carrito/ventaConfirmada/${cartId}`)
+    axios.get('/carrito/ventaConfirmada')
     .then(({data}) => {
         orden.value = data.data;
         direccion.value = data.direccion;

@@ -89,7 +89,21 @@
 
                     
                     <v-card-text v-if="sucursal" class="mt-1">
+                        
                         Pedido programado para su recolección en sucursal.
+                        <v-divider></v-divider>
+                        <v-row>
+                            <v-col cols="6"> Recibe:</v-col>
+                            <v-col cols="6">{{ carrito.usuario.name }}</v-col>
+                            <v-col cols="6">Telefono: </v-col>
+                            <v-col cols="6">{{ carrito.usuario.telefono}}</v-col>
+                            <v-col cols="6">Email: </v-col>
+                            <v-col cols="6">{{ carrito.usuario.email }}</v-col>
+                            <v-col cols="6">Estatus: </v-col>
+                            <v-col cols="6">{{ carrito.status }}</v-col>
+                            <v-col cols="6">Total: </v-col>
+                            <v-col cols="6">{{ formatCurrency(carrito.total) }}</v-col>
+                        </v-row>
                     </v-card-text>
                     <v-card-text v-else>
                         <v-row align="center">
@@ -99,10 +113,14 @@
                             <v-col cols="6">
                                 <v-chip color="primary">Envío a domicilio</v-chip> 
                             </v-col>
+                            <v-divider></v-divider>
                             <v-list lines="two">
                                 <v-list-item :subtitle="`${direccion.direccion}, ${direccion.estado}, ${direccion.codigo_postal}` " title="Dirección"></v-list-item>
                                 <v-list-item :subtitle="direccion.destinatario" title="Recibe"></v-list-item>
                                 <v-list-item :subtitle="direccion.telefono" title="Teléfono"></v-list-item>
+                                <v-list-item  title="Total">
+                                    <v-list-item-subtitle>{{ formatCurrency(carrito.total) }}</v-list-item-subtitle>
+                                </v-list-item>
                             </v-list>
                         </v-row>
                         
@@ -124,6 +142,7 @@
 import { onMounted, ref } from "vue";
 import axios from "axios";
 import { useRouter, useRoute } from "vue-router";
+import formatCurrency from "../../composables/formatNumberToCurrency";
 
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value');
 const router = useRouter();

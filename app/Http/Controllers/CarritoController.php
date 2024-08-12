@@ -256,19 +256,53 @@ class CarritoController extends Controller
     }
 
 
-    public function getCarritosPendientes(Request $request){
+    public function getCarritosPendientes(Request $request)
+    {
         $request->validate([
-            'perPage' => 'nullable|integer'
+            'perPage' => 'nullable|integer',
+            'search' => 'nullable|string'
         ]);
-        $carritos = Carrito::where('status', 'pago confirmado')->paginate($request->get('itemsPerPage',15));
+    
+        // Iniciar la consulta
+        $query = Carrito::with('usuario')->where('status', 'pago confirmado');
+    
+        // Aplicar el filtro de búsqueda si está presente
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->input('search');
+            $query->whereHas('usuario', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('status', 'like', '%' . $search . '%')
+                  ->orWhere('total', 'like', '%' . $search . '%');
+
+            });
+        }
+    
+        // Paginación
+        $carritos = $query->paginate($request->get('itemsPerPage', 15));
+    
         return response()->json($carritos);
     }
 
-    public function ventaConfirmada($cart_id)
+    public function ventaConfirmada(Request $request)
     {
-        $carrito = Carrito::find($cart_id);
 
-        return response()->json(['data' => 'holaaa']);
+        $carrito = Carrito::where('usuario_id', $request->user()->id)
+            ->where('status', 'pago por confirmar')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if($carrito){
+            return response()->json(['data' => $carrito, 'prueba' => 'aun no se confirmo']);
+        }else{
+            $carrito = Carrito::where('usuario_id', $request->user()->id)
+                ->where('status', 'pago confirmado')
+                ->orderBy('created_at', 'desc')
+                ->first();
+            
+            return response()->json(['data' => $carrito, 'prueba' => 'ya se confirmo']);
+        }
+
         
     
         // if (!$carrito) {
@@ -281,7 +315,7 @@ class CarritoController extends Controller
     public function show($id)
     {
 
-        $carritos = Carrito::find($id);
+        $carritos = Carrito::with('usuario')->find($id);
         $ordenes = Orden::with('files')->where('carrito_id', $id)->get();
         $productos = Producto_Carrito::with('producto.files', 'productoCarritoArchivos')->where('carrito_id', $id)->get();
         $files = [];
@@ -335,13 +369,26 @@ class CarritoController extends Controller
     }
 
 
-    public function traerPedidosViejos(Request $request){
+    public function traerPedidosViejos(Request $request)
+    {
         $request->validate([
             'perPage' => 'nullable|integer'
         ]);
-        $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')->where('status', 'pago confirmado')->paginate($request->input('perPage',10));
-        return response()->json(['data'=>$pedidosViejos]);
 
+    
+        $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')
+                                ->where('status', 'pago confirmado', 'usuario')
+                                ->paginate($request->input('perPage', 10));
+    
+        return response()->json(['data' => $pedidosViejos]);
+    }
+
+    public function totalPedidosPendientes(Request $request)
+    {
+        $pedidosViejos = Carrito::where('status', 'pago confirmado')->get();
+        $total = $pedidosViejos->sum('total');
+
+        return response()->json(['data' => $total]);
     }
 
     public function userHistorial(Request $request){
