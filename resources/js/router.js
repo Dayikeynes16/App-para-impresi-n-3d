@@ -147,7 +147,7 @@ const routes = [
                 path: "/PedidoDetalle/:id/detalles",
                 component: pedidoDetalles,
                 meta: {
-                    permission: "dashboard",
+                    permission: "usuario",
                 },
             },
             {

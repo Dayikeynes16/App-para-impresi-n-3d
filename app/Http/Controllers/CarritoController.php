@@ -301,39 +301,61 @@ class CarritoController extends Controller
 
     public function show($id)
     {
-
-        $carritos = Carrito::with('usuario')->find($id);
+        $user = auth()->user();
+    
+        $carrito = Carrito::with('usuario')->find($id);
+    
+        if (!$carrito) {
+            return response()->json(['error' => 'Carrito no encontrado'], 404);
+        }
+    
+        if ($carrito->usuario_id !== $user->id && !$user->hasRole('admin')) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+    
         $ordenes = Orden::with('files')->where('carrito_id', $id)->get();
+    
         $productos = Producto_Carrito::with('producto.files', 'productoCarritoArchivos')->where('carrito_id', $id)->get();
+    
         $files = [];
         foreach ($ordenes as $orden) {
             foreach ($orden->files as $file) {
                 $files[] = $file;
             }
         }
-        $direccion = Direccion::find($carritos->direccion_id);
-        if ($direccion){
-            return response()->json(['carrito' => $carritos, 'files' => $files, 'productos'=>$productos, 'direccion'=>$direccion]);
-
-        }else{
-            return response()->json(['carrito' => $carritos, 'files' => $files, 'productos'=>$productos]);
-
+    
+        $direccion = Direccion::find($carrito->direccion_id);
+    
+        $response = [
+            'carrito' => $carrito,
+            'files' => $files,
+            'productos' => $productos,
+        ];
+    
+        if ($direccion) {
+            $response['direccion'] = $direccion;
         }
+    
+        return response()->json($response);
     }
+    
 
-    public function ventaExitosa($id,Request $request)
+    public function ventaExitosa(Request $request, Carrito $carrito)
     {
+        if($carrito->usuario_id = Auth::user()->id){
+            if ($carrito->status == 'Finalizado') {
+                return response()->json(['data' => $carrito, 'is_old' => true]);
+                
+            } else {
+                $carrito->status = 'pago por confirmar';
+                // $this->enviarCorreoConfirmacion($request->user(),$carrito);
 
-        $carritos = Carrito::with('usuario')->find($id);
-
-        if($carritos->usuario_id === $request->user()->id){
-            $carritos->status = 'pago por confirmar';
-            $this->enviarCorreoConfirmacion($request->user(),$carritos);
-            return response()->json(['data' => $carritos]);
-
+                return response()->json(['data' => $carrito]);
+            }
         } else {
 
-            return response()->json(['data' => 'Esta venta no te pertenece']);
+            return response()->json(['data' => '#404']);
+
         }
 
     }
@@ -391,17 +413,33 @@ class CarritoController extends Controller
 
 
     public function traerPedidosViejos(Request $request)
-    {
-        $request->validate([
-            'perPage' => 'nullable|integer'
-        ]);
-    
-        $pedidosViejos = Carrito::with('orden.files', 'productos.producto.files')
-                                ->where('status', 'Finalizado')
-                                ->paginate($request->input('perPage', 10)); 
-    
-        return response()->json($pedidosViejos);
+{
+    $request->validate([
+        'perPage' => 'nullable|integer',
+        'search' => 'nullable|string'
+    ]);
+
+    $query = Carrito::with('orden.files', 'productos.producto.files', 'usuario')
+                    ->where('status', 'Finalizado');
+
+    if ($request->has('search') && !empty($request->search)) {
+        $search = $request->input('search');
+        $query->whereHas('usuario', function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%')
+              ->orWhere('email', 'like', '%' . $search . '%')
+              ->orWhere('telefono', 'like', '%' . $search . '%');
+        })
+        ->orWhere('total', 'like', '%' . $search . '%')
+        ->orWhere('id', 'like', '%' . $search . '%')
+        ->orWhere('created_at', 'like', '%' . $search . '%');
     }
+
+    $pedidosViejos = $query->paginate($request->input('itemsPerPage', 10));
+
+    return response()->json($pedidosViejos);
+}
+
+    
 
     public function totalPedidosPendientes(Request $request)
     {

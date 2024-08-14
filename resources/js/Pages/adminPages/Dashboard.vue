@@ -70,7 +70,6 @@ const headers = ref([
     { title: "Acciones", key: "detalles" },
 ]);
 const search = ref('');
-const paginate = ref({});
 const loading = ref(false)
 const pedidos = ref([]);
 const totalItems = ref(0)
@@ -113,7 +112,5 @@ const getTotal = async () => {
     
 };
 
-onMounted(() => {
-    getTotal()
-})
+
 </script>

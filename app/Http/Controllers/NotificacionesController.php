@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class NotificacionesController extends Controller
 {
-    public function index () {
+    public function index (Request $request) {
         $pedidos = Carrito::where('status','pago confirmado')->get();
         $pedidoCount = $pedidos->count();
         if($pedidoCount > 0){
@@ -22,5 +22,6 @@ class NotificacionesController extends Controller
     
             return response()->json(['count' => $pedidoCount, 'details' => $pedidoDetails]);
         }
+        return response()->json(['count' => 0]);
     }
 }

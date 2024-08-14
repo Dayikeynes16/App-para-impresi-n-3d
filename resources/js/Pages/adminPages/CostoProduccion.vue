@@ -1,14 +1,12 @@
 <template>
     <v-container>
         <v-row>
-            <v-col cols="12">
+            <v-col cols="4">
                 <v-card>
                     <v-card-title>
                         Precio por minuto de impresión
                     </v-card-title>
-                    <v-card-subtitle>
-                        Actualiza el costo por minuto de impresión según tus necesidades.
-                    </v-card-subtitle>
+                   
                     <v-card-text>
                         <v-text-field
                         type="number"
@@ -18,21 +16,19 @@
                         </v-text-field>
                     </v-card-text>
                     <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn @click="updatePrinting()" variant="outlined">
+                       
+                        <v-btn block @click="updatePrinting()" variant="outlined">
                             Guardar
                         </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="4">
                 <v-card>
                     <v-card-title>
                         Costo de envío
                     </v-card-title>
-                    <v-card-subtitle>
-                        Modifica el costo de envío a domicilio.
-                    </v-card-subtitle>
+                    
                     <v-card-text>
                         <v-text-field
                         type="number"
@@ -42,21 +38,19 @@
                         </v-text-field>
                     </v-card-text>
                     <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn @click="updateShipment()" variant="outlined">
+                        
+                        <v-btn block @click="updateShipment()" variant="outlined">
                             Guardar
                         </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="4">
                 <v-card>
                     <v-card-title>
                         Factor de conversión
                     </v-card-title>
-                    <v-card-subtitle>
-                        Cuan rapida es nuestra impresora en comparacion del dato de referencia
-                    </v-card-subtitle>
+                   
                     <v-card-text>
                         <v-text-field
                         type="number"
@@ -66,8 +60,7 @@
                         </v-text-field>
                     </v-card-text>
                     <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn @click="updateConversion()" variant="outlined">
+                        <v-btn block @click="updateConversion()" variant="outlined">
                             Guardar
                         </v-btn>
                     </v-card-actions>

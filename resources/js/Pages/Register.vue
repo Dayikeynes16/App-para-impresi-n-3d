@@ -36,7 +36,7 @@
                         <div class="text-subtitle-1 text-medium-emphasis">Telefono</div>
 
                         <v-text-field
-                            :error-messages="errorMessages.email"
+                            :error-messages="errorMessages.telefono"
                             v-model="form.telefono"
                             density="compact"
                             placeholder="Telefono"

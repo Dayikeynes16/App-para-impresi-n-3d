@@ -78,6 +78,8 @@ import { onMounted, ref } from "vue";
 import axios from "@/axios.js";
 import { UploadFilled } from "@element-plus/icons-vue";
 import filesCard from "@/Components/files-card.vue";
+import { ElMessage } from 'element-plus'
+
 const cartStore = useCartStore();
 const router = useRouter();
 const loadform = ref();
@@ -94,13 +96,18 @@ const totales = ref({
 });
 
 const agregarCarrito = async () => {
-    axios.post("/carrito/agregar", {
+    await axios.post("/carrito/agregar", {
         producto_id: 1,
         cantidad: 1,
         files: totales.value.files,
     })
     .then(() => {
-        cartStore.fetchCart();
+         cartStore.fetchCart()
+         ElMessage({
+            message: 'Producto añadido',
+            type: 'success',
+        })
+
     })
     
 };

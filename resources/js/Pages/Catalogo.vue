@@ -131,6 +131,9 @@
 import axios from "@/axios.js";
 import { ref, watch, onMounted } from "vue";
 import { useCartStore } from "@/stores/carrito";
+import { ElMessage } from 'element-plus'
+
+
 const paginastotales = ref(1);
 const imagenes = ref([]);
 const cantidad = ref(2);
@@ -167,7 +170,13 @@ const modelos = async (filters = {}) => {
 };
 
 const añadirCarrito = async (id, cantidad) => {
-    await cartStore.addToCart(id, cantidad);
+    await cartStore.addToCart(id, cantidad)
+    .then(()=> {
+        ElMessage({
+            message: 'Producto añadido',
+            type: 'success',
+        })
+    })
 };
 
 

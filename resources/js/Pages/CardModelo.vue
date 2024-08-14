@@ -9,23 +9,18 @@
             {{ item.name }}
         </v-card-title>
         <v-card-actions>
-            <v-col class="text-left" cols="6"
-                ><v-icon icon="mdi-delete" @click="open(item.id)"> </v-icon
-            ></v-col>
-
-            <v-col class="text-right" cols="6">
+            <v-col class="text-left" cols="6">
                 <v-icon
-                    icon="mdi-pencil"
-                    @click="
-                        router.push({
-                            name: 'editarModelo',
-                            params: {
-                                id: item.id,
-                            },
-                        })
-                    "
+                color="primary"
+                icon="mdi-pencil"
+                @click="router.push({name: 'editarModelo',params: {id: item.id,},})"
                 >
                 </v-icon>
+                
+                </v-col>
+                
+                <v-col class="text-right" cols="6">
+                <v-icon color="danger" icon="mdi-delete" @click="open(item.id)"> </v-icon>
             </v-col>
         </v-card-actions>
     </v-card>

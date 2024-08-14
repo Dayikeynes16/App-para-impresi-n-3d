@@ -1,78 +1,45 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="12">
-        <v-card title="Pedidos Finalizados">
+  <v-container class="mt-0 pt-0">
+    <v-row class="mt-0 pt-0">
+      <v-col class="mt-0 pt-0">
+        <v-card class="mt-0 pt-0">
+          <v-card-title>
+            Historial de pedidos finalizados.
+          </v-card-title>
           <v-card-text>
-            <v-expansion-panels>
-              <v-expansion-panel v-for="item in Pedidos" :key="item.id">
-                <v-expansion-panel-title>
-                  Pedido #{{ item.id }}  <v-chip class="ms-5" color="success">{{ item.status }}</v-chip>
-                </v-expansion-panel-title>
-                <v-expansion-panel-text>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          <v-row>
-                            <v-col cols="10">Fecha de pedido: {{ dayjs(item.created_at).format('MM/DD/YYYY') }}</v-col>
-                            <v-col cols="2"><v-icon class="cursor-pointer" @click="router.push({ name: 'PedidoDetalle', params: { id: item.id } })" icon="mdi-file-search-outline"></v-icon></v-col>
-                          </v-row>
-                         
-                        </v-list-item-title>
-                        <v-list-item-subtitle>Usuario ID: {{ item.usuario_id }}</v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item-group>
-                      <template v-for="(producto, index) in item.productos" :key="index">
-                        <v-divider></v-divider>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>Producto: {{ producto.producto.name }}</v-list-item-title>
-                            <v-list-item-subtitle>Descripción: {{ producto.producto.description }}</v-list-item-subtitle>
-                            <v-list-item-subtitle>Cantidad: {{ producto.cantidad }}</v-list-item-subtitle>
-                            <v-list-item-subtitle>Precio unitario: {{ formatCurrency(producto.total / producto.cantidad) }}</v-list-item-subtitle>
-                            <v-list-item-subtitle>Total: {{ formatCurrency(producto.total) }}</v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </template>
-                    </v-list-item-group>
-                  </v-list>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-            </v-expansion-panels>
+            <template v-slot>
+              <v-text-field
+                v-model="search"
+                label="Buscar"
+                prepend-inner-icon="mdi-magnify"
+                variant="outlined"
+                hide-details
+                single-line
+              ></v-text-field>  
+          
+              <v-data-table-server
+                v-model:page="paginate.page"
+                :headers="headers"
+                :items="Pedidos"
+                :items-length="totalItems"
+                :loading="loading"
+                :search="search"
+                v-model:items-per-page="paginate.perPage"
+                @update:options="loadItems"
+              >
+                <template v-slot:item.created_at="{ item }">
+                  {{ dayjs(item.created_at).format('DD/MM/YYYY') }}
+                </template>
+                <template v-slot:item.detalles="{ item }">
+                  <v-btn @click="router.push({ name: 'PedidoDetalle', params: { id: item.id } })" color="primary" variant="tonal" prepend-icon="mdi-information-outline">Detalles</v-btn>
+                </template>
+                <template v-slot:item.total="{ item }">
+                  {{ formatCurrency(item.total) }}
+                </template>
+              </v-data-table-server>
+            </template>
           </v-card-text>
         </v-card>
-      </v-col>
-      <v-col cols="12">
-        <v-row align="center" class="mt-10">
-          <v-col cols="2" class="text-center">
-            <v-select
-              label="Elementos por pagina:"
-              v-model="paginate.perPage"
-              :items="[10, 25, 50]"
-              density="compact"
-              variant="outlined"
-              @update:model-value="fetchPedidos"
-            ></v-select>
-          </v-col>
-          <v-col cols="2"></v-col>
-          <v-col cols="4" class="text-center">
-            <v-pagination
-              variant="outlined"
-              v-model="paginate.page"
-              :length="paginate.pageCount"
-              @update:model-value="fetchPedidos"
-            ></v-pagination>
-          </v-col>
-          <v-col cols="4" class="text-center">
-            <div variant="outlined">
-              <v-card-subtitle>
-                Mostrando: {{ paginate.from }} a {{ paginate.to }} de {{ paginate.total }} elementos.
-              </v-card-subtitle>
-            </div>
-          </v-col>
-        </v-row>
       </v-col>
     </v-row>
   </v-container>
@@ -84,39 +51,51 @@ import { ref, onMounted } from 'vue';
 import dayjs from 'dayjs';
 import formatCurrency from '../../composables/formatNumberToCurrency';
 import { useRouter } from 'vue-router';
+
 const router = useRouter();
+const search = ref('');
+const headers = ref([
+  { title: "# Orden", key: "id" },
+  { title: "Fecha", key: "created_at" },
+  { title: "Cliente", key: "usuario.name" },
+  { title: "Telefono", key: "usuario.telefono" },
+  { title: "Correo", key: "usuario.email" },
+  { title: "Total", key: "total" },
+  { title: "Acciones", key: "detalles" },
+]);
 
 const Pedidos = ref([]);
+const totalItems = ref(0);
 const paginate = ref({
-  perPage: 10, // Número de elementos por página por defecto
-  page: 1, // Página actual por defecto
-  total: 0, // Total de elementos
-  from: 0,
-  to: 0,
-  pageCount: 0 // Total de páginas
+  perPage: 10,
+  page: 1,
 });
+const loading = ref(false);
 
-const fetchPedidos = async () => {
+const loadItems = async ({ page, itemsPerPage }) => {
+  loading.value = true;
+  await fetchPedidos({
+    page: page || paginate.value.page,  
+    itemsPerPage: itemsPerPage || paginate.value.perPage,  
+    search: search.value
+  });
+  loading.value = false;
+};
+
+const fetchPedidos = async (params = {}) => {
   try {
-    const { data } = await axios.get('/traerPedidosViejos', {
-      params: {
-        page: paginate.value.page,
-        perPage: paginate.value.perPage
-      }
-    });
-    
+    const { data } = await axios.get("/traerPedidosViejos", { params });
     Pedidos.value = data.data;
-    paginate.value.total = data.total;
-    paginate.value.from = data.from;
-    paginate.value.to = data.to;
-    paginate.value.pageCount = data.last_page;
-    paginate.value.page = data.current_page;
+    totalItems.value = data.total;
+    paginate.value.page = data.current_page; 
+    paginate.value.perPage = params.itemsPerPage;  
   } catch (error) {
-    console.error('Error fetching orders:', error);
+    console.error("Error al cargar los pedidos:", error);
   }
 };
 
+
 onMounted(() => {
-  fetchPedidos();
+  loadItems({ page: 1, itemsPerPage: paginate.value.perPage });
 });
 </script>

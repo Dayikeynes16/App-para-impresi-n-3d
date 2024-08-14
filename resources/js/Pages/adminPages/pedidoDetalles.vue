@@ -171,7 +171,7 @@ onMounted(async () => {
             direccion.value = data.direccion
         }
     } catch (error) {
-        console.error("Error fetching data:", error);
+        router.push({name: 'cotizar'})
     }
 });
 

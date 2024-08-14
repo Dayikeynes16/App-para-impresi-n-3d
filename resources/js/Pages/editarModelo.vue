@@ -231,16 +231,18 @@ const guardarSTL = async (file) => {
         const formData = new FormData();
         formData.append("file", file.file);
         formData.append("producto_id", id.value);
-
+        
         const { data } = await axios.post("/guardarSTLproducto", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         });
-
-        if (data.status === 200) {
-            traerArchivos(id.value);
-        }
+        traerArchivos(id.value)
+        ElMessage({
+            message: 'Archivo guardado correctamente',
+            type: 'success',
+        })
+        
     } catch (error) {
         ElMessage.error('Ocurrió un problema al guardar el STL');
     }

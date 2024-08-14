@@ -1,5 +1,5 @@
 <template>
-    <v-container >
+    <v-container v-if="!loading">
         <v-card >
             <v-card-title class="mt-10">
                 <v-row class="text-center">
@@ -26,10 +26,12 @@
                         </v-card-subtitle>
                     </v-col>
                     <v-col cols="12"><v-btn variant="outlined" color="success" @click="router.push({name: 'cotizar'})">Regresar al inicio</v-btn></v-col>
-                   
                 </v-row>
             </v-card-text >
         </v-card>
+    </v-container>
+    <v-container class="" align="center" v-else>
+        <v-progress-circular indeterminate></v-progress-circular>
     </v-container>
 </template>
 
@@ -41,25 +43,32 @@ import { useRouter, useRoute } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-const orden = ref({
-    
-})
+const orden = ref({});
+const loading = ref(true);
 
-const traerCarrito = () => {
-    axios.get(`/ventaExitosa/${route.query.venta}`)
+const traerCarrito  = async () => {
+    await axios.get(`/ventaExitosa/${route.query.venta}`)
     .then(({data}) => {
-        if(!data.data){
-            router.push({name: 'cotizar'})
+        if(data.data === '#404'){
+            router.push({name: 'cotizar'});
+        } else {
+            if (data.is_old === true) {
+                loading.value = false;
+                router.push({ name: 'PedidoDetalle', params: {id : data.data.id}  })
+            } else {
+            console.log('hegxvsb', data.data);
+                loading.value = false;
+                orden.value = data.data
+            } 
         }
-        orden.value = data.data;
     })
-    .catch(error => {
-        console.error("Error al obtener los detalles del carrito:", error);
-    });
+    .catch((error) => {
+        
+    })
+  
 }
 
 onMounted(() => {
     traerCarrito();
-
 });
 </script>

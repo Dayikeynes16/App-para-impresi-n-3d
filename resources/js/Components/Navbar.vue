@@ -35,11 +35,14 @@
                         <v-list-item-text  > Tienes un nuevo pedido</v-list-item-text>
                         <v-list-item-subtitle>{{ formatRelativeTime(notificacion.fecha) }}</v-list-item-subtitle>
                     </v-list-item>
+                    <v-list-item v-if="notificaciones.count === 0" prepend-icon="mdi-bell-alert"  class="cursor-pointer">
+                        <v-list-item-text  > No tienes notificaciones nuevas</v-list-item-text>
+                    </v-list-item>
                 </v-list>
 
             </v-menu>
                 <div v-else="cliente" style="margin-right: 10px; margin-top: 10px">
-                    <v-badge color="danger" :content="cartStore.items.length">
+                    <v-badge color="danger" :content="cartStore.items.length" >
                         <v-btn color="white" @click="handleCartClick" icon="mdi-cart"></v-btn>
                     </v-badge>
                 </div>
