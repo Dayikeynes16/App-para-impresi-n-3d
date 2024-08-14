@@ -348,7 +348,7 @@ class CarritoController extends Controller
                 
             } else {
                 $carrito->status = 'pago por confirmar';
-                // $this->enviarCorreoConfirmacion($request->user(),$carrito);
+                $this->enviarCorreoConfirmacion($request->user(),$carrito);
 
                 return response()->json(['data' => $carrito]);
             }
@@ -366,7 +366,7 @@ class CarritoController extends Controller
         if ($request->input('status')) {
             $carrito->status = 'Finalizado';
             $user = User::find($carrito->usuario_id); 
-            if ($carrito->recoleccion === true) {
+            if ($carrito->recoleccion == true) {
                 Mail::to($user->email)->send(new \App\Mail\PedidoRecoleccion($user, $carrito));
             } else {
                 Mail::to($user->email)->send(new \App\Mail\PedidoEnviado($user, $carrito));
@@ -413,31 +413,52 @@ class CarritoController extends Controller
 
 
     public function traerPedidosViejos(Request $request)
-{
-    $request->validate([
-        'perPage' => 'nullable|integer',
-        'search' => 'nullable|string'
-    ]);
-
-    $query = Carrito::with('orden.files', 'productos.producto.files', 'usuario')
-                    ->where('status', 'Finalizado');
-
-    if ($request->has('search') && !empty($request->search)) {
-        $search = $request->input('search');
-        $query->whereHas('usuario', function ($q) use ($search) {
-            $q->where('name', 'like', '%' . $search . '%')
-              ->orWhere('email', 'like', '%' . $search . '%')
-              ->orWhere('telefono', 'like', '%' . $search . '%');
-        })
-        ->orWhere('total', 'like', '%' . $search . '%')
-        ->orWhere('id', 'like', '%' . $search . '%')
-        ->orWhere('created_at', 'like', '%' . $search . '%');
+    {
+        $request->validate([
+            'itemsPerPage' => 'nullable|integer',
+            'search' => 'nullable|string',
+            'sortBy' => 'nullable|string'
+        ]);
+    
+        $query = Carrito::with('orden.files', 'productos.producto.files', 'usuario')
+                        ->where('status', 'Finalizado');
+    
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->input('search');
+            $query->whereHas('usuario', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('telefono', 'like', '%' . $search . '%');
+            })
+            ->orWhere('total', 'like', '%' . $search . '%')
+            ->orWhere('id', 'like', '%' . $search . '%')
+            ->orWhere('created_at', 'like', '%' . $search . '%');
+        }
+    
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            switch ($request->input('sortBy')) {
+                case 'created_at_desc':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'created_at_asc':
+                    $query->orderBy('created_at', 'asc');
+                    break;
+                case 'total_desc':
+                    $query->orderBy('total', 'desc');
+                    break;
+                case 'total_asc':
+                    $query->orderBy('total', 'asc');
+                    break;
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+    
+        $pedidosViejos = $query->paginate($request->input('itemsPerPage', 10));
+    
+        return response()->json($pedidosViejos);
     }
-
-    $pedidosViejos = $query->paginate($request->input('itemsPerPage', 10));
-
-    return response()->json($pedidosViejos);
-}
+    
 
     
 

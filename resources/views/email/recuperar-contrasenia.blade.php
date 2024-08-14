@@ -45,7 +45,7 @@
     <div class="card">
         <h1>Recuperar Contraseña</h1>
         <p>Haga clic en el siguiente enlace para restablecer su contraseña:</p>
-     <a type="button" href="{{ url('reiniciar-contrasenia/' . $token) }}">Restablecer Contraseña</a>
+        <a type="button" href="{{ url('reiniciar-contrasenia/' . $token . '/' . $email) }}">Restablecer Contraseña</a>
     </div>
 </body>
 </html>

@@ -8,14 +8,40 @@
           </v-card-title>
           <v-card-text>
             <template v-slot>
-              <v-text-field
-                v-model="search"
-                label="Buscar"
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                hide-details
-                single-line
-              ></v-text-field>  
+              <v-row>
+                <v-col cols="10">
+                  <v-text-field
+                    v-model="search"
+                    label="Buscar"
+                    prepend-inner-icon="mdi-magnify"
+                    variant="outlined"
+                    hide-details
+                    single-line
+                  ></v-text-field>  
+                </v-col>
+                <v-col cols="2" class="" align="center">
+                  <v-menu>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" class="cursor-pointer" block icon="mdi-filter-variant" size="xxx-large"></v-icon>
+                    </template>
+                    <v-list>
+                      <v-list-item class="cursor-pointer" @click="applyFilter('created_at_desc')">
+                      Más recientes
+                    </v-list-item>
+                    <v-list-item class="cursor-pointer" @click="applyFilter('created_at_asc')">
+                      Más antiguos
+                    </v-list-item>
+                    <v-list-item class="cursor-pointer" @click="applyFilter('total_desc')">
+                      Más caros
+                    </v-list-item>
+                    <v-list-item class="cursor-pointer" @click="applyFilter('total_asc')">
+                      Menos caros
+                    </v-list-item>
+
+                    </v-list>
+                  </v-menu>
+                </v-col>
+              </v-row>
           
               <v-data-table-server
                 v-model:page="paginate.page"
@@ -54,6 +80,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const search = ref('');
+const sortBy = ref('');
 const headers = ref([
   { title: "# Orden", key: "id" },
   { title: "Fecha", key: "created_at" },
@@ -75,11 +102,17 @@ const loading = ref(false);
 const loadItems = async ({ page, itemsPerPage }) => {
   loading.value = true;
   await fetchPedidos({
-    page: page || paginate.value.page,  
-    itemsPerPage: itemsPerPage || paginate.value.perPage,  
-    search: search.value
+    page: page || paginate.value.page,
+    itemsPerPage: itemsPerPage || paginate.value.perPage,
+    search: search.value,
+    sortBy: sortBy.value 
   });
   loading.value = false;
+};
+
+const applyFilter = (filter) => {
+  sortBy.value = filter;
+  loadItems({ page: paginate.value.page, itemsPerPage: paginate.value.perPage });
 };
 
 const fetchPedidos = async (params = {}) => {

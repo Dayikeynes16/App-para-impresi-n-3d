@@ -44,7 +44,7 @@
     
           <v-card-text class="text-center">
             <a
-              class="text-blue text-decoration-none"
+              class="text-blue text-decoration-none cursor-pointer"
               @click="router.push({ name: 'register' })"
               rel="noopener noreferrer"
               target="_blank"
@@ -53,12 +53,12 @@
             </a>
             <br>
             <a
-              class="text-blue text-decoration-none"
+              class="text-blue text-decoration-none cursor-pointer"
               @click="router.push({ name: 'recuperarContrasena' })"
               rel="noopener noreferrer"
               target="_blank"
             >
-              ¿Olvidaste tu contraseña? Recuperala<v-icon icon="mdi-chevron-right"></v-icon>
+              ¿Olvidaste tu contraseña?<v-icon icon="mdi-chevron-right"></v-icon>
             </a>
           </v-card-text>
         </v-card>

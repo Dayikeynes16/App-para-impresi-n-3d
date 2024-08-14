@@ -29,6 +29,7 @@ import cotizacionRapida from "./Pages/clientePages/cotizacionRapida.vue";
 import { useLoginStore } from "./stores/login";
 
 const routes = [
+    
     {
         name: "logear",
         path: "/logear",

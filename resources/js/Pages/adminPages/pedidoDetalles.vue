@@ -1,6 +1,10 @@
 <template>
-    <v-container>
+     <v-container class="" align="center" v-if="loading">
+        <v-progress-circular indeterminate></v-progress-circular>
+    </v-container>
+    <v-container v-else>
         <v-row>
+           
             <v-col cols="8">
                 <v-card elevation="4">
                     <v-card-title> Productos </v-card-title>
@@ -128,7 +132,7 @@
 
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn block v-if="carrito.status === 'Pago confirmado'" variant="outlined" @click="PedidoListo(carrito.id)" prepend-icon="mdi-check-outline">Pedido Listo</v-btn> <br>
+                        <v-btn block v-if="carrito.status === 'Pago Confirmado'" variant="outlined" @click="PedidoListo(carrito.id)" prepend-icon="mdi-check-outline">Pedido Listo</v-btn> <br>
                         <v-btn block v-if="['Listo para recolectar', 'Listo Para Enviar'].includes(carrito.status)" variant="outlined" @click="terminarTarea(carrito.id)" prepend-icon="mdi-check-outline">Finalizar</v-btn>
                     </v-card-actions>
                 </v-card>
@@ -150,7 +154,7 @@ const router = useRouter();
 const route = useRoute();
 
 
-
+const loading =ref(false);
 const files = ref([]);
 const productos = ref([]);
 const carrito = ref({});
@@ -225,9 +229,10 @@ const PedidoListo = async (id) => {
 };
 
 const terminarTarea = async (id) => {
+    loading.value = true;
     axios.post(`/listoParaEnvio/${id}`, {status: 'Finalizado'})
     .then(() => {
-        
+        loading.value = false;
         router.push({name: 'Dashboard'});
     })
 }

@@ -1,5 +1,6 @@
 <template>
-    <v-container>
+    <v-container class="mt-0 pt-0 mb-10 pb-10">
+        <v-card-title align="center">Editar Catalogo</v-card-title>
         <v-row>
             <v-col cols="12">
                 <v-row>

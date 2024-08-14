@@ -91,7 +91,7 @@
             
                     <v-card-text class="text-center">
                         <a
-                            class="text-blue text-decoration-none"
+                            class="text-blue text-decoration-none cursor-pointer"
                             @click="router.push({ name: 'logear' })"
                             rel="noopener noreferrer"
                             target="_blank"

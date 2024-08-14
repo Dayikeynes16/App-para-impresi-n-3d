@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols="12">
-                <v-card rounded="lg" title="Pedidos Pendientes">
+                <v-card rounded="lg" title="Pedidos Pendientes.">
                    
                     <v-card-subtitle>
                          Total por finalizar: <strong>  {{ formatCurrency(totalPayment) }} </strong>
@@ -83,7 +83,7 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
     await traerPendientes({
         page,
         itemsPerPage,
-        search: search.value // Envía el término de búsqueda al servidor
+        search: search.value 
     });
     loading.value = false;
 };
@@ -100,7 +100,7 @@ const traerPendientes = async (params = {}) => {
 
 onMounted(() => {
     getTotal();
-    loadItems({ page: 1, itemsPerPage: perPage.value }); // Cargar los ítems al montar el componente
+    loadItems({ page: 1, itemsPerPage: perPage.value }); 
 });
 
 const getTotal = async () => {
