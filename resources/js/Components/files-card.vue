@@ -69,13 +69,8 @@ const calcularTotal = () => {
 
     let total = selectedFiles.map(file => file.total).reduce((a,b) => a+b, 0);
     let itemsCarrito = files.value.filter(file => enviarCarrito.value.includes(file.id));
-    // enviarCarrito.value.forEach(element => {
-    //     let carrito = files.value.find((file) => {
-    //         return file.id === element;
-    //         });
-    //     total += carrito.total;
-    //     itemsCarrito.push(carrito);
-    // });
+
+
 
     emit('datosCarrito', { cantidad: enviarCarrito.value.length, total: total, files: itemsCarrito });
 };
