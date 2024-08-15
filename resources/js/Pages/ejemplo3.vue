@@ -7,7 +7,7 @@
                 <v-card-text >
                     <v-row class="text-center" align="center">
                         <v-col cols="5"><h5>Seleccionados: {{ totales.cantidad }}</h5></v-col>
-                        <v-col cols="5"><h5>Total {{ formatCurrency(totales.total) }}</h5></v-col>
+                        <v-col cols="5"><h5>Total {{ formatCurrency(parseFloat(totales.total)) }}</h5></v-col>
                         <v-col cols="2">
                             <v-btn
                             variant="tonal"

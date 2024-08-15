@@ -22,6 +22,11 @@ class UsuarioCotizacion extends Model
         'total',
     ];
 
+    protected $casts = [
+        'precio' => 'double',
+        'total' => 'double',
+    ];
+
     public function usuario() 
     {
         return $this->belongsTo(User::class, 'usuario_id');

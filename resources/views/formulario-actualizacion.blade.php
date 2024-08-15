@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.6.14/dist/vuetify.min.css">
     <link href="https://cdn.jsdelivr.net/npm/vuetify@3.6.14/dist/vuetify.min.css">
@@ -29,12 +29,37 @@
               </v-card-text>
             </v-card>
         </v-container>
-        <v-dialog v-model="dialog">
+        <v-dialog v-model="dialog" max-width="500px">
             <v-card >
-                <v-card-text>
-                
-                    La contraseña se ha guardado correctamente
+                <v-card-text align=center>
+                    <v-row>
+                        <v-col cols="12" class="mt-6 mb-6">
+                        <i class="fa-solid fa-7x fa-circle-check " style="color: #63E6BE; width: 300px"></i>
+                        </v-col>
+                        <v-col cols="12" class="mt-6 mb-6">
+                            <v-card-title>La contraseña se ha guardado correctamente</v-card-title>
+                        </v-col>
+                    </v-row>
                 </v-card-text>
+                <v-card-actions>
+                    <v-btn >Login</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="token_expired" max-width="500px">
+            <v-card >
+                <v-card-text align=center>
+                    <v-row>
+                        <v-col cols="12" class="mt-6 mb-6">
+                        <i class="fa-solid fa-triangle-exclamation fa-7x"  style="color: #FFAF00;"></i>                        </v-col>
+                        <v-col cols="12" class="mt-6 mb-6">
+                            <v-card-title>El token ha expirado</v-card-title>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn variant="outlined" color="primary" href="/logear">Login</v-btn>
+                </v-card-actions>
             </v-card>
         </v-dialog>
        
@@ -49,13 +74,9 @@
 
 const { createApp, ref, onMounted, useRouter } = Vue
 const { createVuetify } = Vuetify
-const token = document.querySelector("meta[name='csrf-token']").getAttribute('content');
 const vuetify = createVuetify();
 const app = createApp({
     setup(){
-        onMounted(() => {
-            console.log(token);
-        })   
         const form = ref({
             email: "{{$email}}",
             password: null,
@@ -63,10 +84,11 @@ const app = createApp({
             password_confirmation: null
         })
         const errorMessage = ref([])
-        const dialog = ref(true)
+        const dialog = ref(false)
+        const token_expired = ref(false);
 
         const changePassword = async () => {
-            await axios.post('/actualizar-contrasenia', form.value, { headers: { "X-CSRF-TOKEN": token } })
+            await axios.post('/actualizar-contrasenia', form.value, { headers: { "X-CSRF-TOKEN": "{{csrf_token()}}" } })
             .then(({data})=>{
                 if(data.data === 0){
                     alert('El token ha expirado')
@@ -84,7 +106,8 @@ const app = createApp({
             form,
             changePassword,
             errorMessage,
-            dialog
+            dialog,
+            token_expired
         }
     }
 })
