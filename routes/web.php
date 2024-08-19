@@ -25,7 +25,7 @@ use App\Http\Controllers\WebhookController;
 Route::get('/formulario-recuperar-contrasenia', [AuthController::class, 'formularioRecuperarContrasenia'])->name('formulario-recuperar-contrasenia');
 Route::post('/enviar-recuperar-contrasenia', [AuthController::class, 'enviarRecuperarContraseña'])->name('enviar-recuperacion');
 Route::get('/reiniciar-contrasenia/{token}/{email}', [AuthController::class, 'formularioActualizacion'])->name('formulario-actualizar-contrasenia');
-Route::post('/actualizar-contrasenia', [AuthController::class, 'actualizarContrasenia'])->name('actualizar-contrasenia');
+Route::post('/actualizar-contrasenia', [AuthController::class, 'actualizarContrasenia']);
 Route::get('/auth', [AuthController::class, 'auth']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/cerrarSesion', [AuthController::class, 'cerrarSesion']);
