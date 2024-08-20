@@ -236,11 +236,11 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useCartStore } from "../stores/carrito";
+import { useCartStore } from "../../stores/carrito";
 import { ElMessage, ElMessageBox } from "element-plus";
-import ElegirDireccion from "../Components/ElegirDireccion.vue";
+import ElegirDireccion from "../../Components/ChooseDirection.vue";
 import axios from "@/axios.js";
-import formatCurrency from '../composables/formatNumberToCurrency'
+import formatCurrency from '../../composables/formatNumberToCurrency'
 import { useLoginStore } from "@/stores/login";
 import { useRoute } from 'vue-router';
 

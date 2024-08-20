@@ -63,8 +63,8 @@
 import axios from '@/axios';
 import { ref,onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from "element-plus";
-import Usuarios from './Usuarios.vue';
-import EditarUsuario from './EditarUsuario.vue';
+import Usuarios from './AddUser.vue';
+import EditarUsuario from './EditUser.vue';
 
 const openDialogEditUser = ref(false);
 const showDialogUser = ref(false);

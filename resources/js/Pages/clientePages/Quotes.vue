@@ -70,23 +70,19 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-
-import formatCurrency from "../composables/formatNumberToCurrency";
-import { useCartStore } from '../stores/carrito';
-import { onMounted, ref } from "vue";
+import formatCurrency from "../../composables/formatNumberToCurrency";
+import { useCartStore } from '../../stores/carrito';
+import {  ref } from "vue";
 import axios from "@/axios.js";
 import { UploadFilled } from "@element-plus/icons-vue";
-import filesCard from "@/Components/files-card.vue";
+import filesCard from "../../Components/UploadedUserFiles.vue";
 import { ElMessage } from 'element-plus'
 
 const cartStore = useCartStore();
-const router = useRouter();
 const loadform = ref();
 const resultado = ref(true);
 const loading = ref(false);
 const errorMessage = ref("");
-const traerarchivos = ref();
 const dialog = ref(false);
 const actualizarLista = ref(false);
 const totales = ref({

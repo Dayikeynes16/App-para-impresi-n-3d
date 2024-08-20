@@ -97,12 +97,12 @@
   </template>
   
   <script setup>
-  import Direcciones from "../Components/Direcciones.vue";
+  import Direcciones from "./AddDirectons.vue";
   import { ref } from "vue";
   import axios from "@/axios.js";
   import { useRouter } from 'vue-router';
   import { ElMessage, ElMessageBox } from "element-plus";
-  import EditarDireccion from "./EditarDireccion.vue";
+  import EditarDireccion from "./EditDirections.vue";
   
   const direcciones = ref([]);
   const dialog = ref(false);

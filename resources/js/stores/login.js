@@ -26,7 +26,6 @@ export const useLoginStore = defineStore("login", () => {
                 });
             })
             .catch((error) => {
-                console.error(error);
             });
     };
 

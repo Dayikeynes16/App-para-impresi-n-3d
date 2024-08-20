@@ -59,14 +59,10 @@
 <script setup>
 import axios from "@/axios.js";
 import { onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-const visible = ref(false);
 const imagenes = ref([]);
-const img = {};
 const page = ref(1);
-import CardModelo from "./CardModelo.vue";
-import GuardarProducto from "./GuardarProducto.vue";
-import router from "../router";
+import CardModelo from "../../Components/Product.vue";
+import router from "../../router";
 
 const paginate = ref({
     perPage: null,
@@ -93,8 +89,6 @@ const modelos = async (filters = {}) => {
         paginate.value.totalItems = data.total
         
     })
-
-    
 };
 
 watch(
@@ -103,7 +97,6 @@ watch(
         await modelos();
     }
 );
-
 onMounted(() => {
     modelos();
 });

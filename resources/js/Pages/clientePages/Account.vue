@@ -46,12 +46,9 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
 import axios from "@/axios.js";
-import Direcciones from "../Components/Direcciones.vue";
-import listaDirecciones from "../Components/listaDirecciones.vue";
+import listaDirecciones from "../../Components/DirectionsList.vue";
 import dayjs from "dayjs";
-import { useLoginStore } from "@/stores/login";
 
-const loginStore = useLoginStore();
 const isAdmin = ref(false);
 const user = ref({
 

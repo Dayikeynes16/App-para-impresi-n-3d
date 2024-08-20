@@ -107,18 +107,12 @@ import axios from "axios";
 import { ref, onMounted } from "vue";
 import AddRole from "../../Components/AddRole.vue";
 import { useRouter } from "vue-router";
-import Usuarios from "../adminPages/Usuarios.vue";
 import EditRole from "../../Components/EditRole.vue";
-const router = useRouter();
-const token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 
 const roles = ref([]);
-const openCreateUserDialog = ref(false);
 const permissions = ref([]);
 const addRoleDialog = ref(false);
 const noRoles = ref(false);
-const users = ref([]);
-const userToEdit = ref({});
 const openEditRoleDialogVisible = ref(false);
 const rolToEdit = ref({})
 

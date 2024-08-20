@@ -81,8 +81,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import axios from "@/axios.js";
-import Direcciones from "./Direcciones.vue";
-import { errorMessages } from "vue/compiler-sfc";
+import Direcciones from "./AddDirectons.vue";
 const emit = defineEmits(["pasos","direccion"]);
 const selectedDireccion = ref(null);
 const direcciones = ref([]);

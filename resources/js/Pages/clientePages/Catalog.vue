@@ -147,7 +147,7 @@ const paginate = ref({
 const cartStore = useCartStore();
 
 
-const modelos = async (filters = {}) => {
+const getProducts = async (filters = {}) => {
     axios.get('/modelos',{params: filters})
     .then(({data}) => {
         imagenes.value = data.data.map((imagen) => {
@@ -194,6 +194,6 @@ const sumarProductoCantidad = (imagen) => {
 };
 
 onMounted(() => {
-    modelos();
+    getProducts();
 });
 </script>

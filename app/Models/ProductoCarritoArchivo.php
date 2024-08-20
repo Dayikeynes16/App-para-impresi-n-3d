@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductoCarritoArchivo extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'nombre',
@@ -17,7 +17,8 @@ class ProductoCarritoArchivo extends Model
         'precio',
         'total',
         'cantidad',
-        'producto_carrito_id'];
+        'producto_carrito_id'
+    ];
 
     public function productoCarrito(){
         return $this->belongsToMany(Producto_Carrito::class, 'producto_carrito_id');

@@ -38,7 +38,7 @@
 <script setup>
 import axios from '@/axios'
 import { onMounted, ref } from 'vue';
-import formatCurrency from '../composables/formatNumberToCurrency';
+import formatCurrency from '../../composables/formatNumberToCurrency';
 import { useRouter, useRoute } from 'vue-router';
 
 const route = useRoute();

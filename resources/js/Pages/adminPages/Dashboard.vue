@@ -51,7 +51,6 @@
 </template>
 
 <script setup>
-import CantidadComponent from '../../Components/CantidadComponent.vue';
 import axios from "@/axios.js";
 import dayjs from "dayjs";
 import { useRouter } from 'vue-router';

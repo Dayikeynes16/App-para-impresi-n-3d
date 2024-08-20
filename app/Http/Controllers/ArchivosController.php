@@ -32,15 +32,12 @@ class ArchivosController extends Controller
                 'status' => 'activo',
             ]);
     
-            // $filePath = $request->file('file')->store('files');
             $file = ([
-                // 'path' => $filePath,
                 'nombre' => $request->file('file')->getClientOriginalName(),
                 'piezas' => 1,
                 'minutos' => ($response['estimated_printing_time_seconds'] / 60) / 3.5,
                 'precio' => (($response['estimated_printing_time_seconds'] / 60) / 3.5) * $PrecioMinuto->precio,
             ]);
-            // $orden->files()->save($file);
     
             return response()->json(['data' => $file]);
         } catch (Exception $e) {
@@ -50,6 +47,7 @@ class ArchivosController extends Controller
         return response()->json(['message' => 'Error al subir el archivo.']);
     }
     
+
     public function apiRequest($file)
     {
         $url = "https://3d-print-stl-estimation.p.rapidapi.com/slice_and_extract?rotate_y=0&rotate_x=0&config_file=config.ini";
@@ -91,6 +89,8 @@ class ArchivosController extends Controller
             }
         return Storage::download($file->path, $file->nombre);
     }
+
+    
 
     public function guardarSTLproducto(Request $request){
         $request->validate([

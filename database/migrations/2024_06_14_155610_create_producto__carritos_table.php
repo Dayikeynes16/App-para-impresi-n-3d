@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('producto_carritos', function (Blueprint $table) {
             $table->id();
+            $table->softDeletes();
             $table->timestamps();
             $table->foreignId('producto_id')->nullable()->constrained('products','id');
             $table->integer('cantidad')->default(1);

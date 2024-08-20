@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('producto_carrito_id')->constrained('producto_carritos');
             $table->string('nombre');
             $table->string('path');
+            $table->softDeletes();
             $table->integer('cantidad')->default(1)->nullable();
             $table->unsignedInteger('minutos')->nullable();
             $table->decimal('precio')->nullable();

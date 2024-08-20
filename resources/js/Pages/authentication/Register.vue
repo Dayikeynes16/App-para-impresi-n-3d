@@ -109,10 +109,9 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { useLoginStore } from "../stores/login";
+import { useLoginStore } from "../../stores/login";
 import axios from "@/axios.js";
 
-const loginStore = useLoginStore();
 const router = useRouter();
 
 const errorMessages = ref({});
