@@ -111,19 +111,15 @@ class ArchivosController extends Controller
             return response()->json(['message' => 'Producto no encontrado'], 404);
         }
     
-        // Obtener el nombre original del archivo incluyendo la extensión
         $originalName = $request->file('file')->getClientOriginalName();
     
-        // Guardar el archivo en la carpeta 'files' manteniendo el nombre original
         $filePath = $request->file('file')->storeAs('files', $originalName);
     
-        // Guardar el archivo en la base de datos
         $file = new Files([
             'path' => $filePath,
             'nombre' => $originalName
         ]);
     
-        // Asociar el archivo al producto
         $producto->files()->save($file);
     
         return response()->json(['data' => 200]);
