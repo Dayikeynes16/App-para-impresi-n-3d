@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\FactorConversion;
+use App\Models\Files;
 use App\Models\PrecioMinuto;
+use App\Models\ProductoCarritoArchivo;
 use App\Models\UsuarioCotizacion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use PhpParser\Node\Expr\New_;
 
 class UsuarioCotizacionController extends Controller
@@ -21,24 +24,54 @@ class UsuarioCotizacionController extends Controller
         ]);
         try {
             $response = $this->apiRequest($request->file('file'));
-            $filePath = $request->file('file')->store('files');
-
+            
+            $originalName = $request->file('file')->getClientOriginalName();
+            
+            $filePath = $request->file('file')->storeAs('public/files', $originalName);
+    
+            $filePath = str_replace('public/', '', $filePath);
+    
             $cotizacion = UsuarioCotizacion::create([
                 'path' => $filePath,
-                'nombre' => $request->file('file')->getClientOriginalName(),
+                'nombre' => $originalName,
                 'minutos' => ($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion,
                 'precio' => (($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion) * $precioMinuto->precio,
                 'usuario_id' => Auth::user()->id,
                 'total' => (($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion) * $precioMinuto->precio,
-
             ]);
-
+    
             return response()->json(['data' => $cotizacion]);
-
+    
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 409);
         }
+    }
+
+    public function quickQuote(Request $request){
         
+        $conversion = FactorConversion::first();
+        $precioMinuto = PrecioMinuto::first();
+        $request->validate([
+            'file' => 'file|required',
+        ]);
+        try {
+            $response = $this->apiRequest($request->file('file'));
+            
+            $originalName = $request->file('file')->getClientOriginalName();
+           
+            $cotizacion = ([
+                'nombre' => $originalName,
+                'minutos' => ($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion,
+                'precio' => (($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion) * $precioMinuto->precio,
+                'total' => (($response['estimated_printing_time_seconds'] / 60) / $conversion->conversion) * $precioMinuto->precio,
+                'file' => $request->file('file')
+            ]);
+    
+            return response()->json(['data' => $cotizacion]);
+    
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
+        }
     }
 
     public function apiRequest($file)
@@ -70,12 +103,18 @@ class UsuarioCotizacionController extends Controller
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function index() 
+    public function index()
     {
-       
+        $usuarioCotizaciones = UsuarioCotizacion::where('usuario_id', Auth::user()->id)->get();
+
+        $usuarioCotizaciones->transform(function ($item) {
+            $item->full_path = Storage::url($item->path);
+            return $item;
+        });
+
         return response()->json([
-            'data' => UsuarioCotizacion::where('usuario_id', Auth::user()->id)->get(),
-        ]); 
+            'data' => $usuarioCotizaciones,
+        ]);
     }
 
 
@@ -95,11 +134,11 @@ class UsuarioCotizacionController extends Controller
 
     public function store()
     {
-    
+
     }
 
     public function delete(UsuarioCotizacion $id) {
-       
+
         $id->delete();
         return response()->json(['data' => 'ctixacion eliminada con exito']);
     }

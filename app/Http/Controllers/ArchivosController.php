@@ -9,7 +9,9 @@ use App\Models\Orden;
 use App\Models\PrecioMinuto;
 use App\Models\Product;
 use App\Models\ProductoCarritoArchivo;
+use App\Models\UsuarioCotizacion;
 use Exception;
+use Faker\Core\File;
 
 class ArchivosController extends Controller
 {
@@ -83,36 +85,63 @@ class ArchivosController extends Controller
 
         $file = Files::find($id);
 
-        if(!$file === null) {
-            $archivo = ProductoCarritoArchivo::find($id);
-            return $archivo;
-            }
         return Storage::download($file->path, $file->nombre);
     }
 
+    public function stlViewer(UsuarioCotizacion $usuarioCotizacion)
+    {
+        $fileUrl = asset('storage/' . $usuarioCotizacion->path);
+        
+        return response()->json([
+            'file_url' => $fileUrl
+        ]);
+    }
     
 
-    public function guardarSTLproducto(Request $request){
+    public function guardarSTLproducto(Request $request)
+    {
         $request->validate([
             'file' => 'file|required',
             'producto_id' => 'numeric|required'
         ]);
+    
         $producto = Product::find($request->input('producto_id'));
-        $filePath = $request->file('file')->store('files');
+    
+        if (!$producto) {
+            return response()->json(['message' => 'Producto no encontrado'], 404);
+        }
+    
+        // Obtener el nombre original del archivo incluyendo la extensión
+        $originalName = $request->file('file')->getClientOriginalName();
+    
+        // Guardar el archivo en la carpeta 'files' manteniendo el nombre original
+        $filePath = $request->file('file')->storeAs('files', $originalName);
+    
+        // Guardar el archivo en la base de datos
         $file = new Files([
             'path' => $filePath,
-            'nombre' => $request->file('file')->getClientOriginalName()
+            'nombre' => $originalName
         ]);
+    
+        // Asociar el archivo al producto
         $producto->files()->save($file);
-        return response()->json(['data'=>200]);
+    
+        return response()->json(['data' => 200]);
     }
+
+    public function downloadArchivo($id){
+
+        $file = ProductoCarritoArchivo::find($id);
+
+        return Storage::download($file->path, $file->nombre);
+    }
+    
 
     public function traerArchivos(Request $request)
     {
         $request->validate(['id' => 'required']);
         $producto = Product::with('files')->find($request->input('id'));
         return response($producto->files);
-        
     }
 
     public function eliminarArchivo(Request $request){

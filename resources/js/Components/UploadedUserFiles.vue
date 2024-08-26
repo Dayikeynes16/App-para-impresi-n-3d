@@ -40,6 +40,28 @@
                         <v-icon v-model="form.id" color="danger" variant="tonal" icon="mdi-delete-outline" @click="open(file)">
                         </v-icon>
                     </v-col>
+                    <v-col cols="1">
+                        <v-icon
+                        @click="file.dialog = true"
+                        color="surface-variant"
+                        icon="mdi-eye"
+                        variant="flat"
+                        ></v-icon>
+                        <v-dialog  max-width="500" v-model="file.dialog">
+                            
+                                <v-card color="black" class="pa-0 ma-0">
+                                    <STLViewer :stl="file"></STLViewer>
+                                    <v-card-actions>
+                                        <v-btn color="white" append-icon="mdi-close-circle" @click="file.dialog = false">Cerrar</v-btn>          
+                                    </v-card-actions>
+                                </v-card>
+        
+                        </v-dialog>
+                    </v-col>
+                </v-row>
+                <v-row>
+                   
+                 
                 </v-row>
             </v-card-text>
         </v-card>
@@ -51,6 +73,7 @@ import axios from "@/axios.js";
 import { ref, onMounted, watch } from "vue";
 import formatCurrency from "../composables/formatNumberToCurrency";
 import { ElMessage, ElMessageBox } from "element-plus";
+import STLViewer from './STLViewer.vue';
 
 const files = ref([]);
 const props = defineProps({ item: Object, update: Boolean });

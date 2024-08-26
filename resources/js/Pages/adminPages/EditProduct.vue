@@ -148,7 +148,7 @@
                                     type="number"
                                     :error-messages="errorMessages.price"
                                 ></v-text-field>
-                                <v-btn variant="tonal" @click="update" color="primary"
+                                <v-btn block variant="outlined" @click="update" color="primary"
                                     >Guardar</v-btn
                                 >
                             </v-card-text>

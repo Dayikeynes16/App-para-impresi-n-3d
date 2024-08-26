@@ -73,6 +73,7 @@
                                     </v-row>
                                 
                                 </v-col>
+                               
                                 <v-col class="text-right" cols="4">
                                     <v-icon
                                         @click="
@@ -132,7 +133,6 @@ import axios from "@/axios.js";
 import { ref, watch, onMounted } from "vue";
 import { useCartStore } from "@/stores/carrito";
 import { ElMessage } from 'element-plus'
-
 
 const paginastotales = ref(1);
 const imagenes = ref([]);

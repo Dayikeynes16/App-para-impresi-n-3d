@@ -29,8 +29,8 @@ Route::post('/actualizar-contrasenia', [AuthController::class, 'actualizarContra
 Route::get('/auth', [AuthController::class, 'auth']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/cerrarSesion', [AuthController::class, 'cerrarSesion']);
+Route::post('quick-quote', [UsuarioCotizacionController::class, 'quickQuote']);
 
-Route::get('/prueba', [AuthController::class, 'prueba']);
 
 //stripe
 Route::post('/paymentSuccess', [WebhookController::class, 'paymentSuccess']);
@@ -91,10 +91,14 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/deletefile', [ArchivosController::class, 'deletefile']);
     Route::post('/calculate', [ArchivosController::class, 'calculate']);
     Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);
-    Route::get('/downloadArchivo/{productoCarritoArchivo}', [ArchivosController::class, 'downloadSArchivo']);
+    Route::get('/DownloadArchivo/{id}', [ArchivosController::class, 'downloadArchivo']);
+    Route::get('/stlViewer/{usuarioCotizacion}', [ArchivosController::class, 'stlViewer']);
+
+    // Route::get('/downloadArchivo/{productoCarritoArchivo}', [ArchivosController::class, 'downloadSArchivo']);
     Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);  
     Route::get('/traerArchivos',[ArchivosController::class, 'traerArchivos']) ;
     Route::post('/borrarArchivo',[ArchivosController::class, 'eliminarArchivo']);
+    Route::get('/download-stl/{id}', [UsuarioCotizacionController::class, 'download'])->name('download.stl');
 
     //ModelsController
     Route::get('/traerarchivos', [ModelsController::class, 'traerarchivos']);

@@ -185,10 +185,12 @@ const downloadArchivo = async (id, nombre) => {
         const response = await axios.get(`/DownloadArchivo/${id}`, {
             responseType: "blob",
         });
+        console.log('holi');
+        console.log(response);
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", `${nombre}.stl`);
+        link.setAttribute("download", `${nombre}`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -206,7 +208,7 @@ const download = async (id, nombre) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", `${nombre}.stl`);
+        link.setAttribute("download", `${nombre}`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

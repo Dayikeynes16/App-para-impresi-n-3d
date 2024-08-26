@@ -11,7 +11,12 @@ use PhpParser\Node\Expr\New_;
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable=['name', 'description',  'price', 'is_custom'];
+    protected $fillable=[
+        'name',
+        'description',
+        'price', 
+        'is_custom'
+    ];
 
     protected $casts = [
         'price' => 'float',

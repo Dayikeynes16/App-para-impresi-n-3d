@@ -6,6 +6,9 @@ import { vuetify } from './vuetify';
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import { createPinia } from 'pinia'
+import * as THREE from 'three';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
+
 const pinia = createPinia()
 
 createApp(app)

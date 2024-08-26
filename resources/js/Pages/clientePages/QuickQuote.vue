@@ -5,8 +5,8 @@
         </v-row>
        
         <v-row>
-            <v-col>
-                <v-card>
+            <v-col align="center">
+                <v-card class="" max-width="600px">
                     <v-card-title>Sube tu archivo aquí</v-card-title>
                     <v-card-text>
                         <el-upload
@@ -30,57 +30,26 @@
                             </template>
                         </el-upload>
                     </v-card-text>
+                    <v-card-actions v-if="resultado">
+                        <v-row>
+                            <v-col cols="12">
+                                Costo estimado: {{ formatCurrency(files.total) }}
+                            </v-col>
+                            <v-col cols="12">
+                                Tiempo de Impresión: {{ Math.round(files.minutos) }} min
+                            </v-col>
+                            <v-col cols="12">
+                                <v-btn block variant="outlined" append-icon="mdi-cart" @click="router.push({name: 'cotizar'})">Comprar</v-btn>
+                            </v-col>
+                        </v-row>
+                        
+                    </v-card-actions>
                 </v-card>
                 <v-overlay :model-value="loading" class="align-center justify-center">
                     <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
                 </v-overlay>
             </v-col>
-            <v-col v-if="resultado" cols="8">
-                <v-card-subtitle>Aquí podrá ver todas las cotizaciones que ha realizado, puedes seleccionar y agregarlas al carrito.</v-card-subtitle>
-                <v-row class="text-center mt-0 pt-0 mb-2">
-                    <v-col cols="5"><h6>Archivos</h6></v-col>
-                    <v-col cols="3" class="text-center ml-6"><h6>Piezas</h6></v-col>
-                    <v-col cols="2" class="text-center ml-6"><h6>Precio</h6></v-col>
-                    <v-col cols="1" class="text-center"></v-col>
-                </v-row>
-                <v-row v-for="file in files" :key="file.nombre">
-                    
-                        <v-col cols="12">
-                            <v-card>
-                                <v-card-text>
-                                    <v-row align="center">
-                                        <v-col cols="4">
-                                            {{ file.nombre }}
-                                        </v-col>
-                                        <v-col cols="3">
-                                            <v-row>
-                                                <v-col cols="4">
-                                                    <v-icon icon="mdi-minus"></v-icon>
-                                                </v-col>
-                                                <v-col cols="4">
-                                                    {{ file.piezas }}
-
-                                                </v-col>
-                                                <v-col cols="4">
-                                                    <v-icon icon="mdi-plus"></v-icon>
-
-                                                </v-col>
-                                            </v-row>
-                                        </v-col>
-                                        <v-col cols="3">
-                                            {{ file.precio * file.piezas }}
-                                        </v-col>
-                                        <v-col cols="2">
-                                            <v-icon icon="mdi-delete" @click="removeFile(file)"></v-icon>
-                                        </v-col>
-
-                                    </v-row>
-                                </v-card-text>
-                            </v-card>
-
-                        </v-col>
-                </v-row>
-            </v-col>
+  
         </v-row>
 
         <v-dialog v-model="dialog" width="auto">
@@ -103,8 +72,9 @@ import { UploadFilled } from "@element-plus/icons-vue";
 
 const cartStore = useCartStore();
 const router = useRouter();
+
 const loadform = ref();
-const resultado = ref(true);
+const resultado = ref(false);
 const loading = ref(false);
 const errorMessage = ref("");
 const dialog = ref(false);
@@ -114,19 +84,9 @@ const totales = ref({
     total: 0,
     files: [],
 });
-const files = ref([]);
+const files = ref({});
 
-const agregarCarrito = async () => {
-    axios
-        .post("/carrito/agregar", {
-            producto_id: 1,
-            cantidad: 1,
-            files: totales.value.files,
-        })
-        .then(() => {
-            cartStore.fetchCart();
-        });
-};
+
 
 const cotizar = async (file) => {
     loading.value = true;
@@ -135,10 +95,11 @@ const cotizar = async (file) => {
     const formData = new FormData();
     formData.append("file", file.file);
     try {
-        const { data } = await axios.post("/calculate", formData);
+        const { data } = await axios.post("/quick-quote", formData);
         loading.value = false;
+        resultado.value = true;
         actualizarLista.value = true;
-        files.value.push(data.data); 
+        files.value = (data.data); 
     } catch (error) {
         loading.value = false;
         if (error.response && error.response.data && error.response.data.message) {
@@ -148,10 +109,5 @@ const cotizar = async (file) => {
     }
 };
 
-const removeFile = (file) => {
-    const index = files.value.indexOf(file);
-    if (index > -1) {
-        files.value.splice(index, 1);
-    }
-};
+
 </script>
