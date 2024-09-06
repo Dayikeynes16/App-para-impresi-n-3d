@@ -91,7 +91,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/deletefile', [ArchivosController::class, 'deletefile']);
     Route::post('/calculate', [ArchivosController::class, 'calculate']);
     Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);
-    Route::get('/DownloadArchivo/{id}', [ArchivosController::class, 'downloadArchivo']);
+    Route::get('/DownloadArchivo/{productoCarritoArchivo}', [ArchivosController::class, 'downloadArchivo']);
     Route::get('/stlViewer/{usuarioCotizacion}', [ArchivosController::class, 'stlViewer']);
 
     // Route::get('/downloadArchivo/{productoCarritoArchivo}', [ArchivosController::class, 'downloadSArchivo']);

@@ -49,7 +49,7 @@
                         ></v-icon>
                         <v-dialog  max-width="500" v-model="file.dialog">
                             
-                                <v-card color="black" class="pa-0 ma-0">
+                                <v-card rounded="5" elevation="15" color="black" class="pa-0 ma-0">
                                     <STLViewer :stl="file"></STLViewer>
                                     <v-card-actions>
                                         <v-btn color="white" append-icon="mdi-close-circle" @click="file.dialog = false">Cerrar</v-btn>          

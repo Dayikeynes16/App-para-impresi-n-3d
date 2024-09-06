@@ -79,16 +79,24 @@ class ArchivosController extends Controller
         return json_decode($response->getBody()->getContents(), true);
     }
 
-
+    public function downloadArchivo(ProductoCarritoArchivo $productoCarritoArchivo)
+    {
+        $file = $productoCarritoArchivo;
+    
+        if (!Storage::disk('public')->exists($file->path)) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+    
+        return Storage::disk('public')->download($file->path, $file->nombre);
+    }
+    
     public function downloadFile($id)
     {
-
         $file = Files::find($id);
-
         return Storage::download($file->path, $file->nombre);
     }
 
-    public function stlViewer(UsuarioCotizacion $usuarioCotizacion)
+    public function stlViewer(UsuarioCotizacion $usuarioCotizacion, ProductoCarritoArchivo $productoCarritoArchivo, Files $files)
     {
         $fileUrl = asset('storage/' . $usuarioCotizacion->path);
         
@@ -125,12 +133,7 @@ class ArchivosController extends Controller
         return response()->json(['data' => 200]);
     }
 
-    public function downloadArchivo($id){
-
-        $file = ProductoCarritoArchivo::find($id);
-
-        return Storage::download($file->path, $file->nombre);
-    }
+ 
     
 
     public function traerArchivos(Request $request)

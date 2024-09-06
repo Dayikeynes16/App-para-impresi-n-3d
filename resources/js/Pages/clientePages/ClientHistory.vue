@@ -14,7 +14,6 @@
                     <v-list-item>
                       <v-list-item-content>
                         <v-list-item-title>Fecha de Creación: {{ dayjs(item.created_at).format('MM/DD/YYYY') }}</v-list-item-title>
-                        <v-list-item-subtitle>Usuario ID: {{ item.usuario_id }}</v-list-item-subtitle>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item-group>
